@@ -1,0 +1,7 @@
+.bgimage{
+    background-image: url("../../assets/bgimg.png");
+    width: 100%;
+    background-size: cover;
+    background-repeat: no-repeat;
+    min-height: 100vh;
+}

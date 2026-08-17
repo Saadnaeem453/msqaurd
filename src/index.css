@@ -1,0 +1,75 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    overflow-x: auto;
+  }
+
+  body {
+    min-height: 100vh;
+    background-color: #0a0b0e;
+  }
+
+  #root {
+    width: 100%;
+    min-height: 100vh;
+  }
+}
+
+@layer components {
+  .app-container {
+    @apply w-full mx-auto px-4 sm:px-5 lg:px-6;
+  }
+
+  .app-container-breakout {
+    @apply -mx-4 sm:-mx-5 lg:-mx-6;
+  }
+}
+
+.dashboard {
+    background-image: url('/src/assets/bgimg.png'); 
+    background-size: cover;    
+    background-position: center; 
+    min-height: 100vh;          
+    margin: 0;                  
+    display: flex;
+    flex-direction: column;
+  }
+
+  .font-inter {
+    font-family: "Poppins", sans-serif;
+  }
+
+  .font-jakarta {
+    font-family: "Plus Jakarta Sans", sans-serif;
+  }
+
+/* Chrome, Edge, Safari Autofill Fix */
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+  -webkit-text-fill-color: #ffffff !important;
+  caret-color: #ffffff;
+
+  -webkit-box-shadow: 0 0 0px 1000px transparent inset;
+  box-shadow: 0 0 0px 1000px transparent inset;
+
+  transition: background-color 999999s ease-in-out 0s;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
