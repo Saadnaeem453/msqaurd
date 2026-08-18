@@ -6,9 +6,4 @@ export default defineConfig({
   resolve: {
     extensions: [".tsx", ".ts", ".jsx", ".js"],
   },
-  build: {
-    rollupOptions: {
-      input: "src/main.tsx", // Ensure Vite looks for main.tsx
-    },
-  },
 });
