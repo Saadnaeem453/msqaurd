@@ -1,6 +1,6 @@
 // components/HeroSection.jsx
 import React from 'react';
-import events from "../../../src/assets/events.svg"
+import events from "/events.svg"
 import { Link } from 'react-router-dom';
 const HeroSection = () => {
     const currentYear = new Date().getFullYear();
@@ -11,7 +11,7 @@ const HeroSection = () => {
       <div 
         className="absolute inset-0 h-full w-full bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundImage: "url('/src/assets/hero.png')",
+          backgroundImage: "url('/hero.png')",
           filter: 'brightness(1.2) contrast(1.1)',
           scale: '1.1'
         }}

@@ -8,7 +8,7 @@ const HouseOfWisdomSection = () => {
         <div className="w-full lg:w-1/2 flex justify-center">
           <div className="rounded-3xl overflow-hidden shadow-lg w-full">
             <img
-              src="/src/assets/landingimg2.svg"
+              src="/landingimg2.svg"
               alt="House of Wisdom Preview"
               className="w-full h-auto object-cover"
             />

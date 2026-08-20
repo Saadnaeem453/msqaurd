@@ -24,7 +24,7 @@ const Testimonials = () => {
             <div className="w-full md:w-1/3 flex justify-center">
               <div className="w-48 h-48 md:w-56 md:h-56 lg:w-64 rounded-xl lg:h-64 overflow-hidden">
                 <img
-                  src="/src/assets/testimonial.png"
+                  src="/testimonial.svg"
                   alt="Testimonial"
                   className="w-full h-full object-cover"
                 />

@@ -1,5 +1,5 @@
 .bgimage{
-    background-image: url("../../assets/bgimg.png");
+    background-image: url("/bgimg.svg");
     width: 100%;
     background-size: cover;
     background-repeat: no-repeat;

@@ -5,15 +5,15 @@ import axios from 'axios';
 import { onboardingApi, OnboardingSubmitData } from '../../../services/onboarding_service';
 
 // --- Step 2 Icons ---
-import islamicimg from '../../../assets/onboarding_icons/islamic.svg';
-import sportsimg from '../../../assets/onboarding_icons/sports.svg';
-import artimg from '../../../assets/onboarding_icons/arts.svg';
-import socialimg from '../../../assets/onboarding_icons/socials.svg';
-import networkingimg from '../../../assets/onboarding_icons/networking.svg';
-import charityimg from '../../../assets/onboarding_icons/charity.svg';
+import islamicimg from '/onboarding_icons/islamic.svg';
+import sportsimg from '/onboarding_icons/sports.svg';
+import artimg from '/onboarding_icons/arts.svg';
+import socialimg from '/onboarding_icons/socials.svg';
+import networkingimg from '/onboarding_icons/networking.svg';
+import charityimg from '/onboarding_icons/charity.svg';
 
 // --- Step 3 Image ---
-import ummaImage from '../../../assets/onboarding_icons/umma.png';
+import ummaImage from '/onboarding_icons/umma.png';
 import CompletionPage from './CompletionPage';
 
 // --- Categories (same as before) ---

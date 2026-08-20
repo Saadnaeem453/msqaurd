@@ -7,7 +7,7 @@ const CTA = () => {
         {/* Background Image */}
         <div 
           className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: "url('/src/assets/bgimg.png')" }}
+          style={{ backgroundImage: "url('/bgimg.svg')" }}
         ></div>
         
         {/* Black Overlay with Opacity */}

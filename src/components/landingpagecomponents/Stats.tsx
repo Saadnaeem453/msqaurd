@@ -19,7 +19,7 @@ const Stats = () => {
             <div className="flex items-start gap-4">
               <div className="flex-shrink-0">
                 <img 
-                  src="/src/assets/globe.png" 
+                  src="/globe.svg" 
                   alt="Globe icon" 
                   className="w-12 h-12 md:w-14 md:h-14 object-contain"
                 />
@@ -40,7 +40,7 @@ const Stats = () => {
             <div className="flex items-start gap-4">
               <div className="flex-shrink-0">
                 <img 
-                  src="/src/assets/mosque.png" 
+                  src="/mosque.svg" 
                   alt="Mosque icon" 
                   className="w-12 h-12 md:w-14 md:h-14 object-contain"
                 />
@@ -61,7 +61,7 @@ const Stats = () => {
             <div className="flex items-start gap-4">
               <div className="flex-shrink-0">
                 <img 
-                  src="/src/assets/mortarboard.png" 
+                  src="/mortarboard.svg" 
                   alt="Mortarboard icon" 
                   className="w-12 h-12 md:w-14 md:h-14 object-contain"
                 />

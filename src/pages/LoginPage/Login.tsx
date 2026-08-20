@@ -114,7 +114,7 @@ const Login = () => {
           <div className="absolute inset-0 bg-[#131418]">
             <div className="absolute inset-0 bg-gradient-to-br from-[#131418] via-[#0f1013] to-[#0a0b0e]"></div>
             <div className="absolute inset-0 opacity-80">
-              <img src="/src/assets/login.png" alt="" className="w-full h-full object-cover" />
+              <img src="/login.png" alt="" className="w-full h-full object-cover" />
             </div>
             <div className="absolute inset-0 bg-gradient-to-r from-black via-black/10 to-transparent"></div>
           </div>

@@ -31,8 +31,7 @@
 }
 
 .dashboard {
-    background-image: url('/src/assets/bgimg.png'); 
-    background-size: cover;    
+    background-image: url('/bgimg.svg'); 
     background-position: center; 
     min-height: 100vh;          
     margin: 0;                  

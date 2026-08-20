@@ -241,7 +241,7 @@ const Signup: React.FC = () => {
           <div className="absolute inset-0 bg-[#111214]">
             <div className="absolute inset-0 "></div>
             <div className="absolute inset-0 opacity-60 bg-black">
-              <img src="/src/assets/signup.png" alt="" className="w-full h-full object-cover" />
+              <img src="/signup.png" alt="" className="w-full h-full object-cover" />
             </div>
             <div className="absolute top-[8%] left-[20%] w-20 h-20 bg-primary/90 rounded-full blur-2xl"></div>
             <div className="absolute top-[15%] left-[60%] w-28 h-28 bg-primary/40 rounded-full blur-2xl"></div>

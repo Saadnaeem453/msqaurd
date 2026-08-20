@@ -56,7 +56,7 @@ const FeaturesBenifit = () => {
         <div className="w-full lg:w-1/2 flex justify-center">
           <div className="rounded-3xl overflow-hidden shadow-lg w-full">
             <img
-              src="/src/assets/featureimg.png"
+              src="/featureimg.svg"
               alt="Features Preview"
               className="w-full h-auto object-cover"
             />

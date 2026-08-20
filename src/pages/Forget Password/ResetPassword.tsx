@@ -1,8 +1,8 @@
 // pages/Forget Password/ResetPassword.tsx
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import secureimg from '../../assets/secure.svg';
-import supportimg from '../../assets/support.svg';
+import secureimg from '/secure.svg';
+import supportimg from '/support.svg';
 import { authApi } from '../../services/auth_service';
 
 const ResetPassword = () => {
