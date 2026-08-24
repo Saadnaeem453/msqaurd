@@ -122,7 +122,7 @@ const StatCard = ({
   changeType: "up" | "down" | "neutral";
   sub?: string;
 }) => (
-  <div className="bg-[#131418] border border-secondary/10 rounded-xl p-5">
+  <div className="bg-[#131418]  border border-secondary/10 rounded-xl p-5">
     <p className="text-secondary/50 text-[10px] uppercase tracking-wider font-semibold mb-2">
       {label}
     </p>
@@ -154,7 +154,7 @@ const EventPerformance = () => {
   const funnelBarColors = ["#ef4444", "#b91c1c", "#7f1d1d", "#450a0a"];
 
   return (
-    <div className="max-w-7xl mx-auto px-4 md:px-6 py-6 space-y-6">
+    <div className="max-w-[1500px] mx-auto px-4 md:px-6 py-6 space-y-6">
       {/* ── Top Stats ─────────────────────────────────────── */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard

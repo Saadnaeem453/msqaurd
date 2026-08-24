@@ -307,7 +307,7 @@ const TicketTypes = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 md:py-6 space-y-8">
+    <div className="max-w-[1500px] mx-auto px-4 md:px-6 py-4 md:py-6 space-y-8">
       {/* ── Header ──────────────────────────────────────────── */}
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>

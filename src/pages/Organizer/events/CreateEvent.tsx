@@ -286,7 +286,7 @@ const CreateEvent = ({ editEventId, initialData }: CreateEventProps = {}) => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto py-6">
+    <div className="max-w-[1500px] mx-auto py-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>

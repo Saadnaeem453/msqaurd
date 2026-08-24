@@ -101,10 +101,6 @@ const Signup: React.FC = () => {
         const signupSucceeded = response.ok || response.success === true;
 
         if (signupSucceeded) {
-          if (typeof window !== 'undefined') {
-            localStorage.setItem('onboardingCompleted', 'false');
-            localStorage.setItem('accountType', 'organizer');
-          }
           setSuccessMsg('Organizer account created! Please check your email for the verification code.');
           navigate('/verify-email', {
             state: { email: formData.email.trim(), accountType: 'organizer' },
@@ -123,10 +119,6 @@ const Signup: React.FC = () => {
         const signupSucceeded = response.ok || response.success === true;
 
         if (signupSucceeded) {
-          if (typeof window !== 'undefined') {
-            localStorage.setItem('onboardingCompleted', 'false');
-            localStorage.setItem('accountType', 'attendee');
-          }
           setSuccessMsg('Account created! Please check your email for the verification code.');
           navigate('/verify-email', {
             state: { email: formData.email.trim(), accountType: 'attendee' },

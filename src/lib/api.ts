@@ -15,8 +15,11 @@
 import { toast } from 'sonner';
 
 // ─── Environment ──────────────────────────────────────────────────────────────
-// const BASE_URL = 'http://localhost:5000/api';
-const BASE_URL = "https://msqaurd-backend.onrender.com/api/v1";
+const BASE_URL = 'http://localhost:5000/api';
+// const BASE_URL = "https://msqaurd-backend.onrender.com/api/v1";
+// Exact signup endpoints used by the frontend:
+// - http://localhost:5000/api/auth/signup
+// - http://localhost:5000/api/organizer/signup
 
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -114,8 +117,24 @@ async function request<TData = unknown>(
 
   // Build headers
   const headers: HeadersInit = {};
+  const publicAuthRoutes = new Set([
+    '/auth/signup',
+    '/auth/signin',
+    '/auth/google',
+    '/auth/apple',
+    '/auth/account-verification',
+    '/auth/resend-otp',
+    '/auth/password-reset-code',
+    '/auth/confirm-otp',
+    '/auth/reset-password',
+    '/organizer/signup',
+    '/organizer/signin',
+  ]);
+
   const token = tokenStore.get();
-  if (token) headers['Authorization'] = `Bearer ${token}`;
+  if (token && !publicAuthRoutes.has(endpoint)) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
 
   // Only set Content-Type for JSON bodies (not FormData)
   if (body && !(body instanceof FormData)) {

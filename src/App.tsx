@@ -57,6 +57,8 @@ import PayoutsPage from "./pages/Organizer/finance/PayoutsPage";
 import AudienceInsights from "./pages/Organizer/analytics/AudienceInsights";
 import EventPerformance from "./pages/Organizer/analytics/EventPerformance";
 import TrendsPage from "./pages/Organizer/analytics/TrendsPage";
+import ScannerPage from "./pages/Organizer/checkin/ScannerPage";
+import LiveCheckinsPage from "./pages/Organizer/checkin/LiveCheckinsPage";
 import OrganizationProfile from "./pages/Organizer/organization/OrganizationProfile";
 import TeamPage from "./pages/Organizer/organization/TeamPage";
 import BrandingPage from "./pages/Organizer/organization/BrandingPage";
@@ -89,6 +91,10 @@ const getDashboardRedirectPath = () => {
   const accountType = getStoredAccountType();
   const onboardingCompleted = localStorage.getItem("onboardingCompleted") === "true";
 
+  if (!isEmailVerified() && accountType !== "admin") {
+    return "/verify-email";
+  }
+
   if (accountType === "admin") {
     return "/admin";
   }
@@ -109,13 +115,33 @@ const isUserAuthenticated = () => {
 
   return Boolean(
     localStorage.getItem("token") ||
-      localStorage.getItem("mh_token") ||
-      localStorage.getItem("accountType")
+      localStorage.getItem("mh_token")
   );
+};
+
+const isEmailVerified = () => {
+  if (typeof window === "undefined") return true;
+
+  try {
+    const rawUser = localStorage.getItem("user");
+    const parsedUser = rawUser ? JSON.parse(rawUser) : null;
+    const storedVerify = localStorage.getItem("verify");
+
+    if (storedVerify === "true") return true;
+    if (storedVerify === "false") return false;
+
+    return parsedUser?.email_verified === true;
+  } catch {
+    return true;
+  }
 };
 
 const PublicRoute = ({ children }: { children: ReactNode }) => {
   if (isUserAuthenticated()) {
+    if (!isEmailVerified()) {
+      return <Navigate to="/verify-email" replace />;
+    }
+
     return <Navigate to={getDashboardRedirectPath()} replace />;
   }
 
@@ -254,6 +280,8 @@ function App() {
           <Route path="tickets/sales" element={<TicketSales />} />
           <Route path="tickets/attendees" element={<AttendeeList />} />
           <Route path="tickets/types" element={<TicketTypes />} />
+          <Route path="checkin/scanner" element={<ScannerPage />} />
+          <Route path="checkin/live" element={<LiveCheckinsPage />} />
           <Route path="settings" element={<AccountSettings />} />
           {/* Finance */}
           <Route path="finance/revenue" element={<RevenuePage />} />

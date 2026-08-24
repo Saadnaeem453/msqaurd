@@ -23,6 +23,23 @@ const isOrganizerAccount = () => {
   return localStorage.getItem("accountType") === "organizer";
 };
 
+const isEmailVerified = () => {
+  if (typeof window === "undefined") return true;
+
+  try {
+    const rawUser = localStorage.getItem("user");
+    const parsedUser = rawUser ? JSON.parse(rawUser) : null;
+    const storedVerify = localStorage.getItem("verify");
+
+    if (storedVerify === "true") return true;
+    if (storedVerify === "false") return false;
+
+    return parsedUser?.email_verified === true;
+  } catch {
+    return true;
+  }
+};
+
 const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const location = useLocation();
   const [isChecking, setIsChecking] = useState(true);
@@ -49,6 +66,7 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
           localStorage.removeItem("onboardingCompleted");
           localStorage.removeItem("user");
           localStorage.removeItem("initialLoaderShown");
+          localStorage.removeItem("verify");
         }
       })
       .catch(() => {
@@ -59,6 +77,7 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
         localStorage.removeItem("onboardingCompleted");
         localStorage.removeItem("user");
         localStorage.removeItem("initialLoaderShown");
+        localStorage.removeItem("verify");
         setIsAuthenticated(false);
       })
       .finally(() => setIsChecking(false));
@@ -72,7 +91,11 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  if (!isOnboardingCompleted() && !isOrganizerAccount() && location.pathname !== "/onboarding") {
+  if (!isEmailVerified() && !isOrganizerAccount() && location.pathname !== "/verify-email") {
+    return <Navigate to="/verify-email" state={{ from: location }} replace />;
+  }
+
+  if (!isOnboardingCompleted() && !isOrganizerAccount() && location.pathname !== "/onboarding" && location.pathname !== "/verify-email") {
     return <Navigate to="/onboarding" state={{ from: location }} replace />;
   }
 

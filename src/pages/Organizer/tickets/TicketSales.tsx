@@ -205,7 +205,7 @@ const TicketSales = () => {
   const netProfit = 128565.0;
 
   return (
-    <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 md:py-6 space-y-6">
+    <div className="max-w-[1500px] mx-auto px-4 md:px-6 py-4 md:py-6 space-y-6">
       {/* ── Header ──────────────────────────────────────────── */}
       <div>
         <p className="text-secondary/60 text-sm mb-1">

@@ -155,7 +155,7 @@ const DraftEvents = () => {
   const topPriority = drafts.length > 0 ? drafts.reduce((max, d) => d.completion > max.completion ? d : max, drafts[0]) : null;
 
   return (
-    <div className="max-w-7xl mx-auto px-4 md:px-6 py-6 space-y-8">
+    <div className="max-w-[1500px] mx-auto px-4 md:px-6 py-6 space-y-8">
       {/* Header */}
       <div className="flex items-start justify-between">
         <div>

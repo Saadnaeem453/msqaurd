@@ -37,30 +37,31 @@ const Login = () => {
       const normalizedDetail = (detail || '').toLowerCase();
       const isEmailVerified = user?.email_verified === true || verify === true;
 
-      // A failed signin response should surface as a credential error,
-      // not as a redirect to the verify-email page.
-      if (!ok || !(token && user)) {
-        setError(detail || 'Login failed. Please check your credentials.');
-        return;
-      }
-
       const verificationRequired =
         verify === false ||
         user?.email_verified === false ||
+        normalizedDetail.includes('email not verified') ||
+        normalizedDetail.includes('not verified') ||
         normalizedDetail.includes('verify') ||
         normalizedDetail.includes('verified') ||
         normalizedDetail.includes('verification') ||
         normalizedDetail.includes('otp') ||
         normalizedDetail.includes('code');
 
-      // ─── EMAIL NOT VERIFIED – redirect without saving anything ──────────
+      // ─── EMAIL NOT VERIFIED – redirect before generic credential handling ─────
       if (verificationRequired && !isEmailVerified) {
         const accountType = user?.role === 'organizer' ? 'organizer' : 'attendee';
-        // ❌ Do NOT set localStorage here
         navigate('/verify-email', {
           replace: true,
           state: { email: (user?.email || formData.email.trim()), accountType },
         });
+        return;
+      }
+
+      // A failed signin response should surface as a credential error,
+      // not as a redirect to the verify-email page.
+      if (!ok || !(token && user)) {
+        setError(detail || 'Login failed. Please check your credentials.');
         return;
       }
 

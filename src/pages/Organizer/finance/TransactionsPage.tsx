@@ -398,7 +398,7 @@ const TransactionsPage = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 md:px-6 py-6 space-y-6">
+    <div className="max-w-[1500px] mx-auto px-4 md:px-6 py-6 space-y-6">
       {/* ── Breadcrumb ─────────────────────────────────────── */}
       <div className="flex items-center gap-2 text-sm">
         <Link to="/organizer/finance/revenue" className="text-secondary hover:text-white transition-colors">

@@ -159,7 +159,7 @@ const PayoutsPage = () => {
   }, []);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 md:px-6 py-6 space-y-6">
+    <div className="max-w-[1500px] mx-auto px-4 md:px-6 py-6 space-y-6">
       {/* ── Header ─────────────────────────────────────────── */}
       <div className="flex items-start justify-between">
         <div>

@@ -73,7 +73,7 @@ const TrendsPage = () => {
   const timeRangeOptions = ["Last 3 Months", "Last 6 Months", "Last 12 Months", "Full Year 2024"];
 
   return (
-    <div className="max-w-7xl mx-auto px-4 md:px-6 py-6 space-y-6">
+    <div className="max-w-[1500px] mx-auto px-4 md:px-6 py-6 space-y-6">
       {/* ── Header ─────────────────────────────────────────── */}
       <div>
         <div className="flex items-center gap-2 mb-1">
