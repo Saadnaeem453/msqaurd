@@ -15,8 +15,8 @@
 import { toast } from 'sonner';
 
 // ─── Environment ──────────────────────────────────────────────────────────────
-const BASE_URL = 'http://localhost:5000/api';
-// const BASE_URL = "https://msqaurd-backend.onrender.com/api/v1";
+// const BASE_URL = 'http://localhost:5000/api';
+const BASE_URL = "https://msqaurd-backend.onrender.com/api/v1";
 // Exact signup endpoints used by the frontend:
 // - http://localhost:5000/api/auth/signup
 // - http://localhost:5000/api/organizer/signup
