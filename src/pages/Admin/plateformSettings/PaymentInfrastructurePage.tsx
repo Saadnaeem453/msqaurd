@@ -57,8 +57,7 @@ interface ToggleState {
 
 /* ================== Mock data (swap with real API later) ================== */
 
-const API_KEY_MASKED = "";
-const WEBHOOK_SECRET = "";
+
 
 const latencyBars: LatencyBar[] = [
   { id: "b1", ms: 140, highlight: false },
@@ -117,7 +116,7 @@ const PaymentInfrastructurePage = () => {
 
   const copyWebhook = async () => {
     try {
-      await navigator.clipboard.writeText(WEBHOOK_SECRET);
+      await navigator.clipboard.writeText("WEBHOOK_SECRET");
       toast.success("Webhook secret copied.");
     } catch {
       toast.error("Clipboard access was denied.");
@@ -205,7 +204,7 @@ const PaymentInfrastructurePage = () => {
                 </p>
                 <div className="mt-2 flex items-center gap-2 rounded-sm bg-bgray/10 px-3 py-2.5">
                   <span className="truncate font-mono text-[12px] text-bgray/80">
-                    {showKey ? "API_KEY_FULL" : API_KEY_MASKED}
+                    {showKey ? "API_KEY_FULL" : "API_KEY_MASKED"}
                   </span>
                   <button
                     type="button"
@@ -222,7 +221,7 @@ const PaymentInfrastructurePage = () => {
                   Webhook Secret
                 </p>
                 <div className="mt-2 flex items-center gap-2 rounded-sm bg-bgray/10 px-3 py-2.5">
-                  <span className="truncate font-mono text-[12px] text-bgray/80">{WEBHOOK_SECRET}</span>
+                  <span className="truncate font-mono text-[12px] text-bgray/80">{"WEBHOOK_SECRET"}</span>
                   <button
                     type="button"
                     aria-label="Copy webhook secret"
