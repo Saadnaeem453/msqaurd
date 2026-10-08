@@ -1,6 +1,5 @@
 import { api } from "../lib/api";
 
-// ─── Types ──────────────────────────────────────────────────────────────────
 
 export interface AttendeeOrganization {
   id: string;
@@ -165,7 +164,6 @@ export const CATEGORIES: CategoryItem[] = [
   { label: "Competition", value: "Competition" },
 ];
 
-// ─── Service ────────────────────────────────────────────────────────────────
 
 export const attendeeEventsApi = {
   /**

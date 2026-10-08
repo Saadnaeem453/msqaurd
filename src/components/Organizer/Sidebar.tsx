@@ -99,7 +99,7 @@ const Sidebar = () => {
 
   return (
     <aside className="w-64 bg-[#131418] border-r border-secondary/10 h-screen sticky top-0 overflow-y-auto no-scrollbar flex-shrink-0">
-      {/* Logo + Organizer label */}
+
       <div className="p-6 border-b border-secondary/10">
         <Link to="/organizer" className="text-primary text-2xl font-bold tracking-tight">
           MSQUARED
@@ -109,15 +109,15 @@ const Sidebar = () => {
         </p>
       </div>
 
-      {/* Navigation */}
+
       <nav className="p-4 space-y-4">
         {navSections.map((section, idx) => (
           <div key={idx}>
-            {/* Section title */}
+
             <h3 className="text-secondary/40 text-[10px] uppercase tracking-[0.15em] font-light px-3 py-1">
               {section.title}
             </h3>
-            {/* Items */}
+
             <div className="space-y-0.5">
               {section.items.map((item, itemIdx) => {
                 const active = isActive(item.path);

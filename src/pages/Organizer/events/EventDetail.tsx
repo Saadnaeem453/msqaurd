@@ -97,7 +97,7 @@ const EventDetail = () => {
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
-      {/* Back + actions */}
+
       <div className="flex items-center justify-between">
         <Link
           to="/organizer/events"
@@ -113,7 +113,7 @@ const EventDetail = () => {
             <Edit3 size={14} /> Edit
           </button>
 
-          {/* Status actions */}
+
           {event.status === "draft" && (
             <button
               onClick={() => handleStatusChange("published")}
@@ -143,7 +143,7 @@ const EventDetail = () => {
         </div>
       </div>
 
-      {/* Hero */}
+
       <div className="relative rounded-xl overflow-hidden h-64 bg-secondary/5">
         {event.hero_image ? (
           <img
@@ -174,7 +174,7 @@ const EventDetail = () => {
         </div>
       </div>
 
-      {/* Info grid */}
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-[#131418] border border-secondary/10 rounded-xl p-4 flex items-start gap-3">
           <Calendar size={18} className="text-primary flex-shrink-0 mt-0.5" />
@@ -207,7 +207,7 @@ const EventDetail = () => {
         </div>
       </div>
 
-      {/* Description */}
+
       <div className="bg-[#131418] border border-secondary/10 rounded-xl p-6">
         <h3 className="text-white font-semibold mb-2">About this event</h3>
         <p className="text-secondary text-sm leading-relaxed whitespace-pre-wrap">
@@ -215,7 +215,7 @@ const EventDetail = () => {
         </p>
       </div>
 
-      {/* Stats */}
+
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="bg-[#131418] border border-secondary/10 rounded-xl p-4">
           <p className="text-secondary text-xs">Tickets Sold</p>
@@ -237,7 +237,7 @@ const EventDetail = () => {
         </div>
       </div>
 
-      {/* Tiers */}
+
       {event.tiers && event.tiers.length > 0 && (
         <div className="bg-[#131418] border border-secondary/10 rounded-xl p-6">
           <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
@@ -279,7 +279,7 @@ const EventDetail = () => {
         </div>
       )}
 
-      {/* Speakers */}
+
       {event.speakers && event.speakers.length > 0 && (
         <div className="bg-[#131418] border border-secondary/10 rounded-xl p-6">
           <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
@@ -306,7 +306,7 @@ const EventDetail = () => {
         </div>
       )}
 
-      {/* Agenda */}
+
       {event.agenda && event.agenda.length > 0 && (
         <div className="bg-[#131418] border border-secondary/10 rounded-xl p-6">
           <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
@@ -346,7 +346,7 @@ const EventDetail = () => {
         </div>
       )}
 
-      {/* Gallery */}
+
       {event.gallery && event.gallery.length > 0 && (
         <div className="bg-[#131418] border border-secondary/10 rounded-xl p-6">
           <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
@@ -371,7 +371,7 @@ const EventDetail = () => {
         </div>
       )}
 
-      {/* Video */}
+
       {event.video_url && (
         <div className="bg-[#131418] border border-secondary/10 rounded-xl p-6">
           <h3 className="text-white font-semibold mb-4">Promotional Video</h3>
@@ -386,7 +386,7 @@ const EventDetail = () => {
         </div>
       )}
 
-      {/* Delete confirmation modal */}
+
       <ConfirmModal
         open={showDeleteConfirm}
         onClose={() => setShowDeleteConfirm(false)}

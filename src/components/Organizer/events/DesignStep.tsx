@@ -11,7 +11,7 @@ const DesignStep = ({ data, updateData }: Props) => {
   const heroInputRef = useRef<HTMLInputElement>(null);
   const galleryInputRef = useRef<HTMLInputElement>(null);
 
-  // Local preview state — derived from formData
+
   const [heroPreview, setHeroPreview] = useState<string | null>(
     data.heroImageUrl || null
   );
@@ -19,7 +19,7 @@ const DesignStep = ({ data, updateData }: Props) => {
     data.galleryUrls || []
   );
 
-  // Sync previews when formData changes externally (e.g. edit mode)
+
   useEffect(() => {
     if (data.heroImageUrl && !heroPreview) {
       setHeroPreview(data.heroImageUrl);
@@ -32,10 +32,10 @@ const DesignStep = ({ data, updateData }: Props) => {
   const handleHeroUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      // Store the File in formData
+
       updateData({ heroImage: file });
 
-      // Generate preview
+
       const reader = new FileReader();
       reader.onload = (ev) => {
         setHeroPreview(ev.target?.result as string);
@@ -54,10 +54,10 @@ const DesignStep = ({ data, updateData }: Props) => {
     const files = e.target.files;
     if (files) {
       const newFiles = Array.from(files);
-      // Append to existing gallery files in formData
+
       updateData({ gallery: [...data.gallery, ...newFiles] });
 
-      // Generate previews
+
       newFiles.forEach((file) => {
         const reader = new FileReader();
         reader.onload = (ev) => {
@@ -69,24 +69,24 @@ const DesignStep = ({ data, updateData }: Props) => {
   };
 
   const removeGalleryImage = (index: number) => {
-    // Remove from formData files
+
     const updatedFiles = data.gallery.filter((_, i) => {
-      // Account for existing URLs that come before new files
+
       const fileIndex = i - (data.galleryUrls?.length || 0);
       return fileIndex !== index;
     });
     updateData({ gallery: updatedFiles });
 
-    // Remove preview
+
     const updatedPreviews = galleryPreviews.filter((_, i) => i !== index);
     setGalleryPreviews(updatedPreviews);
   };
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-      {/* Left column – 65% */}
+
       <div className="lg:col-span-3 space-y-6">
-        {/* Hero Image */}
+
         <div>
           <label className="text-gray-400 text-[10px] uppercase tracking-[0.15em] font-semibold block mb-1.5">
             HERO IMAGE
@@ -136,7 +136,7 @@ const DesignStep = ({ data, updateData }: Props) => {
           </div>
         </div>
 
-        {/* Image Gallery */}
+
         <div>
           <div className="flex items-center justify-between mb-1.5">
             <label className="text-gray-400 text-[10px] uppercase tracking-[0.15em] font-semibold">
@@ -184,7 +184,7 @@ const DesignStep = ({ data, updateData }: Props) => {
           </div>
         </div>
 
-        {/* Promotional Video */}
+
         <div>
           <label className="text-gray-400 text-[10px] uppercase tracking-[0.15em] font-semibold block mb-1.5">
             PROMOTIONAL VIDEO
@@ -202,15 +202,15 @@ const DesignStep = ({ data, updateData }: Props) => {
         </div>
       </div>
 
-      {/* Right column – 35% */}
+
       <div className="lg:col-span-2">
-        {/* Attendee Preview Card */}
+
         <div className="bg-[#0d0e12] border border-[#292a2b] rounded-lg p-4">
           <h4 className="text-gray-400 text-[10px] uppercase tracking-[0.15em] font-semibold mb-3">
             ATTENDEE PREVIEW
           </h4>
           <div className="bg-[#080809] rounded-lg overflow-hidden border border-[#292a2b]">
-            {/* Image placeholder */}
+
             <div className="w-full h-32 bg-gray-800 flex items-center justify-center">
               {heroPreview ? (
                 <img
@@ -223,7 +223,7 @@ const DesignStep = ({ data, updateData }: Props) => {
               )}
             </div>
             <div className="p-4">
-              {/* Category badges */}
+
               <div className="flex gap-2 mb-2">
                 <span className="text-primary text-xs font-medium uppercase tracking-wider border border-primary px-2 py-0.5 rounded">
                   {data.category || "COMMUNITY"}
@@ -232,21 +232,21 @@ const DesignStep = ({ data, updateData }: Props) => {
                   ANNUAL
                 </span>
               </div>
-              {/* Title */}
+
               <h3 className="text-white text-lg font-semibold">
                 {data.title || "Event Title"}
               </h3>
-              {/* Date & Location */}
+
               <p className="text-gray-400 text-sm">
                 {data.eventDate || "Oct 24, 2024"} |{" "}
                 {data.venueName || "Central London"}
               </p>
-              {/* Description */}
+
               <p className="text-gray-400 text-sm mt-2">
                 {data.description ||
                   "Join us for a transformative day of learning and networking."}
               </p>
-              {/* Get Tickets Button */}
+
               <button className="mt-3 w-full bg-primary hover:bg-primary/80 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
                 Get Tickets
               </button>

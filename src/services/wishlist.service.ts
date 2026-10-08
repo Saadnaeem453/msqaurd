@@ -1,6 +1,6 @@
 import { api } from "../lib/api";
 
-// ─── Types ──────────────────────────────────────────────────────────────────
+
 
 export interface WishlistItem {
   id: string;
@@ -20,7 +20,7 @@ export interface WishlistItem {
   };
 }
 
-// ─── Service ────────────────────────────────────────────────────────────────
+
 
 export const wishlistApi = {
   /**

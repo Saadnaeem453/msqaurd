@@ -13,7 +13,7 @@ const CategoryBrowser = ({ activeCategory, onCategoryChange, onSeeAll }: Categor
 
   return (
     <div className="flex items-center gap-4">
-      {/* Scrollable category pills */}
+
       <div
         ref={scrollRef}
         className="flex items-center gap-2 overflow-x-auto no-scrollbar flex-1"
@@ -36,7 +36,7 @@ const CategoryBrowser = ({ activeCategory, onCategoryChange, onSeeAll }: Categor
         })}
       </div>
 
-      {/* See all link */}
+
       {onSeeAll && (
         <button
           onClick={onSeeAll}

@@ -1,4 +1,4 @@
-// pages/Forget Password/NewPassword.tsx
+
 import { useState } from "react";
 import { GoArrowLeft } from "react-icons/go";
 import { IoEyeOff, IoEye } from "react-icons/io5";
@@ -17,12 +17,12 @@ const NewPassword = () => {
   const location = useLocation();
   const [searchParams] = useSearchParams();
 
-  // Get email from state (passed from ResetPassword) or from URL query
+
   const emailFromState = (location.state as { email?: string } | null)?.email;
   const emailFromQuery = searchParams.get('email');
   const email = emailFromState || emailFromQuery || '';
 
-  // Get code from URL query (sent via email link)
+
   const code = searchParams.get('code');
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -76,7 +76,7 @@ const NewPassword = () => {
 
   return (
     <div className="min-h-screen bg-[#121317] text-white font-inter flex flex-col">
-      {/* Top Bar - MSQUARED left, Question icon right */}
+
       <div className="w-full max-w-7xl mx-auto px-4 py-6 flex justify-between items-center">
         <h1 className="text-primary text-xl font-jakrata md:text-2xl font-bold font-inter tracking-tight">
           <a href="/">MSQUARED</a>
@@ -89,10 +89,10 @@ const NewPassword = () => {
         </div>
       </div>
 
-      {/* Main Content - Centered */}
+
       <div className="flex-1 flex items-center justify-center px-4 py-8">
         <div className="w-full max-w-[440px]">
-          {/* Form Container */}
+
           <div className="bg-black border border-border_color rounded-xl p-6 md:p-8 py-10">
             <h2 className="text-white text-2xl md:text-3xl font-bold leading-tight mb-2">
               Set New Password
@@ -102,7 +102,7 @@ const NewPassword = () => {
             </p>
 
             <form onSubmit={handleSubmit} className="space-y-6">
-              {/* New Password */}
+
               <div>
                 <label className="text-secondary text-[10px] uppercase tracking-[0.15em] font-light block mb-1.5">
                   NEW PASSWORD
@@ -132,7 +132,7 @@ const NewPassword = () => {
                 </div>
               </div>
 
-              {/* Confirm Password */}
+
               <div>
                 <label className="text-secondary text-[10px] uppercase tracking-[0.15em] font-light block mb-1.5">
                   CONFIRM PASSWORD
@@ -174,7 +174,7 @@ const NewPassword = () => {
               </button>
             </form>
 
-            {/* Centered text under button */}
+
             <div className="mt-16 text-secondary/60 text-sm text-center space-y-2">
               <Link to="/login" className="flex items-center justify-center gap-2 hover:text-primary transition-colors">
                 <span className="text-primary">←</span>
@@ -183,17 +183,17 @@ const NewPassword = () => {
             </div>
           </div>
 
-          {/* Secure Access & Need Help - Row below form (matches ResetPassword) */}
+
           <div className="grid grid-cols-2 gap-4 mt-6">
             <div className="bg-black rounded-xl p-4 border border-secondary/20 flex items-center gap-3">
-            
+
               <div>
                 <h3 className="text-gray-300 text-sm font-semibold mb-0.5">Secure Access</h3>
                 <p className="text-secondary text-xs font-light">Multi-factor authentication ready.</p>
               </div>
             </div>
             <div className="bg-black rounded-xl p-4 border border-secondary/20 flex items-center gap-3">
-           
+
               <div>
                 <h3 className="text-gray-300 text-sm font-semibold mb-0.5">Need Help?</h3>
                 <p className="text-secondary text-xs font-light">Support is available 24/7.</p>
@@ -203,7 +203,7 @@ const NewPassword = () => {
         </div>
       </div>
 
-      {/* Footer - Full width */}
+
       <footer className="border-t border-secondary/10 bg-[#121317] py-6 px-4 text-xs flex flex-col md:flex-row justify-between items-center gap-4 w-full mx-auto">
         <div className="flex flex-col items-center md:items-start gap-1">
           <span className="text-white font-medium"><a href="/">MSQUARED</a></span>

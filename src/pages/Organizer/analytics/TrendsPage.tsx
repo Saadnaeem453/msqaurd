@@ -20,7 +20,7 @@ import {
   ComposedChart,
 } from "recharts";
 
-// ── Mock Data ───────────────────────────────────────────────────────────────
+
 
 const growthData = [
   { month: "JAN", revenue: 42000, tickets: 320 },
@@ -37,8 +37,8 @@ const growthData = [
   { month: "DEC", revenue: 115000, tickets: 1050 },
 ];
 
-// Heatmap data: rows = time of day (MOR, AFT, EVE), cols = days (M–S)
-// Values 0–10 representing intensity
+
+
 const heatmapData: Record<string, number[]> = {
   MOR: [2, 3, 4, 3, 5, 2, 1],
   AFT: [4, 5, 6, 5, 7, 4, 2],
@@ -53,10 +53,10 @@ const trendingCategories = [
 
 const timeLabels = ["M", "T", "W", "T", "F", "S", "S"];
 
-// ── Heatmap Cell Color ──────────────────────────────────────────────────────
+
 
 function heatColor(value: number): string {
-  // 0 = very dark, 10 = bright red/pink
+
   const ratio = value / 10;
   const r = Math.round(40 + (239 - 40) * ratio);
   const g = Math.round(15 + (80 - 15) * ratio);
@@ -64,7 +64,7 @@ function heatColor(value: number): string {
   return `rgb(${r},${g},${b})`;
 }
 
-// ── Component ───────────────────────────────────────────────────────────────
+
 
 const TrendsPage = () => {
   const [timeRange, setTimeRange] = useState("Last 12 Months");
@@ -74,7 +74,7 @@ const TrendsPage = () => {
 
   return (
     <div className="max-w-[1500px] mx-auto px-4 md:px-6 py-6 space-y-6">
-      {/* ── Header ─────────────────────────────────────────── */}
+
       <div>
         <div className="flex items-center gap-2 mb-1">
           <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
@@ -134,9 +134,9 @@ const TrendsPage = () => {
         </div>
       </div>
 
-      {/* ── Top Row: Growth Chart + AI Prediction ─────────── */}
+
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-5">
-        {/* Growth Over Time */}
+
         <div className="lg:col-span-3 bg-[#131418] border border-secondary/10 rounded-xl p-6">
           <div className="flex items-start justify-between mb-6">
             <div>
@@ -218,7 +218,7 @@ const TrendsPage = () => {
           </div>
         </div>
 
-        {/* AI Prediction */}
+
         <div className="lg:col-span-2 bg-[#131418] border border-secondary/10 rounded-xl p-6">
           <div className="flex items-center gap-2 mb-4">
             <div className="w-6 h-6 rounded-full bg-red-500/10 flex items-center justify-center">
@@ -244,7 +244,7 @@ const TrendsPage = () => {
             Based on current retention trends and historical Q4 performance, we project a significant spike in tech networking events.
           </p>
 
-          {/* Confidence Score */}
+
           <div>
             <div className="flex items-center justify-between mb-2">
               <span className="text-secondary text-xs">Confidence Score</span>
@@ -260,9 +260,9 @@ const TrendsPage = () => {
         </div>
       </div>
 
-      {/* ── Middle Row: Peak Launch + Trending + Market Standing ── */}
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-        {/* Peak Launch Times */}
+
         <div className="bg-[#131418] border border-secondary/10 rounded-xl p-6">
           <div className="flex items-center gap-2 mb-5">
             <h2 className="font-jakarta text-base font-bold text-white">Peak Launch Times</h2>
@@ -271,9 +271,9 @@ const TrendsPage = () => {
             </button>
           </div>
 
-          {/* Heatmap Grid */}
+
           <div className="mb-4">
-            {/* Day headers */}
+
             <div className="flex items-center gap-1 mb-1.5 ml-8">
               {timeLabels.map((day, i) => (
                 <div key={i} className="w-8 text-center text-secondary/40 text-[9px] font-medium">
@@ -282,7 +282,7 @@ const TrendsPage = () => {
               ))}
             </div>
 
-            {/* Rows */}
+
             {Object.entries(heatmapData).map(([timeLabel, values]) => (
               <div key={timeLabel} className="flex items-center gap-1 mb-1">
                 <div className="w-7 text-right text-secondary/40 text-[9px] font-medium mr-1">
@@ -307,7 +307,7 @@ const TrendsPage = () => {
           </p>
         </div>
 
-        {/* Trending Categories */}
+
         <div className="bg-[#131418] border border-secondary/10 rounded-xl p-6">
           <h2 className="font-jakarta text-base font-bold text-white mb-5">
             Trending Categories
@@ -344,17 +344,17 @@ const TrendsPage = () => {
           </div>
         </div>
 
-        {/* Market Standing */}
+
         <div className="bg-[#131418] border border-secondary/10 rounded-xl p-6">
           <p className="text-secondary/50 text-[10px] uppercase tracking-[0.15em] font-semibold text-center mb-6">
             Market Standing
           </p>
 
-          {/* Circular Gauge */}
+
           <div className="flex items-center justify-center mb-5">
             <div className="relative w-36 h-36">
               <svg viewBox="0 0 120 120" className="w-full h-full -rotate-90">
-                {/* Background track */}
+
                 <circle
                   cx="60"
                   cy="60"
@@ -366,7 +366,7 @@ const TrendsPage = () => {
                   strokeDashoffset="50"
                   strokeLinecap="round"
                 />
-                {/* Progress arc */}
+
                 <circle
                   cx="60"
                   cy="60"
@@ -394,7 +394,7 @@ const TrendsPage = () => {
         </div>
       </div>
 
-      {/* ── Bottom Row: Retention & Loyalty ───────────────── */}
+
       <div className="bg-[#131418] border border-secondary/10 rounded-xl p-6">
         <div className="flex items-start justify-between">
           <div>
@@ -407,7 +407,7 @@ const TrendsPage = () => {
           </div>
 
           <div className="flex items-center gap-6">
-            {/* Churn Rate */}
+
             <div className="text-right">
               <div className="flex items-center gap-2 justify-end">
                 <span className="text-red-400 text-2xl font-bold font-jakarta">2.4%</span>
@@ -416,10 +416,10 @@ const TrendsPage = () => {
               <p className="text-secondary/40 text-[10px] uppercase tracking-wider mt-0.5">Churn Rate</p>
             </div>
 
-            {/* Divider */}
+
             <div className="w-px h-12 bg-secondary/10" />
 
-            {/* Net Promoter */}
+
             <div className="text-right">
               <span className="text-white text-2xl font-bold font-jakarta">78</span>
               <p className="text-secondary/40 text-[10px] uppercase tracking-wider mt-0.5">Net Promoter</p>

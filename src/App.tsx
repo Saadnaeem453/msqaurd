@@ -1,26 +1,22 @@
-// App.tsx
 import { Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "sonner";
 import { useState, useEffect, ReactNode } from "react";
 
-// ─── Layouts ────────────────────────────────────────────────
-import DashboardLayout from "./pages/Attendee/DashboardLayout";        // old attendee dashboard (sidebar)
+import DashboardLayout from "./pages/Attendee/DashboardLayout";
 
-// ─── Attendee Pages ──────────────────────────────────────────
-import Home from "./pages/Attendee/Home";                             // home page
-import Explore from "./pages/Attendee/Explore";                       // explore page
-import CategoryPage from "./pages/Attendee/CategoryPage";             // category page
-// import Communities from "./pages/Attendee/Communities";           // placeholder – commented out
-import MapView from "./pages/Attendee/MapView";                       // map view page
-import EventDetailPage from "./pages/Attendee/EventDetailPage";       // event detail page
-import EventReviewsPage from "./pages/Attendee/EventReviewsPage";     // event reviews page
-import ProfilePage from "./pages/Attendee/ProfilePage";               // profile page
-import EditProfilePage from "./pages/Attendee/EditProfilePage";       // edit profile page
-import WishlistPage from "./pages/Attendee/WishlistPage";               // wishlist page
-import NotificationsPage from "./pages/Attendee/NotificationsPage";     // notifications page
-import MyTicketsPage from "./pages/Attendee/MyTicketsPage";             // my tickets page
+import Home from "./pages/Attendee/Home";
+import Explore from "./pages/Attendee/Explore";
+import CategoryPage from "./pages/Attendee/CategoryPage";
 
-// ─── Auth Pages ──────────────────────────────────────────────
+import MapView from "./pages/Attendee/MapView";
+import EventDetailPage from "./pages/Attendee/EventDetailPage";
+import EventReviewsPage from "./pages/Attendee/EventReviewsPage";
+import ProfilePage from "./pages/Attendee/ProfilePage";
+import EditProfilePage from "./pages/Attendee/EditProfilePage";
+import WishlistPage from "./pages/Attendee/WishlistPage";
+import NotificationsPage from "./pages/Attendee/NotificationsPage";
+import MyTicketsPage from "./pages/Attendee/MyTicketsPage";
+
 import Login from "./pages/LoginPage/Login";
 import Signup from "./pages/SignupPage/Signup";
 import VerifyEmail from "./pages/VerifyEmail/VerifyEmail";
@@ -29,10 +25,8 @@ import ResetPassword from "./pages/Forget Password/ResetPassword";
 import NewPassword from "./pages/Forget Password/NewPassword";
 import SuccessMessage from "./pages/Forget Password/SuccessMessage";
 
-// ─── Onboarding ──────────────────────────────────────────────
 import OnboardingPage from "./pages/Attendee/LocationPage/OnboardingPage";
 
-// ─── Admin ───────────────────────────────────────────────────
 import AdminDashboardLayout from "./pages/Admin/AdminDashboardLayout";
 import SystemOverview from "./pages/Admin/SystemOverview";
 import LiveActivity from "./pages/Admin/LiveActivity";
@@ -41,7 +35,6 @@ import AdminLogin from "./pages/Admin/AdminLogin";
 import AllUsers from "./pages/Admin/AllUsers";
 import Attendees from "./pages/Admin/Attendees";
 
-// ─── Organizer ───────────────────────────────────────────────
 import OrganizerDashboardOverview from "./pages/Organizer/dashboard/OrganizerDashboardOverview";
 import OrganizerDashboardLayout from "./pages/Organizer/dashboard/OrganizerDashboardLayout";
 import CreateEvent from "./pages/Organizer/events/CreateEvent";
@@ -66,14 +59,52 @@ import TicketSales from "./pages/Organizer/tickets/TicketSales";
 import AttendeeList from "./pages/Organizer/tickets/AttendeeList";
 import TicketTypes from "./pages/Organizer/tickets/TicketTypes";
 
-// ─── Other ───────────────────────────────────────────────────
 import ProtectedRoute from "./routes/ProtectedRoute";
 import HeroSection from "./components/landingpagecomponents/Herosection";
 import LoadingScreen from "./components/landingpagecomponents/LoadingScreen";
 import AttendeeLayout from "./pages/Attendee/DashboardLayout";
 import DashboardOverview from "./pages/Attendee/DashboardOverview";
+import OrganizersSegmentPage from "./pages/Admin/OrganizersSegmentPage";
+import VerificationRequestsPage from "./pages/Admin/VerificationRequestsPage";
+import SuspendedUsersPage from "./pages/Admin/SuspendedUsersPage";
+import NotFound from "./pages/NotFound";
+import LivePublishedEventsPage from "./pages/Admin/events/LivePublishedEventsPage";
+import PendingApprovalPage from "./pages/Admin/events/PendingApprovalPage";
+import EventsDirectoryPage from "./pages/Admin/events/EventsDirectoryPage";
+import ReportedEventsQueuePage from "./pages/Admin/events/ReportedEventsQueuePage";
+import RejectedEventsArchivePage from "./pages/Admin/events/RejectedEventsArchivePage";
+import ModerationEventReportPage from "./pages/Admin/moderation/EventReportPage";
+import ComplaintManagementPage from "./pages/Admin/moderation/ComplaintManagementPage";
+import MediaModerationQueuePage from "./pages/Admin/moderation/MediaModerationQueuePage";
+import BacklogOverviewPage from "./pages/Admin/moderation/BacklogOverviewPage";
+import RevenueDashboardPage from "./pages/Admin/finance/RevenueDashboardPage";
+import GlobalTransactionsLedgerPage from "./pages/Admin/finance/GlobalTransactionsLedgerPage";
+import AdminPayoutsPage from "./pages/Admin/finance/PayoutsPage";
+import RefundsAdjudicationPage from "./pages/Admin/finance/RefundsAdjudicationPage";
+import EventsAnalyticsPage from "./pages/Admin/analytics/EventsAnalyticsPage";
+import RevenueAnalyticsPage from "./pages/Admin/analytics/RevenueAnalyticsPage";
+import UserAnalyticsPage from "./pages/Admin/analytics/UserAnalyticsPage";
+import GrowthTrendsPage from "./pages/Admin/analytics/GrowthTrendsPage";
+import PushNotificationsControlPage from "./pages/Admin/communications/PushNotificationsControlPage";
+import EmailCampaignManagerPage from "./pages/Admin/communications/EmailCampaignManagerPage";
+import AllOrganizationsDirectoryPage from "./pages/Admin/organizations/AllOrganizationsDirectoryPage";
+import MasjidsDirectoryPage from "./pages/Admin/organizations/MasjidsDirectoryPage";
+import IsocsDirectoryPage from "./pages/Admin/organizations/IsocsDirectoryPage";
+import EventOrganizersPage from "./pages/Admin/organizations/EventOrganizersPage";
+import OrganizationVerificationRequestsPage from "./pages/Admin/organizations/VerificationRequestsPage";
+import EventCategoriesPage from "./pages/Admin/plateformSettings/EventCategoriesPage";
+import EventTypeArchitectPage from "./pages/Admin/plateformSettings/EventTypeArchitectPage";
+import PlatformAnnouncementsPage from "./pages/Admin/communications/PlatformAnnouncementsPage";
+import TicketSettingsPage from "./pages/Admin/plateformSettings/TicketSettingsPage";
+import PaymentInfrastructurePage from "./pages/Admin/plateformSettings/PaymentInfrastructurePage";
+import NotificationEnginePage from "./pages/Admin/plateformSettings/NotificationEnginePage";
+import AIRulesPage from "./pages/Admin/plateformSettings/AIRulesPage";
+import AdminActivityLogs from "./pages/Admin/security/AdminActivityLogs";
+import LoginHistoryPage from "./pages/Admin/security/LoginHistoryPage";
+import AccessRolesPage from "./pages/Admin/security/AccessRolesPage";
+import PermissionsMatrixPage from "./pages/Admin/security/PermissionsMatrixPage";
+import ApiKeyManagementPage from "./pages/Admin/security/ApiKeyManagementPage";
 
-// ─── Helpers ─────────────────────────────────────────────────
 const getStoredAccountType = () => {
   if (typeof window === "undefined") return null;
   const stored = localStorage.getItem("accountType");
@@ -156,7 +187,6 @@ const RoleRoute = ({ children, allowedRole }: RoleRouteProps) => {
   }
 
   if (accountType !== allowedRole) {
-    // Redirect to user's own dashboard, not the target role's dashboard
     const ownDashboard =
       accountType === "admin" ? "/admin" :
       accountType === "organizer" ? "/organizer" : "/home";
@@ -196,7 +226,7 @@ function App() {
     <>
       <Toaster position="top-right" richColors />
       <Routes>
-        {/* ─── Public Routes ──────────────────────────────── */}
+
         <Route path="/" element={<PublicRoute><HeroSection /></PublicRoute>} />
         <Route path="login" element={<PublicRoute><Login /></PublicRoute>} />
         <Route path="signup" element={<PublicRoute><Signup /></PublicRoute>} />
@@ -207,11 +237,8 @@ function App() {
         <Route path="successmessage" element={<PublicRoute><SuccessMessage /></PublicRoute>} />
         <Route path="admin-login" element={<AdminLogin />} />
 
-        {/* ─── Onboarding (accessible after signup) ────── */}
         <Route path="onboarding" element={<OnboardingPage />} />
 
-        {/* ─── Attendee Routes ───────────────────────────── */}
-        {/* New layout with navbar + footer – only /home is active for now */}
         <Route
           path="home"
           element={
@@ -223,7 +250,7 @@ function App() {
           }
         >
           <Route index element={<Home />} />
-          {/* Additional attendee pages */}
+
           <Route path="explore" element={<Explore />} />
           <Route path="category/:category" element={<CategoryPage />} />
           <Route path="map" element={<MapView />} />
@@ -231,17 +258,13 @@ function App() {
           <Route path="events/:id/reviews" element={<EventReviewsPage />} />
           <Route path="profile" element={<ProfilePage />} />
           <Route path="profile/edit" element={<EditProfilePage />} />
-          
-          
+
           <Route path="tickets" element={<MyTicketsPage />} />
           <Route path="wishlist" element={<WishlistPage />} />
           <Route path="notifications" element={<NotificationsPage />} />
-          {/*
-          <Route path="communities" element={<Communities />} />
-          */}
+
         </Route>
 
-        {/* Old attendee dashboard (sidebar) – kept for advanced features */}
         <Route
           path="layout"
           element={
@@ -253,10 +276,9 @@ function App() {
           }
         >
           <Route path="overview" element={<Home />} />
-          {/* other old attendee routes can be added here */}
+
         </Route>
 
-        {/* ─── Organizer Routes ───────────────────────────── */}
         <Route
           path="organizer"
           element={
@@ -276,29 +298,28 @@ function App() {
           <Route path="events/past" element={<EventList />} />
           <Route path="events/:id" element={<EventDetail />} />
           <Route path="events/:id/edit" element={<EditEvent />} />
-          {/* Tickets */}
+
           <Route path="tickets/sales" element={<TicketSales />} />
           <Route path="tickets/attendees" element={<AttendeeList />} />
           <Route path="tickets/types" element={<TicketTypes />} />
           <Route path="checkin/scanner" element={<ScannerPage />} />
           <Route path="checkin/live" element={<LiveCheckinsPage />} />
           <Route path="settings" element={<AccountSettings />} />
-          {/* Finance */}
+
           <Route path="finance/revenue" element={<RevenuePage />} />
           <Route path="finance/transactions" element={<TransactionsPage />} />
           <Route path="finance/payouts" element={<PayoutsPage />} />
-          {/* Analytics */}
+
           <Route path="analytics/audience" element={<AudienceInsights />} />
           <Route path="analytics/performance" element={<EventPerformance />} />
           <Route path="analytics/trends" element={<TrendsPage />} />
-          {/* Organization */}
+
           <Route path="organization/profile" element={<OrganizationProfile />} />
           <Route path="organization/team" element={<TeamPage />} />
           <Route path="organization/branding" element={<BrandingPage />} />
-          {/* other organizer routes go here */}
+
         </Route>
 
-        {/* ─── Admin Routes ────────────────────────────────── */}
         <Route
           path="admin"
           element={
@@ -314,19 +335,81 @@ function App() {
           <Route path="dashboard/live" element={<LiveActivity />} />
           <Route path="dashboard/metrics" element={<PlatformMetrics />} />
           <Route path="users" element={<AllUsers />} />
+          <Route path="users/organizers" element={<OrganizersSegmentPage />} />
+          <Route path="users/verification" element={<VerificationRequestsPage />} />
+          <Route path="users/suspended" element={<SuspendedUsersPage />} />
+
           <Route path="users/attendees" element={<Attendees />} />
+
+          <Route path="users/roles" element={<NotFound />} />
+          <Route path="events" element={<EventsDirectoryPage />} />
+          <Route path="events/pending" element={<PendingApprovalPage />} />
+          <Route path="events/published" element={<LivePublishedEventsPage />} />
+          <Route path="events/reported" element={<ReportedEventsQueuePage />} />
+          <Route path="events/rejected" element={<RejectedEventsArchivePage />} />
+          <Route path="events/live" element={<Navigate to="/admin/events/published" replace />} />
+          <Route path="events/flagged" element={<Navigate to="/admin/events/reported" replace />} />
+          <Route path="moderation/event-reports" element={<ModerationEventReportPage />} />
+          <Route path="moderation/reports" element={<ModerationEventReportPage />} />
+          <Route path="moderation/user-reports" element={<ComplaintManagementPage />} />
+          <Route path="moderation/queue" element={<BacklogOverviewPage />} />
+          <Route path="moderation/content" element={<MediaModerationQueuePage />} />
+          <Route path="moderation/disputes" element={<NotFound />} />
+          <Route path="moderation/log" element={<NotFound />} />
+          <Route path="finance" element={<RevenueDashboardPage />} />
+          <Route path="finance/transactions" element={<GlobalTransactionsLedgerPage />} />
+          <Route path="finance/payouts" element={<AdminPayoutsPage />} />
+          <Route path="finance/refunds" element={<RefundsAdjudicationPage />} />
+          <Route path="finance/tax" element={<NotFound />} />
+          <Route path="analytics" element={<PlatformMetrics />} />
+          <Route path="analytics/events" element={<EventsAnalyticsPage />} />
+          <Route path="analytics/users" element={<UserAnalyticsPage />} />
+          <Route path="analytics/revenue" element={<RevenueAnalyticsPage />} />
+          <Route path="analytics/growth" element={<GrowthTrendsPage />} />
+          <Route path="analytics/engagement" element={<NotFound />} />
+          <Route path="analytics/demographics" element={<NotFound />} />
+          <Route path="communications/broadcasts" element={<PlatformAnnouncementsPage />} />
+          <Route path="communications/templates" element={<NotFound />} />
+          <Route path="communications/push" element={<PushNotificationsControlPage />} />
+          <Route path="communications/email" element={<EmailCampaignManagerPage />} />
+          <Route path="organizations" element={<AllOrganizationsDirectoryPage />} />
+          <Route path="organizations/masjids" element={<MasjidsDirectoryPage />} />
+          <Route path="organizations/isocs" element={<IsocsDirectoryPage />} />
+          <Route path="organizations/event-organizers" element={<EventOrganizersPage />} />
+          <Route path="organizations/verification" element={<OrganizationVerificationRequestsPage />} />
+          <Route path="organizations/partnerships" element={<NotFound />} />
+          <Route path="settings" element={<NotFound />} />
+          <Route path="settings/event-types" element={<EventCategoriesPage />} />
+          <Route path="settings/event-type-architect" element={<EventTypeArchitectPage />} />
+          <Route path="settings/plateform/categories" element={<EventCategoriesPage />} />
+          <Route path="settings/plateform/event-types" element={<EventTypeArchitectPage />} />
+          <Route path="settings/plateform/ticket-settings" element={<TicketSettingsPage />} />
+          <Route path="settings/plateform/payment-infrastructure" element={<PaymentInfrastructurePage />} />
+          <Route path="settings/plateform/notification-engine" element={<NotificationEnginePage />} />
+          <Route path="settings/plateform/ai-rules" element={<AIRulesPage />} />
+          {/* Security and logs */}
+          <Route path="settings/security/activity" element={<AdminActivityLogs />} />
+          <Route path="settings/security/login-history" element={<LoginHistoryPage />} />
+          <Route path="settings/security/access-roles" element={<AccessRolesPage />} />
+          <Route path="settings/security/permissions" element={<PermissionsMatrixPage />} />
+          <Route path="settings/security/api-keys" element={<ApiKeyManagementPage />} />
+
+          <Route path="settings/payment-settings" element={<NotFound />} />
+          <Route path="settings/notification-settings" element={<NotFound />} />
+          <Route path="settings/ai-rules" element={<NotFound />} />
+          <Route path="settings/api-keys" element={<NotFound />} />
+          <Route path="settings/features" element={<NotFound />} />
+          <Route path="settings/integrations" element={<NotFound />} />
+          <Route path="security" element={<LoginHistoryPage />} />
+          <Route path="security/incidents" element={<NotFound />} />
+          <Route path="security/compliance" element={<NotFound />} />
+          <Route path="*" element={<NotFound />} />
         </Route>
 
-        {/* ─── Fallback ──────────────────────────────────── */}
-        <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </>
   );
 }
 
 export default App;
-
-
-
-
-

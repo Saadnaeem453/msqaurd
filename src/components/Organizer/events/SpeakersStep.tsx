@@ -56,7 +56,7 @@ const SpeakersStep = ({ data, updateData }: Props) => {
     description: "",
   });
 
-  // Speaker handlers
+
   const addSpeaker = () => {
     updateData({
       speakers: [...data.speakers, { name: "", title: "", bio: "", photo: null }],
@@ -86,7 +86,7 @@ const SpeakersStep = ({ data, updateData }: Props) => {
     updateData({ speakers: updated });
   };
 
-  // Agenda handlers
+
   const addAgendaItem = () => {
     if (newAgenda.title && newAgenda.time) {
       updateData({ agenda: [...data.agenda, newAgenda] });
@@ -128,7 +128,7 @@ const SpeakersStep = ({ data, updateData }: Props) => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Left column - Guest Speakers */}
+
         <div className="bg-[#131418] border border-[#292a2b] rounded-lg p-6 space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -273,9 +273,9 @@ const SpeakersStep = ({ data, updateData }: Props) => {
           </div>
         </div>
 
-        {/* Right column - Event Agenda */}
+
         <div className="bg-[#1a1b1f] border border-[#292a2b] rounded-lg p-6 space-y-4">
-          {/* Header */}
+
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <Calendar className="w-5 h-5 text-primary" />
@@ -302,23 +302,23 @@ const SpeakersStep = ({ data, updateData }: Props) => {
             </div>
           </div>
 
-          {/* Agenda timeline */}
+
           <div className="space-y-0 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
             {data.agenda.map((item, idx) => (
               <div key={idx} className="flex gap-4 relative">
-                {/* Timeline left */}
+
                 <div className="flex flex-col items-center min-w-[75px] relative">
                   <div className="text-white text-sm font-semibold">{item.time}</div>
                   <div className="text-gray-400 text-[11px] font-medium">{item.duration}</div>
-                  {/* Vertical line connector */}
+
                   {idx < data.agenda.length - 1 && (
                     <div className="absolute top-8 left-1/2 -translate-x-1/2 w-0.5 h-[calc(100%+4px)] bg-[#292a2b]"></div>
                   )}
-                  {/* Timeline dot */}
+
                   <div className="w-2.5 h-2.5 rounded-full bg-gray-500 border-2 border-[#1a1b1f] relative z-10 mt-0.5"></div>
                 </div>
 
-                {/* Session card */}
+
                 <div className="flex-1 bg-[#0d0e12] border border-[#292a2b] rounded-lg p-3.5 relative group mb-1">
                   <div className="flex items-start justify-between">
                     <h5 className="text-white font-semibold text-sm">{item.title}</h5>
@@ -366,7 +366,7 @@ const SpeakersStep = ({ data, updateData }: Props) => {
             )}
           </div>
 
-          {/* Add session form - inline expandable */}
+
           {showAddAgendaForm && (
             <div className="bg-[#0d0e12] border border-primary/30 rounded-lg p-4 space-y-3 animate-in slide-in-from-top-2 duration-200">
               <div className="flex items-center justify-between">

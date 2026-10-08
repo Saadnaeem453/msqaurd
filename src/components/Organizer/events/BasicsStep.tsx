@@ -45,9 +45,9 @@ const BasicsStep = ({ data, updateData, onNext, onBack, errors = {} }: Props) =>
 
   return (
     <div className="grid bg-[#131418] mt-8  p-6 md:p-8 border border-secondary/10 rounded-xl grid-cols-1 lg:grid-cols-5 gap-6">
-      {/* Left column – 60% (3/5) */}
+
       <div className="lg:col-span-3 space-y-6">
-        {/* Event Title */}
+
         <div>
           <label className="text-secondary text-[10px] uppercase tracking-[0.15em] font-semibold block mb-1.5">
             EVENT TITLE
@@ -72,7 +72,7 @@ const BasicsStep = ({ data, updateData, onNext, onBack, errors = {} }: Props) =>
           )}
         </div>
 
-        {/* Category */}
+
         <div>
           <label className="text-secondary text-[10px] uppercase tracking-[0.15em] font-semibold block mb-1.5">
             CATEGORY
@@ -105,7 +105,7 @@ const BasicsStep = ({ data, updateData, onNext, onBack, errors = {} }: Props) =>
           )}
         </div>
 
-        {/* Short Description */}
+
         <div>
           <label className="text-secondary text-[10px] uppercase tracking-[0.15em] font-semibold block mb-1.5">
             SHORT DESCRIPTION
@@ -136,9 +136,9 @@ const BasicsStep = ({ data, updateData, onNext, onBack, errors = {} }: Props) =>
         </div>
       </div>
 
-      {/* Right column – 40% (2/5) */}
+
       <div className="lg:col-span-2 space-y-6">
-        {/* Did you know? */}
+
         <div className="bg-secondary/5 border border-secondary/20 rounded-lg p-4">
           <div className="flex items-start gap-3">
           <span className="bg-primary inline-block h-2 w-8 mt-2 rounded-full"></span>
@@ -151,7 +151,7 @@ const BasicsStep = ({ data, updateData, onNext, onBack, errors = {} }: Props) =>
           </div>
         </div>
 
-        {/* Preview Card */}
+
         <div className="bg-secondary/5 border border-secondary/20 rounded-lg p-4">
           <h4 className="text-secondary text-[10px] uppercase tracking-[0.15em] font-semibold mb-3">
             PREVIEWING CARD
@@ -172,7 +172,7 @@ const BasicsStep = ({ data, updateData, onNext, onBack, errors = {} }: Props) =>
         </div>
       </div>
 
-    
+
     </div>
   );
 };

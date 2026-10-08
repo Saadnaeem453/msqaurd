@@ -158,7 +158,7 @@ const NotificationsPage = () => {
 
   return (
     <div className="w-full py-8">
-      {/*  Header ───────────────────────────────────────── */}
+
       <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-8">
         <div>
           <h1 className="font-jakarta text-3xl md:text-4xl font-bold text-white mb-2">
@@ -176,9 +176,9 @@ const NotificationsPage = () => {
         </button>
       </div>
 
-      {/* ─ Notifications List ─────────────────────────── */}
+
       <div className="space-y-8">
-        {/* TODAY */}
+
         {groupedNotifications.today.length > 0 && (
           <div>
             <h2 className="text-[10px] uppercase tracking-[0.15em] font-semibold text-secondary mb-4">
@@ -190,7 +190,7 @@ const NotificationsPage = () => {
                 return (
                   <div key={notification.id} className="p-5">
                     <div className="flex gap-4">
-                      {/* Icon */}
+
                       <div
                         className={`w-10 h-10 rounded-lg ${getIconBg(
                           notification.type
@@ -202,7 +202,7 @@ const NotificationsPage = () => {
                         )}
                       </div>
 
-                      {/* Content */}
+
                       <div className="flex-1 min-w-0">
                         <div className="flex items-start justify-between gap-3 mb-2">
                           <h3 className="text-white text-sm font-semibold">
@@ -257,7 +257,7 @@ const NotificationsPage = () => {
           </div>
         )}
 
-        {/* YESTERDAY */}
+
         {groupedNotifications.yesterday.length > 0 && (
           <div>
             <h2 className="text-[10px] uppercase tracking-[0.15em] font-semibold text-secondary mb-4">
@@ -311,7 +311,7 @@ const NotificationsPage = () => {
           </div>
         )}
 
-        {/* EARLIER */}
+
         {groupedNotifications.earlier.length > 0 && (
           <div>
             <h2 className="text-[10px] uppercase tracking-[0.15em] font-semibold text-secondary mb-4">
@@ -351,7 +351,7 @@ const NotificationsPage = () => {
           </div>
         )}
 
-        {/* Empty State */}
+
         {notifications.length === 0 && (
           <div className="text-center py-20">
             <Bell size={40} className="text-secondary/30 mx-auto mb-4" />

@@ -1,6 +1,6 @@
 import { api } from "../lib/api";
 
-// ─── Types ───────────────────────────────────────────────────────────────────
+
 
 export interface TicketPreset {
   id: string;
@@ -67,7 +67,7 @@ export interface CopyPresetPayload {
   event_id: string;
 }
 
-// ── Service ─────────────────────────────────────────────────────────────────
+
 
 export const presetApi = {
   /** Fetch all presets (optionally filtered by active status) */

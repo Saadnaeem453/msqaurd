@@ -39,7 +39,7 @@ const WriteReviewModal = ({
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  // Reset form when modal opens or editReview changes
+
   useEffect(() => {
     if (open) {
       setRating(editReview?.rating || 0);
@@ -49,7 +49,7 @@ const WriteReviewModal = ({
     }
   }, [open, editReview]);
 
-  // Close on Escape
+
   useEffect(() => {
     if (!open) return;
     const handleKey = (e: KeyboardEvent) => {
@@ -59,7 +59,6 @@ const WriteReviewModal = ({
     return () => document.removeEventListener("keydown", handleKey);
   }, [open, onClose]);
 
-  // Prevent body scroll
   useEffect(() => {
     if (open) document.body.style.overflow = "hidden";
     else document.body.style.overflow = "";
@@ -124,15 +123,15 @@ const WriteReviewModal = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      {/* Backdrop */}
+
       <div
         className="absolute inset-0 bg-black/60 backdrop-blur-sm"
         onClick={onClose}
       />
 
-      {/* Modal */}
+
       <div className="relative bg-[#131418] border border-secondary/15 rounded-xl shadow-2xl w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto no-scrollbar">
-        {/* Header */}
+
         <div className="flex items-center justify-between px-6 py-4 border-b border-secondary/10">
           <h2 className="text-white text-lg font-semibold">
             {editReview ? "Edit Your Review" : "Write a Review"}
@@ -145,9 +144,9 @@ const WriteReviewModal = ({
           </button>
         </div>
 
-        {/* Body */}
+
         <div className="px-6 py-5 space-y-6">
-          {/* Rating */}
+
           <div>
             <label className="text-secondary text-[10px] uppercase tracking-[0.15em] font-semibold block mb-3">
               YOUR RATING
@@ -182,7 +181,7 @@ const WriteReviewModal = ({
             )}
           </div>
 
-          {/* Comment */}
+
           <div>
             <label className="text-secondary text-[10px] uppercase tracking-[0.15em] font-semibold block mb-3">
               YOUR REVIEW
@@ -208,7 +207,7 @@ const WriteReviewModal = ({
             </div>
           </div>
 
-          {/* Tags */}
+
           <div>
             <label className="text-secondary text-[10px] uppercase tracking-[0.15em] font-semibold block mb-3">
               TAGS ({selectedTags.length}/{MAX_TAGS})
@@ -236,7 +235,7 @@ const WriteReviewModal = ({
           </div>
         </div>
 
-        {/* Footer */}
+
         <div className="flex gap-3 px-6 py-4 border-t border-secondary/10">
           <button
             onClick={onClose}

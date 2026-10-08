@@ -22,7 +22,7 @@ import {
 } from "../../../hooks/useEvents";
 import { Event } from "../../../services/event.service";
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
+
 
 function formatDate(dateStr: string): string {
   if (!dateStr) return "TBD";
@@ -63,14 +63,14 @@ function formatCurrencyFull(amount: number): string {
   return `$${amount.toLocaleString()}`;
 }
 
-// ─── Component ───────────────────────────────────────────────────────────────
+
 
 const PublishedEvents = () => {
   const navigate = useNavigate();
   const { events, loading } = useEventList({ status: "published", limit: 50 });
   const { stats } = useEventStats();
 
-  // Sort events: upcoming first, then by date
+
   const sortedEvents = useMemo(() => {
     return [...events].sort((a, b) => {
       const dateA = new Date(a.event_date).getTime();
@@ -81,17 +81,17 @@ const PublishedEvents = () => {
 
   const now = new Date();
 
-  // Live events = published events that are today or in the future
+
   const liveEvents = useMemo(() => {
     return sortedEvents.filter((e) => new Date(e.event_date) >= now);
   }, [sortedEvents, now]);
 
-  // Past published events (for micro-event series)
+
   const pastEvents = useMemo(() => {
     return sortedEvents.filter((e) => new Date(e.event_date) < now);
   }, [sortedEvents, now]);
 
-  // Compute stats from events
+
   const computedStats = useMemo(() => {
     let totalTicketsSold = 0;
     let totalRevenueVal = 0;
@@ -116,14 +116,14 @@ const PublishedEvents = () => {
     };
   }, [events]);
 
-  // Display values (use API stats if available, else computed)
+
   const displayTicketsSold = stats?.totalTicketsSold ?? computedStats.totalTicketsSold;
   const displayRevenue = computedStats.revenue;
   const displayAvgCapacity = computedStats.avgCapacity;
 
   return (
     <div className="max-w-[1500px] mx-auto px-4 md:px-6 py-6 space-y-8">
-      {/* Header */}
+
       <div className="flex items-center gap-3">
         <h1 className="text-2xl font-bold text-white">Published Events</h1>
         <div className="flex items-center gap-1.5 px-3 py-1 rounded-full border border-red-500/30 bg-red-500/5">
@@ -134,9 +134,9 @@ const PublishedEvents = () => {
         </div>
       </div>
 
-      {/* Stats Row */}
+
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Total Tickets Sold */}
+
         <div className="bg-[#131418] border border-secondary/10 rounded-xl p-5">
           <p className="text-secondary/60 text-[10px] uppercase tracking-wider font-semibold mb-2">
             Total Tickets Sold
@@ -152,7 +152,7 @@ const PublishedEvents = () => {
           </div>
         </div>
 
-        {/* Active Revenue */}
+
         <div className="bg-[#131418] border border-secondary/10 rounded-xl p-5">
           <p className="text-secondary/60 text-[10px] uppercase tracking-wider font-semibold mb-2">
             Active Revenue
@@ -165,7 +165,7 @@ const PublishedEvents = () => {
           </div>
         </div>
 
-        {/* Avg Capacity */}
+
         <div className="bg-[#131418] border border-secondary/10 rounded-xl p-5">
           <p className="text-secondary/60 text-[10px] uppercase tracking-wider font-semibold mb-2">
             Avg. Capacity
@@ -181,7 +181,7 @@ const PublishedEvents = () => {
           </div>
         </div>
 
-        {/* Blast Promotion */}
+
         <div className="bg-red-600 rounded-xl p-5 relative overflow-hidden cursor-pointer hover:bg-red-700 transition-colors">
           <div className="flex items-start gap-3">
             <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0">
@@ -197,7 +197,7 @@ const PublishedEvents = () => {
         </div>
       </div>
 
-      {/* Live Events Section */}
+
       <div>
         <div className="flex items-center justify-between mb-5">
           <h2 className="text-xl font-bold text-white">
@@ -234,7 +234,7 @@ const PublishedEvents = () => {
         )}
       </div>
 
-      {/* Micro-Event Series */}
+
       {pastEvents.length > 0 && (
         <div className="bg-[#131418] border border-secondary/10 rounded-xl p-6">
           <div className="flex items-center justify-between mb-4">
@@ -254,7 +254,7 @@ const PublishedEvents = () => {
   );
 };
 
-// ─── Live Event Card ─────────────────────────────────────────────────────────
+
 
 const LiveEventCard = ({ event }: { event: Event }) => {
   const navigate = useNavigate();
@@ -277,7 +277,7 @@ const LiveEventCard = ({ event }: { event: Event }) => {
 
   return (
     <div className="bg-[#131418] border border-secondary/10 rounded-xl overflow-hidden hover:border-secondary/20 transition-colors group">
-      {/* Hero Image */}
+
       <div className="relative h-44 bg-secondary/5 overflow-hidden">
         {event.hero_image ? (
           <img
@@ -291,7 +291,7 @@ const LiveEventCard = ({ event }: { event: Event }) => {
           </div>
         )}
 
-        {/* LIVE + Category badges */}
+
         <div className="absolute top-3 left-3 flex items-center gap-2">
           <span className="flex items-center gap-1 px-2.5 py-1 bg-red-600 text-white text-[10px] font-bold uppercase tracking-wider rounded">
             <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
@@ -303,7 +303,7 @@ const LiveEventCard = ({ event }: { event: Event }) => {
         </div>
       </div>
 
-      {/* Content */}
+
       <div className="p-5">
         <div className="flex items-start justify-between mb-2">
           <h3 className="text-white font-bold text-lg leading-tight flex-1 pr-3">
@@ -315,7 +315,7 @@ const LiveEventCard = ({ event }: { event: Event }) => {
           </div>
         </div>
 
-        {/* Location */}
+
         {event.venue_name && (
           <p className="text-secondary text-xs flex items-center gap-1 mb-4">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -327,7 +327,7 @@ const LiveEventCard = ({ event }: { event: Event }) => {
           </p>
         )}
 
-        {/* Stats Row */}
+
         <div className="grid grid-cols-3 gap-3 mb-4 py-3 border-t border-b border-secondary/10">
           <div>
             <p className="text-secondary/50 text-[10px] uppercase tracking-wider mb-0.5">Tickets Sold</p>
@@ -347,7 +347,7 @@ const LiveEventCard = ({ event }: { event: Event }) => {
           </div>
         </div>
 
-        {/* Actions */}
+
         <div className="flex items-center gap-2">
           <button
             onClick={() => navigate(`/organizer/events/${event.id}/edit`)}
@@ -367,7 +367,7 @@ const LiveEventCard = ({ event }: { event: Event }) => {
   );
 };
 
-// ─── Micro Event Item ───────────────────────────────────────────────────────
+
 
 const MicroEventItem = ({ event }: { event: Event }) => {
   const sold = totalSold(event);
@@ -384,12 +384,12 @@ const MicroEventItem = ({ event }: { event: Event }) => {
 
   return (
     <div className="flex items-center gap-4 py-3 px-3 rounded-lg hover:bg-secondary/5 transition-colors group">
-      {/* Icon */}
+
       <div className="w-10 h-10 rounded-lg bg-secondary/10 flex items-center justify-center flex-shrink-0">
         {icon}
       </div>
 
-      {/* Info */}
+
       <div className="flex-1 min-w-0">
         <p className="text-white text-sm font-medium truncate">{event.title}</p>
         <p className="text-secondary/50 text-xs">
@@ -398,7 +398,7 @@ const MicroEventItem = ({ event }: { event: Event }) => {
         </p>
       </div>
 
-      {/* Booking info */}
+
       <div className="text-right flex-shrink-0 mr-2">
         <p className="text-white text-sm font-semibold">
           {sold}/{capacity}
@@ -406,7 +406,7 @@ const MicroEventItem = ({ event }: { event: Event }) => {
         <p className="text-secondary/50 text-[10px] uppercase tracking-wider">Booked</p>
       </div>
 
-      {/* Actions */}
+
       <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
         <button className="p-1.5 text-secondary hover:text-white transition-colors">
           <Share2 size={14} />

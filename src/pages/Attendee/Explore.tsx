@@ -104,7 +104,7 @@ const Explore = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
 
-  // Load recent searches from localStorage on mount
+
   useEffect(() => {
     const stored = localStorage.getItem(RECENT_SEARCHES_KEY);
     if (stored) {
@@ -131,7 +131,7 @@ const Explore = () => {
   const handleSearch = () => {
     if (searchQuery.trim()) {
       addToRecentSearches(searchQuery);
-      // Navigate to search results (placeholder)
+
       console.log("Searching for:", searchQuery);
     }
   };
@@ -156,7 +156,7 @@ const Explore = () => {
 
   return (
     <div className="space-y-10">
-      {/* ── Hero Section: "Explore the Ummah" ───────────────── */}
+
       <section className="text-center space-y-6 pt-8 pb-4">
         <h1 className="text-4xl md:text-5xl font-bold text-white tracking-tight">
           Explore the Ummah
@@ -165,7 +165,7 @@ const Explore = () => {
           Discover professional networking, spiritual circles, and community celebrations near you.
         </p>
 
-        {/* Search Bar */}
+
         <div className="max-w-3xl mx-auto relative">
           <div className="flex items-center bg-[#131418] border border-secondary/15 rounded-full overflow-hidden shadow-lg">
             <Search className="ml-5 text-secondary/60 flex-shrink-0" size={20} />
@@ -187,7 +187,7 @@ const Explore = () => {
         </div>
       </section>
 
-      {/* ── Trending This Week ──────────────────────────────── */}
+
       <section>
         <div className="flex items-center justify-between mb-5">
           <div className="flex items-center gap-2">
@@ -201,7 +201,7 @@ const Explore = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {/* Left Column: 2 large cards */}
+
           <div className="md:col-span-2 space-y-4">
             {trendingEvents.filter((e) => e.large).map((event) => (
               <div
@@ -218,7 +218,7 @@ const Explore = () => {
                 </div>
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
 
-                {/* Tags */}
+
                 {event.tags.length > 0 && (
                   <div className="absolute top-3 left-3 flex gap-2">
                     {event.tags.map((tag) => (
@@ -232,7 +232,7 @@ const Explore = () => {
                   </div>
                 )}
 
-                {/* Content */}
+
                 <div className="absolute bottom-0 left-0 right-0 p-4 md:p-5">
                   <h3 className="text-white font-semibold text-base md:text-lg mb-1 line-clamp-1">
                     {event.title}
@@ -261,7 +261,7 @@ const Explore = () => {
             ))}
           </div>
 
-          {/* Right Column: 2 small cards */}
+
           <div className="space-y-4">
             {trendingEvents.filter((e) => !e.large).map((event) => (
               <div
@@ -288,7 +288,7 @@ const Explore = () => {
         </div>
       </section>
 
-      {/* ── Explore by Category ─────────────────────────────── */}
+
       <section>
         <h2 className="text-xl md:text-2xl font-bold text-white mb-5">Explore by Category</h2>
 
@@ -310,9 +310,9 @@ const Explore = () => {
         </div>
       </section>
 
-      {/* ── Suggested for You & Recent Searches ─────────────── */}
+
       <section className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {/* Suggested for You */}
+
         <div>
           <h2 className="text-xl md:text-2xl font-bold text-white mb-5">Suggested for You</h2>
 
@@ -347,7 +347,7 @@ const Explore = () => {
           </div>
         </div>
 
-        {/* Recent Searches */}
+
         <div>
           <h2 className="text-xl md:text-2xl font-bold text-white mb-5">Recent Searches</h2>
 
@@ -378,7 +378,7 @@ const Explore = () => {
         </div>
       </section>
 
-      {/* ── Map View CTA ────────────────────────────────────── */}
+
       <section>
         <div className="bg-gradient-to-br from-red-900/20 via-[#131418] to-[#131418] border border-secondary/10 rounded-2xl p-8 md:p-12 text-center">
           <MapPin className="text-red-500 mx-auto mb-4" size={32} />

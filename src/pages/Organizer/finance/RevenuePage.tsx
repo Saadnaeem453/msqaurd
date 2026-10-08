@@ -21,7 +21,6 @@ import {
   Cell,
 } from "recharts";
 
-// ── Types ───────────────────────────────────────────────────────────────────
 
 interface Transaction {
   id: string;
@@ -44,7 +43,6 @@ interface MonthlyRevenue {
   revenue: number;
 }
 
-// ─── Mock Data (replace with API calls later) ────────────────────────────────
 
 const monthlyRevenueData: MonthlyRevenue[] = [
   { month: "JAN", revenue: 8500 },
@@ -95,7 +93,6 @@ const transactions: Transaction[] = [
   },
 ];
 
-// ─── Quarter Options ─────────────────────────────────────────────────────────
 
 const quarters = [
   { label: "Q1 2024", value: "Q1 2024", months: ["JAN", "FEB", "MAR"] },
@@ -104,8 +101,6 @@ const quarters = [
   { label: "Q4 2024", value: "Q4 2024", months: ["OCT", "NOV", "DEC"] },
   { label: "Full Year 2024", value: "Full Year 2024", months: ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"] },
 ];
-
-// ─── Helpers ─────────────────────────────────────────────────────────────────
 
 function formatCurrency(amount: number): string {
   return new Intl.NumberFormat("en-US", {
@@ -130,14 +125,13 @@ function formatCompactShort(amount: number): string {
   return `$${amount}`;
 }
 
-// ─── Component ───────────────────────────────────────────────────────────────
 
 const RevenuePage = () => {
   const [selectedQuarter, setSelectedQuarter] = useState("Q3 2024");
   const [showQuarterPicker, setShowQuarterPicker] = useState(false);
   const [chartFilter, setChartFilter] = useState<"revenue" | "profit">("revenue");
 
-  // Compute stats
+
   const stats = useMemo(() => {
     const totalRevenue = 142580;
     const netProfit = 98420.5;
@@ -147,14 +141,14 @@ const RevenuePage = () => {
     return { totalRevenue, netProfit, avgTicketPrice, bookingFees };
   }, []);
 
-  // Filter monthly data based on quarter
+
   const filteredMonthlyData = useMemo(() => {
     const q = quarters.find((q) => q.value === selectedQuarter);
     if (!q || q.months.length === 12) return monthlyRevenueData;
     return monthlyRevenueData.filter((d) => q.months.includes(d.month));
   }, [selectedQuarter]);
 
-  // Export CSV
+
   const handleExportCSV = useCallback(() => {
     const headers = ["Transaction ID", "Participant", "Event", "Amount", "Status", "Date"];
     const rows = transactions.map((t) => [
@@ -179,7 +173,7 @@ const RevenuePage = () => {
     URL.revokeObjectURL(link.href);
   }, [selectedQuarter]);
 
-  // Quarter picker
+
   const currentQuarterIdx = quarters.findIndex((q) => q.value === selectedQuarter);
 
   const goToPrevQuarter = () => {
@@ -198,7 +192,7 @@ const RevenuePage = () => {
 
   return (
     <div className="max-w-[1500px] mx-auto px-4 md:px-6 py-6 space-y-6">
-      {/* ── Header ──────────────────────────────────────────── */}
+
       <div className="flex items-start justify-between">
         <div>
           <h1 className="font-jakarta text-3xl font-bold text-white">
@@ -209,7 +203,7 @@ const RevenuePage = () => {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          {/* Export CSV */}
+
           <button
             onClick={handleExportCSV}
             className="flex items-center gap-2 px-4 py-2 border border-secondary/20 text-secondary hover:text-white hover:border-secondary/40 rounded-lg text-sm transition-colors"
@@ -217,7 +211,7 @@ const RevenuePage = () => {
             <Download size={14} /> Export CSV
           </button>
 
-          {/* Quarter Picker */}
+
           <div className="relative">
             <div className="flex items-center gap-1">
               <button
@@ -273,9 +267,9 @@ const RevenuePage = () => {
         </div>
       </div>
 
-      {/* ─── Stat Cards ──────────────────────────────────────── */}
+
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Total Revenue */}
+
         <StatCard
           label="TOTAL REVENUE"
           value={formatCurrency(stats.totalRevenue)}
@@ -283,7 +277,7 @@ const RevenuePage = () => {
           changeType="up"
         />
 
-        {/* Net Profit */}
+
         <StatCard
           label="NET PROFIT"
           value={formatCurrency(stats.netProfit)}
@@ -291,7 +285,7 @@ const RevenuePage = () => {
           changeType="up"
         />
 
-        {/* Avg. Ticket Price */}
+
         <StatCard
           label="AVG. TICKET PRICE"
           value={formatCurrency(stats.avgTicketPrice)}
@@ -299,7 +293,7 @@ const RevenuePage = () => {
           changeType="neutral"
         />
 
-        {/* Booking Fees */}
+
         <StatCard
           label="BOOKING FEES"
           value={formatCurrency(stats.bookingFees)}
@@ -308,9 +302,9 @@ const RevenuePage = () => {
         />
       </div>
 
-      {/* ─── Charts Row ──────────────────────────────────────── */}
+
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-5">
-        {/* Monthly Revenue Growth */}
+
         <div className="lg:col-span-3 bg-[#131418] border border-secondary/10 rounded-xl p-6">
           <div className="flex items-center justify-between mb-1">
             <h2 className="font-jakarta text-lg font-bold text-white">
@@ -375,7 +369,7 @@ const RevenuePage = () => {
           </div>
         </div>
 
-        {/* By Category */}
+
         <div className="lg:col-span-2 bg-[#131418] border border-secondary/10 rounded-xl p-6">
           <h2 className="font-jakarta text-lg font-bold text-white mb-5">
             By Category
@@ -404,7 +398,7 @@ const RevenuePage = () => {
             ))}
           </div>
 
-          {/* Top Performer */}
+
           <div className="mt-5 pt-4 border-t border-secondary/10">
             <div className="flex items-center gap-2 bg-secondary/5 rounded-lg p-3">
               <div className="w-8 h-8 rounded-lg bg-red-500/10 flex items-center justify-center flex-shrink-0">
@@ -423,9 +417,9 @@ const RevenuePage = () => {
         </div>
       </div>
 
-      {/* ── Bottom Row ──────────────────────────────────────── */}
+
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-5">
-        {/* High-Value Transactions */}
+
         <div className="lg:col-span-3 bg-[#131418] border border-secondary/10 rounded-xl p-6">
           <div className="flex items-center justify-between mb-5">
             <h2 className="font-jakarta text-lg font-bold text-white">
@@ -502,7 +496,7 @@ const RevenuePage = () => {
           </div>
         </div>
 
-        {/* Monthly Goals */}
+
         <div className="lg:col-span-2 bg-[#131418] border border-secondary/10 rounded-xl p-6">
           <div className="flex items-center gap-2 mb-5">
             <Target size={18} className="text-red-400" />
@@ -512,7 +506,7 @@ const RevenuePage = () => {
           </div>
 
           <div className="space-y-5">
-            {/* Revenue Target */}
+
             <GoalItem
               label="Revenue Target"
               achieved="78% ACHIEVED"
@@ -521,7 +515,7 @@ const RevenuePage = () => {
               percent={78}
             />
 
-            {/* Early Bird Target */}
+
             <GoalItem
               label="Early Bird Target"
               achieved="92% ACHIEVED"
@@ -530,7 +524,7 @@ const RevenuePage = () => {
               percent={92}
             />
 
-            {/* Booking Fee Margin */}
+
             <GoalItem
               label="Booking Fee Margin"
               achieved="63% ACHIEVED"
@@ -540,7 +534,7 @@ const RevenuePage = () => {
             />
           </div>
 
-          {/* Adjust Forecasts Button */}
+
           <button className="w-full mt-6 flex items-center justify-center gap-2 py-2.5 border border-secondary/20 text-secondary hover:text-white hover:border-secondary/40 rounded-lg text-sm transition-colors">
             <Settings2 size={14} /> Adjust Forecasts
           </button>
@@ -550,7 +544,7 @@ const RevenuePage = () => {
   );
 };
 
-// ─── Stat Card ───────────────────────────────────────────────────────────────
+
 
 const StatCard = ({
   label,
@@ -595,7 +589,7 @@ const StatCard = ({
   );
 };
 
-// ─── Goal Item ───────────────────────────────────────────────────────────────
+
 
 const GoalItem = ({
   label,

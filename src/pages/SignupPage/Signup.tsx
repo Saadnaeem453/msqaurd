@@ -1,4 +1,4 @@
-// pages/SignupPage/Signup.tsx
+
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { authApi } from '../../services/auth_service';
@@ -22,7 +22,6 @@ const Signup: React.FC = () => {
     email: '',
     password: '',
     agreeTerms: false,
-    // Organizer specific fields
     organizationName: '',
     organizationType: 'event_organizer' as 'masjid' | 'isoc' | 'event_organizer' | 'brand' | 'community',
     jobTitle: '',
@@ -51,7 +50,6 @@ const Signup: React.FC = () => {
     setError('');
     setSuccessMsg('');
 
-    // Common validations
     if (!formData.fullName.trim()) {
       setError('Full name is required');
       return;
@@ -77,7 +75,6 @@ const Signup: React.FC = () => {
       return;
     }
 
-    // Organizer specific validations
     if (accountType === 'organizer' && !formData.organizationName.trim()) {
       setError('Organization name is required for organizer accounts');
       return;
@@ -86,7 +83,6 @@ const Signup: React.FC = () => {
     setLoading(true);
     try {
       if (accountType === 'organizer') {
-        // Call organizer signup
         const response = await organizerApi.signup({
           full_name: formData.fullName.trim(),
           username: formData.username.trim(),
@@ -108,7 +104,7 @@ const Signup: React.FC = () => {
           });
         }
       } else {
-        // Call attendee signup
+
         const response = await authApi.signup({
           full_name: formData.fullName.trim(),
           username: formData.username.trim(),
@@ -134,7 +130,7 @@ const Signup: React.FC = () => {
     }
   };
 
-  // ─── Google Signup ──────────────────────────────────────────
+
   const handleGoogleSignup = () => {
     if (!window.google) {
       const script = document.createElement('script');
@@ -174,7 +170,7 @@ const Signup: React.FC = () => {
     }
   };
 
-  // ─── Apple Signup ──────────────────────────────────────────
+
   const handleAppleSignup = () => {
     if (!window.AppleID) {
       const script = document.createElement('script');
@@ -197,7 +193,6 @@ const Signup: React.FC = () => {
     }
   };
 
-  // Listen for Apple postMessage response
   useEffect(() => {
     const handleAppleMessage = async (event: MessageEvent) => {
       if (event.origin !== 'https://appleid.apple.com') return;
@@ -228,7 +223,7 @@ const Signup: React.FC = () => {
   return (
     <div className="min-h-screen bg-[#111214] text-white font-inter overflow-hidden flex flex-col">
       <div className="flex flex-col lg:flex-row flex-1">
-        {/* LEFT SIDE – Content with Background */}
+
         <div className="relative lg:w-1/2 flex flex-col justify-between p-8 md:p-12 lg:p-16 overflow-hidden min-h-[50vh] lg:min-h-screen">
           <div className="absolute inset-0 bg-[#111214]">
             <div className="absolute inset-0 "></div>
@@ -254,7 +249,7 @@ const Signup: React.FC = () => {
             <div className="absolute top-[78%] left-[42%] w-18 h-18 bg-primary/50 rounded-full blur-3xl"></div>
           </div>
 
-          {/* Content Overlay */}
+
           <div className="relative z-10 flex-1 flex flex-col justify-center py-8">
             <h1 className="text-primary text-3xl md:text-4xl font-bold font-inter tracking-tight mb-10">
               <Link to="/">MSQUARED</Link>
@@ -281,7 +276,7 @@ const Signup: React.FC = () => {
           </div>
         </div>
 
-        {/* RIGHT SIDE – Form */}
+
         <div className="lg:w-1/2 flex items-center justify-center p-4 md:p-6 lg:p-8 bg-[#111214]">
           <div className="w-full max-w-[420px] max-h-[90vh] overflow-y-auto custom-scrollbar">
             <h2 className="text-white text-3xl md:text-4xl font-bold leading-tight mb-1">
@@ -291,7 +286,7 @@ const Signup: React.FC = () => {
               {accountType === 'organizer' ? 'Start organizing events for your community.' : 'Empowering your community journeys.'}
             </p>
 
-            {/* Account Type Toggle */}
+
             <div className="flex gap-2 mb-6 p-1 bg-secondary/5 rounded-lg border border-secondary/10">
               <button
                 type="button"
@@ -317,7 +312,7 @@ const Signup: React.FC = () => {
               </button>
             </div>
 
-            {/* Form */}
+
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label className="text-secondary text-[10px] uppercase tracking-[0.15em] font-light block mb-1.5">
@@ -380,7 +375,7 @@ const Signup: React.FC = () => {
                 />
               </div>
 
-              {/* Organizer Specific Fields */}
+
               {accountType === 'organizer' && (
                 <>
                   <div className="pt-2 border-t border-secondary/10">
@@ -446,7 +441,7 @@ const Signup: React.FC = () => {
                 </>
               )}
 
-              {/* Terms */}
+
               <div className="flex items-start gap-3 pt-2">
                 <input
                   type="checkbox"
@@ -492,7 +487,7 @@ const Signup: React.FC = () => {
         </div>
       </div>
 
-      {/* Footer */}
+
       <footer className="relative z-20 border-t border-secondary/10 bg-black py-6 px-8 text-xs flex flex-col md:flex-row justify-between items-center gap-4 w-full">
         <div className="flex flex-col items-center md:items-start gap-1 sm:gap-2">
           <span className="text-white font-medium">MSQUARED</span>
@@ -505,7 +500,7 @@ const Signup: React.FC = () => {
         </div>
       </footer>
 
-      {/* Custom scrollbar styles */}
+
       <style>{`
         .custom-scrollbar::-webkit-scrollbar {
           width: 4px;

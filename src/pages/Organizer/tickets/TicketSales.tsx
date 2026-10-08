@@ -18,7 +18,6 @@ import {
   CartesianGrid,
 } from "recharts";
 
-// ── Types ───────────────────────────────────────────────────────────────────
 
 interface Transaction {
   id: string;
@@ -33,7 +32,6 @@ interface Transaction {
   status: "Completed" | "Refunded" | "Pending";
 }
 
-// ── Mock Data ───────────────────────────────────────────────────────────────
 
 const timeOptions = ["7D", "30D", "90D", "1Y"];
 
@@ -97,7 +95,6 @@ const transactions: Transaction[] = [
   },
 ];
 
-// ── Helpers ─────────────────────────────────────────────────────────────────
 
 function formatCurrency(amount: number): string {
   return new Intl.NumberFormat("en-US", {
@@ -108,7 +105,6 @@ function formatCurrency(amount: number): string {
   }).format(amount);
 }
 
-// ── Sub-components ──────────────────────────────────────────────────────────
 
 const StatCard = ({
   label,
@@ -192,7 +188,6 @@ const StatusBadge = ({ status }: { status: string }) => {
   );
 };
 
-// ─ Page Component ──────────────────────────────────────────────────────────
 
 const TicketSales = () => {
   const [selectedPeriod, setSelectedPeriod] = useState("30D");
@@ -206,7 +201,7 @@ const TicketSales = () => {
 
   return (
     <div className="max-w-[1500px] mx-auto px-4 md:px-6 py-4 md:py-6 space-y-6">
-      {/* ── Header ──────────────────────────────────────────── */}
+
       <div>
         <p className="text-secondary/60 text-sm mb-1">
           Tickets &rsaquo; <span className="text-secondary">Ticket Sales</span>
@@ -216,7 +211,7 @@ const TicketSales = () => {
         </h1>
       </div>
 
-      {/* ── Period Selector ─────────────────────────────────── */}
+
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-1 bg-[#131418] border border-secondary/10 rounded-lg p-1">
           {timeOptions.map((opt) => (
@@ -281,7 +276,7 @@ const TicketSales = () => {
         </div>
       </div>
 
-      {/* ─ Stat Cards ──────────────────────────────────────── */}
+
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
           label="TOTAL REVENUE"
@@ -309,7 +304,7 @@ const TicketSales = () => {
         />
       </div>
 
-      {/* ── Sales Velocity Chart ─────────────────────────────── */}
+
       <div className="bg-[#131418] border border-secondary/10 rounded-xl p-5 md:p-6">
         <div className="flex flex-wrap items-start justify-between gap-3 mb-1">
           <div>
@@ -399,7 +394,7 @@ const TicketSales = () => {
         </div>
       </div>
 
-      {/* ── Recent Transactions ──────────────────────────────── */}
+
       <div className="bg-[#131418] border border-secondary/10 rounded-xl overflow-hidden">
         <div className="flex flex-wrap items-center justify-between gap-3 p-5 md:p-6 pb-4">
           <h2 className="font-jakarta text-lg font-bold text-white">
@@ -441,7 +436,7 @@ const TicketSales = () => {
           </div>
         </div>
 
-        {/* Table */}
+
         <div className="overflow-x-auto">
           <table className="w-full min-w-[640px]">
             <thead>
@@ -510,7 +505,7 @@ const TicketSales = () => {
           </table>
         </div>
 
-        {/* Pagination */}
+
         <div className="flex flex-wrap items-center justify-between gap-3 px-5 md:px-6 py-4 border-t border-secondary/10">
           <p className="text-secondary/50 text-[10px] uppercase tracking-wider font-semibold">
             Showing 1–10 of 4,285 transactions
@@ -526,7 +521,7 @@ const TicketSales = () => {
         </div>
       </div>
 
-      {/* ── Footer ──────────────────────────────────────────── */}
+
       <div className="flex flex-wrap items-center justify-between gap-2 pt-2 pb-4">
         <p className="text-secondary/30 text-[10px] uppercase tracking-wider">
           MSquared Operating System v2.4.0

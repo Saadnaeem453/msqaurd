@@ -13,7 +13,6 @@ import { useTicketPresets } from "../../../hooks/useTicketPresets";
 import type { TicketPreset, CreatePresetPayload, UpdatePresetPayload } from "../../../services/preset.service";
 import PresetModal from "../../../components/Organizer/PresetModal";
 
-// ── Helpers ─────────────────────────────────────────────────────────────────
 
 function formatCurrency(amount: number): string {
   return new Intl.NumberFormat("en-US", {
@@ -24,7 +23,6 @@ function formatCurrency(amount: number): string {
   }).format(amount);
 }
 
-// ── Sub-components ──────────────────────────────────────────────────────────
 
 const ToggleSwitch = ({
   enabled,
@@ -112,7 +110,6 @@ const PresetCard = ({
           : "border-secondary/5 opacity-60"
       }`}
     >
-      {/* Card Header */}
       <div className="flex items-start justify-between mb-1">
         <div className="flex items-center gap-2">
           <span
@@ -143,7 +140,6 @@ const PresetCard = ({
         </div>
       </div>
 
-      {/* Dropdown Menu */}
       {menuOpen && (
         <>
           <div
@@ -172,15 +168,12 @@ const PresetCard = ({
           </div>
         </>
       )}
-
-      {/* Category Badge */}
       {preset.category && (
         <span className="inline-block bg-secondary/10 text-secondary/70 text-[10px] uppercase tracking-wider font-semibold px-2 py-0.5 rounded mb-3">
           {preset.category}
         </span>
       )}
 
-      {/* Price */}
       <div className="flex items-baseline gap-1 mb-3">
         <span className="text-3xl font-bold text-primary font-jakarta">
           ${preset.price}
@@ -188,14 +181,12 @@ const PresetCard = ({
         <span className="text-secondary/50 text-sm">/ unit</span>
       </div>
 
-      {/* Capacity */}
       <div className="mb-4">
         <span className="text-secondary/60 text-xs">
           Capacity: {preset.capacity.toLocaleString()}
         </span>
       </div>
 
-      {/* Booking Fee */}
       {preset.booking_fee !== undefined && preset.booking_fee !== null && preset.booking_fee > 0 && (
         <div className="bg-secondary/5 border border-secondary/10 rounded-lg p-3">
           <p className="text-secondary/40 text-[10px] uppercase tracking-wider font-semibold mb-1">
@@ -210,7 +201,6 @@ const PresetCard = ({
   );
 };
 
-// ─ Page Component ──────────────────────────────────────────────────────────
 
 const TicketTypes = () => {
   const {
@@ -268,7 +258,6 @@ const TicketTypes = () => {
   const activePresetsCount = stats?.active_presets ?? activeCount;
   const inactivePresetsCount = stats?.inactive_presets ?? inactivePresets.length;
 
-  // Update log (derived from presets — in production, fetch from API)
   const tierUpdates = [
     {
       id: "u1",
@@ -308,7 +297,6 @@ const TicketTypes = () => {
 
   return (
     <div className="max-w-[1500px] mx-auto px-4 md:px-6 py-4 md:py-6 space-y-8">
-      {/* ── Header ──────────────────────────────────────────── */}
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <h1 className="font-jakarta text-2xl md:text-3xl font-bold text-white">
@@ -326,7 +314,6 @@ const TicketTypes = () => {
         </button>
       </div>
 
-      {/* ── Stat Cards ─────────────────────────────────────── */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-[#131418] border border-secondary/10 rounded-xl p-5">
           <p className="text-secondary/50 text-[10px] uppercase tracking-wider font-semibold mb-2">
@@ -367,7 +354,6 @@ const TicketTypes = () => {
         </div>
       </div>
 
-      {/* ── Preset Cards ──────────────────────────────────── */}
       {loading ? (
         <div className="flex items-center justify-center py-16">
           <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
@@ -387,7 +373,6 @@ const TicketTypes = () => {
         </div>
       ) : (
         <>
-          {/* Active presets first */}
           {activePresets.length > 0 && (
             <div>
               <div className="flex items-center gap-2 mb-3">
@@ -414,7 +399,6 @@ const TicketTypes = () => {
             </div>
           )}
 
-          {/* Inactive presets */}
           {inactivePresets.length > 0 && (
             <div className="mt-8">
               <div className="flex items-center gap-2 mb-3">
@@ -443,7 +427,6 @@ const TicketTypes = () => {
         </>
       )}
 
-      {/* ─ Global Tier Settings ───────────────────────────── */}
       <div>
         <div className="flex items-center gap-2 mb-5">
           <SlidersHorizontal size={18} className="text-primary" />
@@ -453,7 +436,6 @@ const TicketTypes = () => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-5">
-          {/* Booking Fee Configuration */}
           <div className="lg:col-span-3 bg-[#131418] border border-secondary/10 rounded-xl p-5 md:p-6">
             <h3 className="text-white text-sm font-bold uppercase tracking-wider mb-5">
               Booking Fee Configuration
@@ -497,7 +479,6 @@ const TicketTypes = () => {
               </div>
             </div>
 
-            {/* Fee Distribution Preview */}
             <div className="bg-secondary/5 border border-secondary/10 rounded-lg p-4 mb-5">
               <p className="text-secondary/40 text-[10px] uppercase tracking-wider font-semibold mb-3">
                 Fee Distribution Preview
@@ -535,7 +516,6 @@ const TicketTypes = () => {
             </div>
           </div>
 
-          {/* Platform Rebate */}
           <div className="lg:col-span-2 bg-[#131418] border border-secondary/10 rounded-xl p-5 md:p-6">
             <h3 className="text-white text-sm font-bold mb-1">
               Platform Rebate
@@ -565,7 +545,6 @@ const TicketTypes = () => {
         </div>
       </div>
 
-      {/* ── Recent Tier Updates ────────────────────────────── */}
       <div>
         <h2 className="font-jakarta text-lg font-bold text-white mb-4">
           Recent Tier Updates
@@ -596,7 +575,6 @@ const TicketTypes = () => {
         </div>
       </div>
 
-      {/* ── Create Preset Modal ────────────────────────────── */}
       <PresetModal
         open={showCreateModal}
         onClose={() => setShowCreateModal(false)}
@@ -604,7 +582,6 @@ const TicketTypes = () => {
         activeCount={activeCount}
       />
 
-      {/* ── Edit Preset Modal ──────────────────────────────── */}
       {editPreset && (
         <PresetModal
           open={true}
@@ -616,7 +593,6 @@ const TicketTypes = () => {
         />
       )}
 
-      {/* ── Delete Confirmation Modal ──────────────────────── */}
       <ConfirmModal
         open={showDeleteModal}
         onClose={() => {

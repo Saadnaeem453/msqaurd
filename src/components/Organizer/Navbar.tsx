@@ -7,7 +7,7 @@ const Navbar = () => {
   const [profileOpen, setProfileOpen] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
 
-  // Close dropdown when clicking outside
+
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (profileRef.current && !profileRef.current.contains(e.target as Node)) {
@@ -31,11 +31,11 @@ const Navbar = () => {
   return (
     <header className="bg-[#111214] border-b border-secondary/10 px-6 py-5 flex items-center justify-between sticky top-0 z-20">
       <div className="flex items-center gap-4">
-        <h2 className="text-primary text-2xl font-semibold">Organizer Dashboard</h2>
+        <h2 className="text-primary font-jakarta text-2xl font-semibold">Organizer Dashboard</h2>
       </div>
 
       <div className="flex items-center gap-4">
-        {/* Search Bar */}
+
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-secondary/60" size={18} />
           <input
@@ -56,7 +56,7 @@ const Navbar = () => {
           <Calendar size={20} />
         </button>
 
-        {/* Profile dropdown */}
+
         <div className="relative" ref={profileRef}>
           <button
             onClick={() => setProfileOpen((v) => !v)}

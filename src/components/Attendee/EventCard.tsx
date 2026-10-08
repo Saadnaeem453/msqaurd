@@ -3,7 +3,6 @@ import { MapPin, Building2 } from "lucide-react";
 import { AttendeeEvent } from "../../services/attendee_events.service";
 import { getHeroImage, getPrimaryPrice, formatEventDate, formatEventTime } from "../../hooks/useAttendeeEvents";
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
 
 const CATEGORY_COLORS: Record<string, string> = {
   "Sports & Fitness": "text-red-400",
@@ -31,7 +30,6 @@ function getVenueIcon(venueType?: string) {
   return <Building2 size={12} className="text-secondary" />;
 }
 
-/** Haversine distance in miles */
 function getDistanceMiles(lat1: number, lon1: number, lat2: number, lon2: number): number {
   const R = 3959;
   const toRad = (d: number) => (d * Math.PI) / 180;
@@ -52,7 +50,6 @@ function computeDistance(event: AttendeeEvent, userLat?: number, userLon?: numbe
   return `${miles.toFixed(1)} MILES AWAY`;
 }
 
-// ─── Component ───────────────────────────────────────────────────────────────
 
 interface EventCardProps {
   event: AttendeeEvent;
@@ -81,7 +78,6 @@ const EventCard = ({ event, userLat, userLon, compact }: EventCardProps) => {
       className="bg-[#131418] border border-secondary/10 rounded-xl overflow-hidden hover:border-secondary/20 transition-colors group flex flex-col cursor-pointer"
       onClick={goToDetail}
     >
-      {/* Image */}
       <div className="relative h-44 overflow-hidden">
         {heroImg ? (
           <img
@@ -95,20 +91,19 @@ const EventCard = ({ event, userLat, userLon, compact }: EventCardProps) => {
           </div>
         )}
 
-        {/* Distance overlay */}
         {distance && (
           <span className="absolute top-2 right-2 bg-black/60 backdrop-blur-sm text-white text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded">
             {distance}
           </span>
         )}
 
-        {/* Gradient overlay at bottom of image */}
+
         <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-[#131418] to-transparent" />
       </div>
 
-      {/* Content */}
+
       <div className="flex-1 flex flex-col p-4">
-        {/* Category + Date/Time row */}
+
         <div className="flex items-start justify-between mb-1.5">
           <span className={`${categoryColor} text-[10px] font-bold uppercase tracking-wider`}>
             {categoryUpper}
@@ -118,18 +113,18 @@ const EventCard = ({ event, userLat, userLon, compact }: EventCardProps) => {
           </span>
         </div>
 
-        {/* Title */}
+
         <h3 className="text-white font-semibold text-sm leading-snug mb-2 line-clamp-2">
           {event.title}
         </h3>
 
-        {/* Venue */}
+
         <div className="flex items-center gap-1.5 text-secondary text-xs mb-3">
           {getVenueIcon(event.venue_type)}
           <span className="truncate">{event.venue_name || "Online Event"}</span>
         </div>
 
-        {/* Price + Book button */}
+
         <div className="mt-auto">
           {price && (
             <p className="text-secondary text-[10px] mb-1.5">

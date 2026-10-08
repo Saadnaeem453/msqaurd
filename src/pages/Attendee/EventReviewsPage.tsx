@@ -37,18 +37,18 @@ const EventReviewsPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [showSortDropdown, setShowSortDropdown] = useState(false);
 
-  // Modal states
+
   const [showWriteReview, setShowWriteReview] = useState(false);
   const [editingReview, setEditingReview] = useState<AttendeeReview | null>(null);
   const [replyTarget, setReplyTarget] = useState<{ id: string; name: string } | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<AttendeeReview | null>(null);
 
-  // Helpful votes state (review_id -> has_voted)
+
   const [helpfulVotes, setHelpfulVotes] = useState<Record<string, boolean>>({});
 
   const ITEMS_PER_PAGE = 10;
 
-  // ─── Fetch reviews ───────────────────────────────────────────
+
   const fetchReviews = async () => {
     if (!id) return;
     setLoading(true);
@@ -64,10 +64,10 @@ const EventReviewsPage = () => {
         const data = res.data as any;
         setReviews(data);
 
-        // Initialize helpful votes from data
+
         const votes: Record<string, boolean> = {};
         (data.reviews || []).forEach((r: AttendeeReview) => {
-          votes[r.id] = false; // Default to not voted
+          votes[r.id] = false;
         });
         setHelpfulVotes(votes);
       }
@@ -82,14 +82,14 @@ const EventReviewsPage = () => {
     fetchReviews();
   }, [id, currentPage, sortBy]);
 
-  // ─── Actions ─────────────────────────────────────────────────
+
   const handleHelpful = async (reviewId: string) => {
     try {
       const res = await attendeeEventsApi.toggleHelpful(reviewId);
       if (res.ok && res.data) {
         const data = res.data as any;
         setHelpfulVotes((prev) => ({ ...prev, [reviewId]: data.user_has_voted }));
-        // Update helpful count in reviews
+
         setReviews((prev) => {
           if (!prev) return prev;
           return {
@@ -126,7 +126,7 @@ const EventReviewsPage = () => {
 
   return (
     <div className="max-w-6xl mx-auto py-8">
-      {/* ── Back link ───────────────────────────────────────── */}
+
       <button
         onClick={() => navigate(-1)}
         className="text-primary text-sm font-medium flex items-center gap-1 mb-6 hover:text-primary/80 transition-colors"
@@ -134,7 +134,7 @@ const EventReviewsPage = () => {
         <ChevronRight size={16} className="rotate-180" /> Back to Details
       </button>
 
-      {/* ── Header ──────────────────────────────────────────── */}
+
       <div className="flex flex-wrap items-start justify-between gap-4 mb-8">
         <div>
           <div className="flex items-center gap-3 mb-3">
@@ -154,7 +154,7 @@ const EventReviewsPage = () => {
           </p>
         </div>
 
-        {/* Rating summary */}
+
         <div className="text-right">
           <div className="flex items-baseline gap-1 justify-end">
             <span className="text-4xl font-bold text-white">
@@ -182,11 +182,11 @@ const EventReviewsPage = () => {
         </div>
       </div>
 
-      {/* ─ Two-column layout ───────────────────────────────── */}
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Left sidebar */}
+
         <div className="lg:col-span-1 space-y-6">
-          {/* Write a Review button */}
+
           <button
             onClick={() => setShowWriteReview(true)}
             className="w-full bg-primary hover:bg-primary/90 text-white text-sm font-bold uppercase tracking-wider py-3.5 rounded-lg transition-colors flex items-center justify-center gap-2"
@@ -195,7 +195,7 @@ const EventReviewsPage = () => {
             Write a Review
           </button>
 
-          {/* Rating Breakdown */}
+
           <div className="bg-[#131418] border border-secondary/10 rounded-xl p-5">
             <h3 className="text-white font-semibold text-sm mb-4">Rating Breakdown</h3>
             <div className="space-y-3">
@@ -218,7 +218,7 @@ const EventReviewsPage = () => {
             </div>
           </div>
 
-          {/* Trending Tags */}
+
           {reviews?.trending_tags && reviews.trending_tags.length > 0 && (
             <div className="bg-[#131418] border border-secondary/10 rounded-xl p-5">
               <h3 className="text-primary text-[10px] font-bold uppercase tracking-wider mb-3">
@@ -238,9 +238,9 @@ const EventReviewsPage = () => {
           )}
         </div>
 
-        {/* Right: Community Voices */}
+
         <div className="lg:col-span-2 space-y-6">
-          {/* Header */}
+
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-bold text-white">Community Voices</h2>
             <div className="relative">
@@ -278,7 +278,7 @@ const EventReviewsPage = () => {
             </div>
           </div>
 
-          {/* Reviews list */}
+
           {loading ? (
             <div className="space-y-4">
               {[1, 2, 3].map((i) => (
@@ -302,7 +302,7 @@ const EventReviewsPage = () => {
                   key={review.id}
                   className="bg-[#131418] border border-secondary/10 rounded-xl p-5"
                 >
-                  {/* Reviewer info + stars + actions */}
+
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex items-center gap-3">
                       <img
@@ -333,7 +333,7 @@ const EventReviewsPage = () => {
                           />
                         ))}
                       </div>
-                      {/* Edit / Delete (own review) */}
+
                       {review.is_owner && (
                         <div className="flex items-center gap-1 ml-2">
                           <button
@@ -355,7 +355,7 @@ const EventReviewsPage = () => {
                     </div>
                   </div>
 
-                  {/* Tags */}
+
                   {review.tags && review.tags.length > 0 && (
                     <div className="flex flex-wrap gap-1.5 mb-3">
                       {review.tags.map((tag) => (
@@ -369,12 +369,12 @@ const EventReviewsPage = () => {
                     </div>
                   )}
 
-                  {/* Review text */}
+
                   <p className="text-secondary/70 text-sm leading-relaxed mb-4">
                     {review.comment}
                   </p>
 
-                  {/* Helpful + Reply */}
+
                   <div className="flex items-center gap-4">
                     <button
                       onClick={() => handleHelpful(review.id)}
@@ -396,7 +396,7 @@ const EventReviewsPage = () => {
                     </button>
                   </div>
 
-                  {/* Replies */}
+
                   {review.replies && review.replies.length > 0 && (
                     <div className="mt-4 space-y-3 pl-6 border-l-2 border-secondary/10">
                       {review.replies.map((reply) => (
@@ -438,7 +438,7 @@ const EventReviewsPage = () => {
             </div>
           )}
 
-          {/* Pagination */}
+
           {totalPages > 1 && (
             <div className="flex items-center justify-center gap-2 mt-8">
               {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
@@ -459,7 +459,7 @@ const EventReviewsPage = () => {
         </div>
       </div>
 
-      {/* ── Modals ──────────────────────────────────────────── */}
+
       <WriteReviewModal
         open={showWriteReview}
         onClose={() => {

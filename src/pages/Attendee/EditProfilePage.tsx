@@ -41,7 +41,7 @@ const ALL_INTERESTS = [
   "Public Speaking",
 ];
 
-// Map API interest format (snake_case) to display format (Title Case)
+
 const INTEREST_API_TO_DISPLAY: Record<string, string> = {
   islamic_talks: "Islamic Talks",
   sports: "Sports",
@@ -53,7 +53,7 @@ const INTEREST_API_TO_DISPLAY: Record<string, string> = {
   public_speaking: "Public Speaking",
 };
 
-// Map display format to API format
+
 const INTEREST_DISPLAY_TO_API: Record<string, string> = {
   "Islamic Talks": "islamic_talks",
   Sports: "sports",
@@ -88,7 +88,7 @@ const EditProfilePage = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(profile?.avatar_url || null);
 
-  // Fetch profile data from API
+
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -101,7 +101,7 @@ const EditProfilePage = () => {
           setAvatarUrl(user?.avatar_url || null);
           setPreviewUrl(user?.avatar_url || null);
           setBio(profileData?.bio || "");
-          // Normalize interests from API format (snake_case) to display format (Title Case)
+
           const apiInterests = profileData?.interests || [];
           const normalizedInterests: string[] = Array.from(
             new Set<string>(
@@ -148,12 +148,12 @@ const EditProfilePage = () => {
   const handleProfilePictureChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      // Validate file size (max 5MB)
+
       if (file.size > 5 * 1024 * 1024) {
         toast.error("Profile picture must be less than 5MB");
         return;
       }
-      // Validate file type
+
       if (!file.type.startsWith("image/")) {
         toast.error("Please select a valid image file");
         return;
@@ -178,8 +178,8 @@ const EditProfilePage = () => {
   const handleSave = async () => {
     setSaving(true);
     try {
-      // Convert interests from display format (Title Case) to API format (snake_case)
-      // and deduplicate
+
+
       const apiInterests: string[] = Array.from(
         new Set<string>(
           interests
@@ -207,7 +207,7 @@ const EditProfilePage = () => {
       const res = await attendeeProfileApi.update(payload);
 
       if (res.ok) {
-        // Update localStorage with new data
+
         const data = res.data as any;
         const updatedUser = {
           ...profile,
@@ -238,7 +238,7 @@ const EditProfilePage = () => {
 
   return (
     <div className="w-full py-6">
-      {/* ─ Back Button ──────────────────────────────────── */}
+
       <button
         onClick={() => navigate(-1)}
         className="flex items-center gap-1.5 text-secondary hover:text-white text-sm mb-6 transition-colors"
@@ -247,13 +247,13 @@ const EditProfilePage = () => {
         Back to Profile
       </button>
 
-      {/* ─ Two-Column Layout ────────────────────────────── */}
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* ─ Left Sidebar ───────────────────────────────── */}
+
         <div className="space-y-6">
-          {/* Profile Card */}
+
           <div className="bg-[#131418] border border-secondary/10 rounded-xl p-6 text-center">
-            {/* Profile Picture */}
+
             <div className="relative w-24 h-24 mx-auto mb-4">
               <div className="w-24 h-24 rounded-full bg-secondary/10 overflow-hidden flex items-center justify-center border-2 border-primary/30">
                 {previewUrl ? (
@@ -266,7 +266,7 @@ const EditProfilePage = () => {
                   <span className="text-primary text-3xl font-bold">{userInitial}</span>
                 )}
               </div>
-              {/* Upload button overlay */}
+
               <button
                 onClick={() => fileInputRef.current?.click()}
                 className="absolute -bottom-1 -right-1 w-7 h-7 bg-primary rounded-full flex items-center justify-center border-2 border-[#131418] hover:bg-primary/90 transition-colors"
@@ -295,7 +295,7 @@ const EditProfilePage = () => {
             <h2 className="text-white text-lg font-bold">{fullName || "Zaid Ahmed"}</h2>
             <p className="text-secondary text-sm mt-0.5">Elite Community Member</p>
 
-            {/* Badges */}
+
             <div className="flex items-center justify-center gap-2 mt-4">
               <span className="bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded border border-primary/20">
                 Active Member
@@ -306,7 +306,7 @@ const EditProfilePage = () => {
             </div>
           </div>
 
-          {/* Tab Navigation */}
+
           <div className="bg-[#131418] border border-secondary/10 rounded-xl p-3 space-y-1">
             {tabs.map((tab) => {
               const Icon = tab.icon;
@@ -332,19 +332,19 @@ const EditProfilePage = () => {
           </div>
         </div>
 
-        {/* ─ Right Content ───────────────────────────────── */}
+
         <div className="lg:col-span-2">
           {activeTab === "public" && (
             <div className="bg-[#131418] border border-secondary/10 rounded-xl p-6 md:p-8">
-              {/* Header */}
+
               <h1 className="text-xl font-bold text-white mb-1">Edit Profile</h1>
               <p className="text-secondary text-sm mb-8">
                 Manage your public information and how other members see you.
               </p>
 
-              {/* Form Fields */}
+
               <div className="space-y-6">
-                {/* Full Name + Email */}
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label className="text-[10px] uppercase tracking-[0.15em] font-semibold text-secondary block mb-2">
@@ -370,7 +370,7 @@ const EditProfilePage = () => {
                   </div>
                 </div>
 
-                {/* Bio */}
+
                 <div>
                   <label className="text-[10px] uppercase tracking-[0.15em] font-semibold text-secondary block mb-2">
                     Bio
@@ -383,7 +383,7 @@ const EditProfilePage = () => {
                   />
                 </div>
 
-                {/* Interests */}
+
                 <div>
                   <label className="text-[10px] uppercase tracking-[0.15em] font-semibold text-secondary block mb-3">
                     Interests
@@ -409,9 +409,9 @@ const EditProfilePage = () => {
                   </div>
                 </div>
 
-                {/* Gender + Notifications row */}
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  {/* Gender Preference */}
+
                   <div>
                     <label className="text-[10px] uppercase tracking-[0.15em] font-semibold text-secondary block mb-3">
                       Gender Preference
@@ -451,7 +451,7 @@ const EditProfilePage = () => {
                     </div>
                   </div>
 
-                  {/* Notifications */}
+
                   <div>
                     <label className="text-[10px] uppercase tracking-[0.15em] font-semibold text-secondary block mb-3">
                       Notifications
@@ -505,7 +505,7 @@ const EditProfilePage = () => {
                   </div>
                 </div>
 
-                {/* Divider + Buttons */}
+
                 <div className="border-t border-secondary/10 pt-6 flex items-center justify-end gap-3">
                   <button
                     onClick={() => navigate("/home/profile")}
@@ -556,7 +556,7 @@ const EditProfilePage = () => {
             </div>
           )}
 
-          {/* Premium Loyalty Card */}
+
           <div className="bg-[#131418] border border-secondary/10 rounded-xl p-5 mt-6 flex items-center justify-between">
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">

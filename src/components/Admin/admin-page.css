@@ -1,0 +1,6 @@
+.admin-content { font-family: "Plus Jakarta Sans", sans-serif; @apply text-sm font-normal text-bgray; }
+.admin-content .admin-page { @apply mx-auto w-full min-w-0 max-w-[1500px] px-4 py-6 md:px-6 lg:px-8; }
+.admin-content .admin-page-title { font-family: inherit; @apply m-0 text-3xl font-normal leading-9 tracking-tight text-bgray; }
+.admin-content .admin-page-description { @apply mt-2 max-w-none text-sm font-normal leading-6 tracking-normal text-secondary; }
+.admin-content .admin-section-title { font-family: "Plus Jakarta Sans", sans-serif; @apply text-base font-normal leading-6 normal-case tracking-normal text-bgray; }
+.admin-content .admin-page-heading { @apply mb-6 flex flex-wrap items-center justify-between gap-4; }

@@ -4,7 +4,7 @@ import { Plus, Trash2, Sparkles, Copy } from "lucide-react";
 import { useTicketPresets } from "../../../hooks/useTicketPresets";
 import type { TicketPreset } from "../../../services/preset.service";
 
-// ─── Types ───────────────────────────────────────────────────────────────────
+
 
 interface Props {
   data: EventFormData;
@@ -24,7 +24,7 @@ interface Tier {
   isPrimary: boolean;
 }
 
-// ── Component ────────────────────────────────────────────────────────────────
+
 
 const TicketsStep = ({ data, updateData, eventId }: Props) => {
   const [showAddForm, setShowAddForm] = useState(false);
@@ -40,16 +40,16 @@ const TicketsStep = ({ data, updateData, eventId }: Props) => {
     isPrimary: false,
   });
 
-  // Fetch active presets for "Available Presets" section
+
   const { activePresets, copyPresetToEvent, loading: presetsLoading } = useTicketPresets(true);
 
-  // Show the Available Presets section only when there are active presets
+
   const showPresets = activePresets.length > 0;
 
   const addTier = () => {
     if (newTier.name && newTier.price > 0 && newTier.capacity > 0) {
       const tiers = data.tiers || [];
-      // If this tier is primary, unset others
+
       const updatedTiers = newTier.isPrimary
         ? tiers.map((t) => ({ ...t, isPrimary: false }))
         : tiers;
@@ -86,7 +86,7 @@ const TicketsStep = ({ data, updateData, eventId }: Props) => {
     const tiers = data.tiers || [];
     const updated = tiers.map((tier, i) => {
       if (i === index) {
-        // If setting isPrimary to true, unset others
+
         if (field === "isPrimary" && value === true) {
           return { ...tier, isPrimary: true };
         }
@@ -108,7 +108,7 @@ const TicketsStep = ({ data, updateData, eventId }: Props) => {
 
   const handleUsePreset = async (preset: TicketPreset) => {
     if (!eventId) {
-      // No event ID yet — just add preset as a local tier (for create flow)
+
       const tiers = data.tiers || [];
       const newTierFromPreset: Tier = {
         name: preset.name,
@@ -137,14 +137,14 @@ const TicketsStep = ({ data, updateData, eventId }: Props) => {
       return;
     }
 
-    // Event exists — call the backend API to copy preset
+
     setCopyingPresetId(preset.id);
     try {
       const result = await copyPresetToEvent(preset.id, eventId);
       if (result) {
-        // Refresh tiers from the event (or update local state)
-        // The backend copies the preset as a tier on the event
-        // We add it locally so it shows immediately
+
+
+
         const tiers = data.tiers || [];
         const newTierFromPreset: Tier = {
           name: preset.name,
@@ -176,7 +176,7 @@ const TicketsStep = ({ data, updateData, eventId }: Props) => {
     }
   };
 
-  // Calculate totals
+
   const tiers = data.tiers || [];
   const totalRevenue = tiers.reduce((sum, t) => sum + t.price * t.capacity, 0);
   const totalCapacity = tiers.reduce((sum, t) => sum + t.capacity, 0);
@@ -186,9 +186,9 @@ const TicketsStep = ({ data, updateData, eventId }: Props) => {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-      {/* Left column – 65% */}
+
       <div className="lg:col-span-3 space-y-6">
-        {/* ── Available Presets Section ─────────────────────────── */}
+
         {showPresets && (
           <div>
             <div className="flex items-center justify-between mb-4">
@@ -263,12 +263,12 @@ const TicketsStep = ({ data, updateData, eventId }: Props) => {
           </div>
         )}
 
-        {/* ── Divider ──────────────────────────────────────────── */}
+
         {showPresets && (
           <div className="border-t border-[#292a2b]" />
         )}
 
-        {/* ── Header with inline Add Tier button ───────────────── */}
+
         <div className="flex items-center justify-between">
           <div>
             <h3 className="text-xl font-semibold text-white font-jakarta">
@@ -286,7 +286,7 @@ const TicketsStep = ({ data, updateData, eventId }: Props) => {
           </button>
         </div>
 
-        {/* ── Tier list ────────────────────────────────────────── */}
+
         <div className="space-y-4">
           {tiers.map((tier, idx) => (
             <div
@@ -295,7 +295,7 @@ const TicketsStep = ({ data, updateData, eventId }: Props) => {
                 tier.isPrimary ? "border-primary/60 border-2" : "border-[#292a2b]"
               }`}
             >
-              {/* Primary Badge - Top Right (no toggle) */}
+
               {tier.isPrimary && (
                 <div className="flex justify-end">
                   <span className="text-xs text-primary border border-primary px-2 py-0.5 rounded flex items-center gap-1">
@@ -304,7 +304,7 @@ const TicketsStep = ({ data, updateData, eventId }: Props) => {
                 </div>
               )}
 
-              {/* Row 1: Tier Name, Price, Capacity - 3 inputs in a row */}
+
               <div className="grid grid-cols-3 gap-3">
                 <div>
                   <p className="text-gray-400 text-[10px] uppercase tracking-[0.15em] font-semibold">
@@ -345,9 +345,9 @@ const TicketsStep = ({ data, updateData, eventId }: Props) => {
                 </div>
               </div>
 
-              {/* Row 2: Premium Perks (left) + Sales Period (right) */}
+
               <div className="grid grid-cols-2 gap-4 pt-2 border-t border-[#292a2b]">
-                {/* Left: Premium Perks with gray background group */}
+
                 <div className="bg-[#0d0e12] rounded-lg p-3">
                   <div className="flex items-center gap-3">
                     <div className="flex items-center gap-2">
@@ -379,7 +379,7 @@ const TicketsStep = ({ data, updateData, eventId }: Props) => {
                       />
                     </button>
                   </div>
-                  {/* Premium Description - plain text (no border/no input) */}
+
                   {tier.isPremium && tier.premiumDescription && (
                     <p className="mt-2 text-gray-400 text-sm">
                       {tier.premiumDescription}
@@ -387,7 +387,7 @@ const TicketsStep = ({ data, updateData, eventId }: Props) => {
                   )}
                 </div>
 
-                {/* Right: Sales Period */}
+
                 <div>
                   <p className="text-gray-400 text-[10px] uppercase tracking-[0.15em] font-semibold">
                     SALES PERIOD
@@ -414,7 +414,7 @@ const TicketsStep = ({ data, updateData, eventId }: Props) => {
                 </div>
               </div>
 
-              {/* Remove button */}
+
               <div className="flex justify-end pt-2 border-t border-[#292a2b]">
                 <button
                   onClick={() => removeTier(idx)}
@@ -427,11 +427,11 @@ const TicketsStep = ({ data, updateData, eventId }: Props) => {
           ))}
         </div>
 
-        {/* ── Add Tier Form ────────────────────────────────────── */}
+
         {showAddForm && (
           <div className="bg-[#080809] border border-[#292a2b] rounded-lg p-4 space-y-3">
             <h4 className="text-white text-sm font-medium">New Tier</h4>
-            {/* Row 1: Name, Price, Capacity */}
+
             <div className="grid grid-cols-3 gap-3">
               <input
                 type="text"
@@ -517,7 +517,7 @@ const TicketsStep = ({ data, updateData, eventId }: Props) => {
                 </div>
               </div>
             </div>
-            {/* Primary Toggle */}
+
             <div className="flex items-center gap-3 pt-2 border-t border-[#292a2b]">
               <span className="text-white text-sm">Set as Primary</span>
               <button
@@ -563,9 +563,9 @@ const TicketsStep = ({ data, updateData, eventId }: Props) => {
         )}
       </div>
 
-      {/* Right column – 35% */}
+
       <div className="lg:col-span-2 space-y-6">
-        {/* Financial Overview */}
+
         <div className="bg-[#0d0e12] border border-[#292a2b] rounded-lg p-4">
           <h4 className="text-gray-400 text-[10px] uppercase tracking-[0.15em] font-semibold font-jakarta">
             Financial Overview
@@ -609,7 +609,7 @@ const TicketsStep = ({ data, updateData, eventId }: Props) => {
           </div>
         </div>
 
-        {/* Pricing Strategy Tip */}
+
         <div className="bg-[#0d0e12] border border-[#292a2b] rounded-lg p-4">
           <div className="flex items-start gap-3">
             <span className="text-primary text-lg">💡</span>
@@ -624,7 +624,7 @@ const TicketsStep = ({ data, updateData, eventId }: Props) => {
           </div>
         </div>
 
-        {/* Event name badge */}
+
         {data.title && (
           <div className="bg-[#0d0e12] border border-[#292a2b] rounded-lg p-3">
             <p className="text-gray-400 text-sm text-center font-jakarta">

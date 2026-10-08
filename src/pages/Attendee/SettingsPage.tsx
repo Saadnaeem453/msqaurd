@@ -64,7 +64,7 @@ const SettingsPage = () => {
 
   return (
     <div className="w-full py-6">
-      {/* ─ Back Button ─────────────────────────────────── */}
+
       <button
         onClick={() => navigate(-1)}
         className="flex items-center gap-1.5 text-secondary hover:text-white text-sm mb-6 transition-colors"
@@ -73,14 +73,14 @@ const SettingsPage = () => {
         Back to Edit Profile
       </button>
 
-      {/* ─ Header ──────────────────────────────────────── */}
+
       <h1 className="text-2xl font-bold text-white mb-1">Settings</h1>
       <p className="text-secondary text-sm mb-8">
         Manage your account preferences and security settings.
       </p>
 
       <div className="space-y-6">
-        {/* ─ Account Settings ─────────────────────────── */}
+
         <div className={sectionClass}>
           <div className="px-5 py-3 border-b border-secondary/5">
             <h2 className="text-primary text-[10px] font-bold uppercase tracking-[0.15em]">
@@ -113,7 +113,7 @@ const SettingsPage = () => {
           </div>
         </div>
 
-        {/* ─ Privacy ──────────────────────────────────── */}
+
         <div className={sectionClass}>
           <div className="px-5 py-3 border-b border-secondary/5">
             <h2 className="text-primary text-[10px] font-bold uppercase tracking-[0.15em]">
@@ -149,7 +149,7 @@ const SettingsPage = () => {
           </div>
         </div>
 
-        {/* ─ Notifications ─────────────────────────────── */}
+
         <div className={sectionClass}>
           <div className="px-5 py-3 border-b border-secondary/5">
             <h2 className="text-primary text-[10px] font-bold uppercase tracking-[0.15em]">
@@ -201,7 +201,7 @@ const SettingsPage = () => {
           </div>
         </div>
 
-        {/* ─ Legal ─────────────────────────────────────── */}
+
         <div className={sectionClass}>
           <div className="px-5 py-3 border-b border-secondary/5">
             <h2 className="text-primary text-[10px] font-bold uppercase tracking-[0.15em]">
@@ -228,7 +228,7 @@ const SettingsPage = () => {
           </div>
         </div>
 
-        {/* ─ Log Out ──────────────────────────────────── */}
+
         <button
           onClick={handleLogout}
           className="w-full bg-red-600 hover:bg-red-700 text-white text-sm font-semibold py-3 rounded-lg transition-colors flex items-center justify-center gap-2"

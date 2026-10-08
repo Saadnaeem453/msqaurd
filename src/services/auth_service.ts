@@ -1,7 +1,6 @@
 import { api, User } from "../lib/api";
 
 export const authApi = {
-  // ─── Email / Password ───────────────────────────────────────────────
   signup: (body: {
     full_name: string;
     username: string;
@@ -22,7 +21,6 @@ export const authApi = {
       successMessage: 'Welcome back!',
     }),
 
-  // ─── Social Login ──────────────────────────────────────────────────
   googleLogin: (body: { idToken: string }) =>
     api.post<{ user: User; token: string }>('/auth/google', body, {
       loadingMessage: 'Signing in with Google...',
@@ -35,7 +33,6 @@ export const authApi = {
       successMessage: 'Welcome!',
     }),
 
-  // ─── Verification & Password Reset ────────────────────────────────
   verifyAccount: (body: { email: string; code: string }) =>
     api.post('/auth/account-verification', body, {
       loadingMessage: 'Verifying...',
@@ -56,7 +53,7 @@ export const authApi = {
 
   confirmOtp: (body: { email: string; code: string }) =>
     api.post('/auth/confirm-otp', body, {
-      successMessage: false, // handled silently — UI will move to next step
+      successMessage: false, 
     }),
 
   resetPassword: (body: { email: string; code: string; password: string }) =>
@@ -65,11 +62,10 @@ export const authApi = {
       successMessage: 'Password reset successfully. Please sign in.',
     }),
 
-  // ─── Protected (authenticated) ────────────────────────────────────
   validateToken: () =>
     api.get('/auth/validate-token', {
       successMessage: false,
-      errorMessage: false,   // silent — used for background session checks
+      errorMessage: false,   
     }),
 
   getProfile: () =>

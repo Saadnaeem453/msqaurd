@@ -237,12 +237,12 @@ const CategoryPage = () => {
     };
   }, [category]);
 
-  // Fetch events
+
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
 
-    // Try API first, fallback to mock
+
     attendeeEventsApi
       .getAll({ category, limit: 50 })
       .then((res) => {
@@ -321,7 +321,7 @@ const CategoryPage = () => {
 
   return (
     <div className="space-y-8">
-      {/* ── Breadcrumb ────────────────────────────────────── */}
+
       <div className="flex items-center gap-2 text-sm">
         <Link to="/home/explore" className="text-secondary hover:text-white transition-colors">
           Explore
@@ -330,7 +330,7 @@ const CategoryPage = () => {
         <span className="text-white font-medium">{categoryInfo.label}</span>
       </div>
 
-      {/* ── Header ────────────────────────────────────────── */}
+
       <div className="flex items-start justify-between">
         <div>
           <h1 className="text-3xl md:text-4xl font-bold text-white mb-3">
@@ -346,7 +346,7 @@ const CategoryPage = () => {
         </span>
       </div>
 
-      {/* ── Filters ───────────────────────────────────────── */}
+
       <div className="flex items-center gap-3 flex-wrap">
         <FilterButton label="Date" icon={Calendar} options={FILTER_OPTIONS.date} filterKey="date" />
         <FilterButton label="Location Radius" icon={MapPin} options={FILTER_OPTIONS.radius} filterKey="radius" />
@@ -359,7 +359,7 @@ const CategoryPage = () => {
         </button>
       </div>
 
-      {/* ── Events Grid ──────────────────────────────────── */}
+
       {loading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {[1, 2, 3].map((i) => (
@@ -399,7 +399,7 @@ const CategoryPage = () => {
                 className="bg-[#131418] border border-secondary/10 rounded-xl overflow-hidden hover:border-secondary/20 transition-colors group cursor-pointer"
                 onClick={() => navigate(`/home/events/${event.id}`)}
               >
-                {/* Image */}
+
                 <div className="relative h-44 overflow-hidden">
                   <img
                     src={event.hero_image || "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&h=500&fit=crop"}
@@ -408,7 +408,7 @@ const CategoryPage = () => {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
 
-                  {/* Badges */}
+
                   <div className="absolute top-3 left-3 flex items-center gap-2">
                     {isLive && (
                       <span className="bg-red-600 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wide flex items-center gap-1">
@@ -425,7 +425,7 @@ const CategoryPage = () => {
                     </span>
                   </div>
 
-                  {/* Heart */}
+
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
@@ -436,25 +436,25 @@ const CategoryPage = () => {
                   </button>
                 </div>
 
-                {/* Content */}
+
                 <div className="p-4">
-                  {/* Date */}
+
                   <p className="text-red-400 text-[11px] font-semibold uppercase tracking-wider flex items-center gap-1.5 mb-2">
                     <Calendar size={12} />
                     {formatDate(event.event_date, event.start_time)}
                   </p>
 
-                  {/* Title */}
+
                   <h3 className="text-white font-semibold text-base mb-1.5 line-clamp-1">
                     {event.title}
                   </h3>
 
-                  {/* Description */}
+
                   <p className="text-secondary/60 text-xs leading-relaxed line-clamp-2 mb-4">
                     {event.description}
                   </p>
 
-                  {/* Bottom row */}
+
                   <div className="flex items-center justify-between pt-3 border-t border-secondary/10">
                     <span className="text-secondary text-xs flex items-center gap-1">
                       <MapPin size={12} />
@@ -475,7 +475,7 @@ const CategoryPage = () => {
         </div>
       )}
 
-      {/* ── Pagination ────────────────────────────────────── */}
+
       <Pagination
         currentPage={currentPage}
         totalPages={totalPages}

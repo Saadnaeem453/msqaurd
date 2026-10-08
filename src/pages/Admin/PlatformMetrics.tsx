@@ -11,8 +11,6 @@ import {
   Cell,
 } from "recharts";
 
-// ── Chart Data ──────────────────────────────────────────────────────────────
-
 const revenueAcquisitionData = [
   { year: "2022", revenue: 1.2, acquisition: 0.8 },
   { year: "2022 H2", revenue: 1.8, acquisition: 1.1 },
@@ -29,16 +27,12 @@ const marketShareData = [
   { name: "Other", value: 10, color: "#2a2a35" },
 ];
 
-// ─── Table Data ──────────────────────────────────────────────────────────────
-
 const orgTypeData = [
   { type: "Masjids", vol: "1,240", revenue: "$12,400", health: "STABLE", healthColor: "bg-green-500/15 text-green-400 border border-green-500/30" },
   { type: "ISOCs", vol: "842", revenue: "$4,200", health: "HIGH GROWTH", healthColor: "bg-green-500/15 text-green-400 border border-green-500/30" },
   { type: "Professional Organizers", vol: "320", revenue: "$48,900", health: "PREMIUM", healthColor: "bg-blue-500/15 text-blue-400 border border-blue-500/30" },
   { type: "Charity Trusts", vol: "80", revenue: "$15,200", health: "VOLATILE", healthColor: "bg-yellow-500/15 text-yellow-400 border border-yellow-500/30" },
 ];
-
-// ─── Cohort Data ─────────────────────────────────────────────────────────────
 
 const cohortData = [
   { cohort: "Jan 24", M1: 98, M2: 82, M3: 71, M4: 64, M5: 59, M6: 52 },
@@ -55,8 +49,6 @@ const getCellBg = (value: number | null): string => {
   if (value >= 60) return "bg-[#6a1020]";
   return "bg-[#3a1020]";
 };
-
-// ─ Stat Card ────────────────────────────────────────────────────────────────
 
 const StatCard = ({
   label,
@@ -93,18 +85,16 @@ const StatCard = ({
   </div>
 );
 
-// ── Main Page ───────────────────────────────────────────────────────────────
-
 const PlatformMetrics = () => {
   return (
-    <div className="p-4 md:p-6 lg:p-8 space-y-6 max-w-[1440px] mx-auto">
-      {/* ─ Header ────────────────────────────────────────── */}
+    <div className="admin-page space-y-6">
+
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="font-jakarta text-xl md:text-2xl font-bold text-gray-200">
+          <h1 className="admin-page-title">
             Platform Metrics
           </h1>
-          <p className="text-secondary/60 text-sm mt-1">
+          <p className="admin-page-description">
             Historical performance and comparative ecosystem analysis.
           </p>
         </div>
@@ -120,7 +110,6 @@ const PlatformMetrics = () => {
         </div>
       </div>
 
-      {/* ── Stat Cards ────────────────────────────────────── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
           label="Total Revenue Growth"
@@ -160,9 +149,8 @@ const PlatformMetrics = () => {
         />
       </div>
 
-      {/* ── Charts Row ────────────────────────────────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
-        {/* Revenue & Acquisition Trends */}
+
         <div className="lg:col-span-3 bg-[#1a1b20] border border-secondary/10 rounded-xl p-5">
           <div className="flex items-start justify-between mb-6">
             <div>
@@ -199,11 +187,11 @@ const PlatformMetrics = () => {
                   axisLine={false}
                   tickLine={false}
                 />
-                {/* Acquisition bars — dim secondary */}
+
                 <Bar dataKey="acquisition" fill="rgba(233,188,182,0.15)" radius={[2, 2, 0, 0]} barSize={28} />
-                {/* Revenue bars — mid secondary */}
+
                 <Bar dataKey="revenue" fill="rgba(233,188,182,0.35)" radius={[2, 2, 0, 0]} barSize={28} />
-                {/* Revenue line — solid secondary */}
+
                 <Line
                   type="monotone"
                   dataKey="revenue"
@@ -216,7 +204,6 @@ const PlatformMetrics = () => {
           </div>
         </div>
 
-        {/* Market Share */}
         <div className="lg:col-span-2 bg-[#1a1b20] border border-secondary/10 rounded-xl p-5">
           <h3 className="text-gray-200 text-sm font-bold font-jakarta">
             Market Share
@@ -225,7 +212,6 @@ const PlatformMetrics = () => {
             Event volume by category
           </p>
 
-          {/* Donut Chart */}
           <div className="relative h-48 mt-4">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
@@ -245,7 +231,7 @@ const PlatformMetrics = () => {
                 </Pie>
               </PieChart>
             </ResponsiveContainer>
-            {/* Center text overlay */}
+
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
               <div className="text-center">
                 <p className="text-gray-200 text-lg font-bold font-jakarta">2,482</p>
@@ -254,7 +240,6 @@ const PlatformMetrics = () => {
             </div>
           </div>
 
-          {/* Legend */}
           <div className="space-y-2 mt-2">
             {marketShareData.map((item) => (
               <div key={item.name} className="flex items-center justify-between">
@@ -272,9 +257,8 @@ const PlatformMetrics = () => {
         </div>
       </div>
 
-      {/* ── Table + Cohorts Row ───────────────────────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {/* Performance by Organization Type */}
+
         <div className="bg-[#1a1b20] border border-secondary/10 rounded-xl p-5">
           <h3 className="text-gray-200 text-sm font-bold font-jakarta">
             Performance by Organization Type
@@ -317,13 +301,12 @@ const PlatformMetrics = () => {
           </table>
         </div>
 
-        {/* Retention Cohorts */}
         <div className="bg-[#1a1b20] border border-secondary/10 rounded-xl p-5">
           <div className="flex items-center justify-between mb-1">
             <h3 className="text-gray-200 text-sm font-bold font-jakarta">
               Retention Cohorts
             </h3>
-            {/* Color legend */}
+
             <div className="flex items-center gap-1">
               <span className="w-3 h-3 rounded-sm bg-[#e50a15]" />
               <span className="w-3 h-3 rounded-sm bg-[#c21020]" />
@@ -335,9 +318,8 @@ const PlatformMetrics = () => {
             Active users by onboarding month
           </p>
 
-          {/* Cohort grid */}
           <div className="mt-5">
-            {/* Header row */}
+
             <div className="flex items-center gap-1.5 mb-2">
               <div className="w-16 shrink-0" />
               {["M1", "M2", "M3", "M4", "M5", "M6"].map((m) => (
@@ -349,14 +331,13 @@ const PlatformMetrics = () => {
               ))}
             </div>
 
-            {/* Data rows */}
             {cohortData.map((row) => (
               <div key={row.cohort} className="flex items-center gap-1.5 mb-1.5">
-                {/* Row label */}
+
                 <div className="w-16 shrink-0 bg-[#1e2028] rounded-md py-1.5 flex items-center justify-center">
                   <span className="text-gray-400 text-[10px] font-medium">{row.cohort}</span>
                 </div>
-                {/* Cells */}
+
                 {[row.M1, row.M2, row.M3, row.M4, row.M5, row.M6].map((val, i) => (
                   <div key={i} className="flex-1 flex justify-center">
                     {val !== null ? (
@@ -376,7 +357,6 @@ const PlatformMetrics = () => {
         </div>
       </div>
 
-      {/* ── Ecosystem Resilience Analysis ─────────────────── */}
       <div className="bg-[#1a1b20] border border-secondary/10 rounded-xl p-5">
         <h3 className="text-gray-200 text-sm font-bold font-jakarta mb-2">
           Ecosystem Resilience Analysis
@@ -386,7 +366,7 @@ const PlatformMetrics = () => {
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Two image cards */}
+
           <div className="relative h-32 rounded-lg overflow-hidden bg-[#0f1923]">
             <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-transparent" />
             <div className="absolute inset-0 flex items-center justify-center">
@@ -408,7 +388,7 @@ const PlatformMetrics = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-          {/* Stat callouts */}
+
           <div className="bg-[#0f1420] border border-secondary/10 rounded-lg p-4">
             <TrendingUp size={16} className="text-secondary/40 mb-2" />
             <p className="text-gray-200 text-lg font-bold font-jakarta">18.2 months</p>
@@ -433,7 +413,6 @@ const PlatformMetrics = () => {
         </div>
       </div>
 
-      {/* ─ Footer ────────────────────────────────────────── */}
       <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-secondary/10">
         <div className="flex items-center gap-6">
           <p className="text-secondary/30 text-[10px]">

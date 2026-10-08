@@ -34,7 +34,7 @@ const HeroCarousel = ({ events, loading }: HeroCarouselProps) => {
     [events.length]
   );
 
-  // Auto-advance every 6 seconds
+
   useEffect(() => {
     if (events.length <= 1) return;
     const timer = setInterval(() => {
@@ -73,7 +73,7 @@ const HeroCarousel = ({ events, loading }: HeroCarouselProps) => {
       className="relative w-full h-[320px] md:h-[420px] rounded-2xl overflow-hidden group cursor-pointer"
       onClick={() => navigate(`/home/events/${event.id}`)}
     >
-      {/* Background image */}
+
       {heroImg ? (
         <img
           src={heroImg}
@@ -84,13 +84,13 @@ const HeroCarousel = ({ events, loading }: HeroCarouselProps) => {
         <div className="absolute inset-0 bg-gradient-to-br from-primary/30 to-secondary/10" />
       )}
 
-      {/* Gradient overlays */}
+
       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/10" />
       <div className="absolute inset-0 bg-gradient-to-r from-black/40 to-transparent" />
 
-      {/* Content */}
+
       <div className="absolute inset-0 flex flex-col justify-end p-6 md:p-10">
-        {/* Badges */}
+
         <div className="flex items-center gap-2 mb-3">
           <span className="bg-primary text-white text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded">
             FOR YOU
@@ -100,17 +100,17 @@ const HeroCarousel = ({ events, loading }: HeroCarouselProps) => {
           </span>
         </div>
 
-        {/* Title */}
+
         <h2 className="text-white text-2xl md:text-4xl font-bold leading-tight max-w-xl">
           {event.title}
         </h2>
 
-        {/* Description */}
+
         <p className="text-white/70 text-sm md:text-base mt-2 max-w-lg line-clamp-2">
           {event.summary || event.description}
         </p>
 
-        {/* Buttons */}
+
         <div className="flex items-center gap-3 mt-5">
           <button
             onClick={goToDetail}
@@ -127,7 +127,7 @@ const HeroCarousel = ({ events, loading }: HeroCarouselProps) => {
         </div>
       </div>
 
-      {/* Navigation arrows */}
+
       {events.length > 1 && (
         <>
           <button
@@ -153,7 +153,7 @@ const HeroCarousel = ({ events, loading }: HeroCarouselProps) => {
         </>
       )}
 
-      {/* Dots indicator */}
+
       {events.length > 1 && (
         <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-1.5">
           {events.map((_, idx) => (

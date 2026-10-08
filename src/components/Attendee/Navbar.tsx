@@ -29,7 +29,7 @@ const Navbar = () => {
 
   const userInitial = profile?.full_name?.charAt(0).toUpperCase() || profile?.username?.charAt(0).toUpperCase() || "U";
 
-  // Close menu on outside click
+
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
@@ -42,7 +42,7 @@ const Navbar = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [showProfileMenu]);
 
-  // Close on Escape
+
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") setShowProfileMenu(false);
@@ -92,12 +92,12 @@ const Navbar = () => {
   return (
     <header className="w-full bg-[#0a0b0e] border-b-[0.5px] border-secondary/10 py-4 sticky top-0 z-30">
       <div className="app-container mx-auto max-w-384 flex items-center justify-between">
-        {/* Logo */}
+
         <Link to="/" className="text-primary text-2xl font-bold tracking-tight">
           MSQUARED
         </Link>
 
-        {/* Navigation links */}
+
         <nav className="hidden md:flex items-center gap-6">
           {navItems.map((item) => {
             const isActive = location.pathname === item.path;
@@ -105,7 +105,7 @@ const Navbar = () => {
               <Link
                 key={item.path}
                 to={item.path}
-                className={`text-sm transition-colors ${
+                className={`text-sm font-jakarta transition-colors ${
                   isActive
                     ? "text-primary font-medium"
                     : "text-secondary hover:text-white"
@@ -117,7 +117,7 @@ const Navbar = () => {
           })}
         </nav>
 
-        {/* Right side: Search + Icons + Profile */}
+
         <div className="flex items-center gap-3">
           <div className="relative hidden sm:block">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-secondary/60" size={16} />
@@ -128,7 +128,7 @@ const Navbar = () => {
             />
           </div>
 
-          {/* Bell icon */}
+
           <button
             onClick={() => navigate("/home/notifications")}
             className="text-secondary hover:text-white transition-colors p-1.5 relative"
@@ -139,7 +139,7 @@ const Navbar = () => {
             </span>
           </button>
 
-          {/* Heart icon */}
+
           <button
             onClick={() => navigate("/home/wishlist")}
             className="text-secondary hover:text-white transition-colors p-1.5"
@@ -147,7 +147,7 @@ const Navbar = () => {
             <Heart size={18} />
           </button>
 
-          {/* Profile photo / Initial */}
+
           <div className="relative" ref={menuRef}>
             <button
               onClick={() => setShowProfileMenu(!showProfileMenu)}
@@ -171,7 +171,7 @@ const Navbar = () => {
               )}
             </button>
 
-            {/* Profile Menu Dropdown */}
+
             {showProfileMenu && (
               <div className="absolute right-0 top-full mt-2 bg-[#0a0b0e] border border-secondary/10 rounded-xl shadow-2xl w-56 py-3 z-50">
                 {menuItems.map((item) => {
@@ -199,7 +199,7 @@ const Navbar = () => {
             )}
           </div>
 
-          {/* Mobile menu toggle */}
+
           <button className="md:hidden text-secondary hover:text-white">
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />

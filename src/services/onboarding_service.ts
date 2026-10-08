@@ -1,4 +1,4 @@
-// services/onboarding_service.ts
+
 import { api } from "../lib/api";
 
 export interface OnboardingStepResponse {
@@ -27,7 +27,7 @@ export interface OnboardingSubmitData {
   zip_code?: string;
   latitude?: number;
   longitude?: number;
-  interests: string[];   // array of category IDs
+  interests: string[];
   age_group?: string;
   gender_preference?: string;
   dob?: string;

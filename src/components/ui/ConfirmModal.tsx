@@ -26,14 +26,14 @@ const ConfirmModal = ({
 }: ConfirmModalProps) => {
   const confirmBtnRef = useRef<HTMLButtonElement>(null);
 
-  // Focus confirm button on open
+
   useEffect(() => {
     if (open) {
       setTimeout(() => confirmBtnRef.current?.focus(), 100);
     }
   }, [open]);
 
-  // Close on Escape
+
   useEffect(() => {
     if (!open) return;
     const handleKey = (e: KeyboardEvent) => {
@@ -43,7 +43,7 @@ const ConfirmModal = ({
     return () => document.removeEventListener("keydown", handleKey);
   }, [open, onClose]);
 
-  // Prevent body scroll
+
   useEffect(() => {
     if (open) {
       document.body.style.overflow = "hidden";
@@ -82,15 +82,15 @@ const ConfirmModal = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      {/* Backdrop */}
+
       <div
         className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-in fade-in duration-150"
         onClick={onClose}
       />
 
-      {/* Modal */}
+
       <div className="relative bg-[#131418] border border-secondary/15 rounded-xl shadow-2xl w-full max-w-sm mx-4 animate-in zoom-in-95 fade-in duration-150">
-        {/* Close button */}
+
         <button
           onClick={onClose}
           className="absolute top-3 right-3 text-secondary/40 hover:text-white transition-colors p-1"
@@ -99,26 +99,26 @@ const ConfirmModal = ({
           <X size={16} />
         </button>
 
-        {/* Content */}
+
         <div className="p-6">
-          {/* Icon */}
+
           <div className={`w-12 h-12 rounded-full ${v.bg} flex items-center justify-center mx-auto mb-4`}>
             <AlertTriangle className={v.icon} size={24} />
           </div>
 
-          {/* Title */}
+
           {title && (
             <h3 className="text-white text-lg font-semibold text-center mb-2">
               {title}
             </h3>
           )}
 
-          {/* Message */}
+
           <p className="text-secondary text-sm text-center leading-relaxed">
             {message}
           </p>
 
-          {/* Actions */}
+
           <div className="flex gap-3 mt-6">
             <button
               onClick={onClose}

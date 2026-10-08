@@ -19,8 +19,6 @@ import {
   Cell,
 } from "recharts";
 
-// ─── Chart Data ──────────────────────────────────────────────────────────────
-
 const revenueData = [
   { time: "00:00", value: 12 },
   { time: "02:00", value: 18 },
@@ -37,8 +35,6 @@ const revenueData = [
 ];
 
 const maxValue = Math.max(...revenueData.map((d) => d.value));
-
-// ── Organizers Data ─────────────────────────────────────────────────────────
 
 const organizersData = [
   {
@@ -67,8 +63,6 @@ const organizersData = [
   },
 ];
 
-// ─── Alerts Data ─────────────────────────────────────────────────────────────
-
 const alertsData = [
   {
     id: "a1",
@@ -96,8 +90,6 @@ const alertsData = [
   },
 ];
 
-// ── Globe Dots ──────────────────────────────────────────────────────────────
-
 const globeDots = [
   { cx: 30, cy: 35, label: "North America", color: "#e50a15", r: 2.5 },
   { cx: 55, cy: 28, label: "Europe", color: "#e9bcb6", r: 2 },
@@ -107,8 +99,6 @@ const globeDots = [
   { cx: 35, cy: 65, label: "South America", color: "#e9bcb6", r: 1.5 },
   { cx: 85, cy: 65, label: "Australia", color: "#e9bcb6", r: 1 },
 ];
-
-// ── Sub-Components ──────────────────────────────────────────────────────────
 
 const StatCard = ({
   label,
@@ -127,7 +117,7 @@ const StatCard = ({
   progress?: number;
   progressColor?: string;
 }) => (
-  <div className="bg-[#131418] border border-secondary/10 rounded-xl p-4 md:p-5">
+  <div className="bg-lightgrayblue border border-secondary/10 rounded-xl p-4 md:p-5">
     <div className="flex items-center justify-between mb-3">
       <p className="text-secondary/70 text-[10px] uppercase tracking-wider font-semibold">
         {label}
@@ -155,8 +145,6 @@ const StatCard = ({
   </div>
 );
 
-// ── Globe SVG ────────────────────────────────────────────────────────────────
-
 const GlobeMap = () => (
   <svg
     viewBox="0 0 120 100"
@@ -170,10 +158,8 @@ const GlobeMap = () => (
       </radialGradient>
     </defs>
 
-    {/* Globe sphere */}
     <circle cx="60" cy="50" r="42" fill="url(#globeFill)" />
 
-    {/* Latitude lines */}
     {[-25, -12, 0, 12, 25].map((offset, i) => {
       const y = 50 + offset;
       const halfW = Math.sqrt(42 * 42 - offset * offset);
@@ -192,7 +178,6 @@ const GlobeMap = () => (
       );
     })}
 
-    {/* Longitude lines */}
     {[-28, -14, 0, 14, 28].map((offset, i) => (
       <ellipse
         key={`lon-${i}`}
@@ -207,12 +192,10 @@ const GlobeMap = () => (
       />
     ))}
 
-    {/* Equator */}
     <line x1={18} y1={50} x2={102} y2={50} stroke="#3a4a5a" strokeWidth="0.4" opacity="0.4" />
-    {/* Prime meridian */}
+
     <line x1={60} y1={8} x2={60} y2={92} stroke="#3a4a5a" strokeWidth="0.4" opacity="0.4" />
 
-    {/* Pulse rings from active regions */}
     {globeDots.filter((d) => d.color === "#e50a15").map((dot, i) => (
       <circle
         key={`pulse-${i}`}
@@ -241,7 +224,6 @@ const GlobeMap = () => (
       </circle>
     ))}
 
-    {/* Activity dots */}
     {globeDots.map((dot, i) => (
       <g key={i}>
         <circle cx={dot.cx} cy={dot.cy} r={dot.r} fill={dot.color} opacity="0.85" />
@@ -249,12 +231,9 @@ const GlobeMap = () => (
       </g>
     ))}
 
-    {/* Globe border */}
     <circle cx={60} cy={50} r={42} fill="none" stroke="#3a4a5a" strokeWidth="0.4" opacity="0.3" />
   </svg>
 );
-
-// ── Dollar icon helper ───────────────────────────────────────────────────────
 
 function DollarSignIcon() {
   return (
@@ -275,8 +254,6 @@ function DollarSignIcon() {
   );
 }
 
-// ── Bar color helper ─────────────────────────────────────────────────────────
-
 const getBarColor = (value: number) => {
   const ratio = value / maxValue;
   if (ratio >= 0.95) return "#e50a15";
@@ -284,8 +261,6 @@ const getBarColor = (value: number) => {
   if (ratio >= 0.5) return "#e9bcb6";
   return "#6b7a8a";
 };
-
-// ── Page Component ──────────────────────────────────────────────────────────
 
 const SystemOverview = () => {
   const [timeframe] = useState("Last 7 Days");
@@ -298,14 +273,14 @@ const SystemOverview = () => {
   };
 
   return (
-    <div className="p-4 md:p-6 lg:p-8 space-y-6 max-w-[1440px] mx-auto">
-      {/* ── Header ─────────────────────────────────────────── */}
+    <div className="admin-page space-y-6">
+
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="font-jakarta text-xl md:text-2xl font-bold text-white">
+          <h1 className="admin-page-title">
             System Overview
           </h1>
-          <p className="text-secondary/60 text-sm mt-1">
+          <p className="admin-page-description">
             Real-time platform performance and operational status.
           </p>
         </div>
@@ -321,7 +296,6 @@ const SystemOverview = () => {
         </div>
       </div>
 
-      {/* ── Stat Cards ────────────────────────────────────── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
           label="Platform GMV"
@@ -386,10 +360,9 @@ const SystemOverview = () => {
         />
       </div>
 
-      {/* ── Globe + Revenue Velocity ───────────────────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
-        {/* Global Activity Map */}
-        <div className="lg:col-span-3 bg-[#131418] border border-secondary/10 rounded-xl p-4 md:p-5">
+
+        <div className="lg:col-span-3 bg-lightgrayblue border border-secondary/10 rounded-xl p-4 md:p-5">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <Globe size={16} className="text-secondary/60" />
@@ -402,12 +375,10 @@ const SystemOverview = () => {
             </span>
           </div>
 
-          {/* Globe container */}
-          <div className="relative w-full h-48 md:h-64 lg:h-72 bg-[#0a0f18] rounded-lg overflow-hidden">
+          <div className="relative w-full h-48 md:h-64 lg:h-72 bg-lightgrayblue rounded-lg overflow-hidden">
             <GlobeMap />
           </div>
 
-          {/* Legend */}
           <div className="flex flex-wrap items-center gap-4 mt-4">
             <div className="flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-primary" />
@@ -430,8 +401,7 @@ const SystemOverview = () => {
           </div>
         </div>
 
-        {/* Revenue Velocity */}
-        <div className="lg:col-span-2 bg-[#131418] border border-secondary/10 rounded-xl p-4 md:p-5">
+        <div className="lg:col-span-2 bg-lightgrayblue border border-secondary/10 rounded-xl p-4 md:p-5">
           <div className="mb-4">
             <h3 className="text-white text-sm font-bold font-jakarta">
               Revenue Velocity
@@ -441,7 +411,6 @@ const SystemOverview = () => {
             </p>
           </div>
 
-          {/* Bar Chart */}
           <div className="h-40 md:h-48">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={revenueData} barSize={16}>
@@ -463,7 +432,6 @@ const SystemOverview = () => {
             </ResponsiveContainer>
           </div>
 
-          {/* Stats */}
           <div className="grid grid-cols-2 gap-4 mt-4 pt-4 border-t border-secondary/10">
             <div>
               <p className="text-secondary/60 text-[10px] uppercase tracking-wider">
@@ -481,10 +449,9 @@ const SystemOverview = () => {
         </div>
       </div>
 
-      {/* ── Alerts + Organizers ────────────────────────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {/* Critical Alerts */}
-        <div className="bg-[#131418] border border-secondary/10 rounded-xl p-4 md:p-5">
+
+        <div className="bg-lightgrayblue border border-secondary/10 rounded-xl p-4 md:p-5">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <Activity size={16} className="text-red-400" />
@@ -501,7 +468,7 @@ const SystemOverview = () => {
             {alertsData.map((alert) => (
               <div
                 key={alert.id}
-                className="bg-white/[0.02] rounded-lg p-3"
+                className="bg-lightgrayblue rounded-lg p-3"
               >
                 <div className="flex items-center justify-between mb-1">
                   <p className="text-white text-xs font-bold tracking-wider">
@@ -520,8 +487,7 @@ const SystemOverview = () => {
           </div>
         </div>
 
-        {/* High-Performance Organizers */}
-        <div className="bg-[#131418] border border-secondary/10 rounded-xl p-4 md:p-5">
+        <div className="bg-lightgrayblue border border-secondary/10 rounded-xl p-4 md:p-5">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-white text-sm font-bold font-jakarta">
               High-Performance Organizers
@@ -531,7 +497,6 @@ const SystemOverview = () => {
             </span>
           </div>
 
-          {/* Table */}
           <div className="overflow-x-auto">
             <table className="w-full text-xs">
               <thead>
@@ -561,7 +526,7 @@ const SystemOverview = () => {
                   >
                     <td className="py-3 pr-3">
                       <div className="flex items-center gap-2">
-                        {/* Gray avatar */}
+
                         <div className="w-7 h-7 rounded-md bg-[#2a2b30] flex items-center justify-center flex-shrink-0">
                           <span className="text-gray-400 text-[9px] font-bold">
                             {org.initials}

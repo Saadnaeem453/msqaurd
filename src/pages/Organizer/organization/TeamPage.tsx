@@ -9,8 +9,6 @@ import {
   MoreVertical,
 } from "lucide-react";
 
-// ── Types ───────────────────────────────────────────────────────────────────
-
 type Role = "Owner" | "Admin" | "Moderator" | "Staff" | "Volunteer";
 type Status = "Active" | "Inactive";
 
@@ -30,7 +28,6 @@ interface ActivityEntry {
   timeAgo: string;
 }
 
-// ── Mock Data ───────────────────────────────────────────────────────────────
 
 const allMembers: Member[] = [
   {
@@ -88,12 +85,9 @@ const roleBadgeColors: Record<Role, string> = {
   Volunteer: "bg-secondary/10 text-secondary border-secondary/15",
 };
 
-// ── Tabs ────────────────────────────────────────────────────────────────────
 
 const tabs = ["All Members", "Staff", "Volunteers"] as const;
 type Tab = (typeof tabs)[number];
-
-// ── Component ───────────────────────────────────────────────────────────────
 
 const TeamPage = () => {
   const [activeTab, setActiveTab] = useState<Tab>("All Members");
@@ -118,7 +112,7 @@ const TeamPage = () => {
 
   return (
     <div className="max-w-[1500px] mx-auto px-4 md:px-6 py-6 space-y-6">
-      {/* ── Header ────────────────────────────────────────── */}
+
       <div className="flex items-start justify-between">
         <div>
           <h1 className="font-jakarta text-2xl font-bold text-white">
@@ -134,11 +128,11 @@ const TeamPage = () => {
         </button>
       </div>
 
-      {/* ── Main Grid ──────────────────────────────────────── */}
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-        {/* Left: Member Table (2/3) */}
+
         <div className="lg:col-span-2 bg-[#131418] border border-secondary/10 rounded-xl p-5">
-          {/* Tabs */}
+
           <div className="flex items-center justify-between border-b border-secondary/10 pb-0 mb-4">
             <div className="flex items-center gap-4">
               {tabs.map((tab) => {
@@ -169,7 +163,7 @@ const TeamPage = () => {
             </span>
           </div>
 
-          {/* Table Header */}
+
           <div className="grid grid-cols-12 gap-4 px-4 py-2 border-b border-secondary/10">
             <div className="col-span-5">
               <span className="text-secondary/40 text-[10px] uppercase tracking-wider font-semibold">
@@ -193,7 +187,7 @@ const TeamPage = () => {
             </div>
           </div>
 
-          {/* Table Rows */}
+
           {filteredMembers.length === 0 ? (
             <div className="text-center py-12">
               <p className="text-secondary/50 text-sm">No members in this group</p>
@@ -204,7 +198,7 @@ const TeamPage = () => {
                 key={member.id}
                 className="grid grid-cols-12 gap-4 px-4 py-4 items-center border-b border-secondary/5 hover:bg-secondary/5 transition-colors"
               >
-                {/* Member */}
+
                 <div className="col-span-5 flex items-center gap-3">
                   <div
                     className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 ${member.color}`}
@@ -221,7 +215,7 @@ const TeamPage = () => {
                   </div>
                 </div>
 
-                {/* Role */}
+
                 <div className="col-span-3">
                   <span
                     className={`inline-block px-3 py-1 rounded text-xs font-semibold border ${
@@ -232,7 +226,7 @@ const TeamPage = () => {
                   </span>
                 </div>
 
-                {/* Status */}
+
                 <div className="col-span-2">
                   <span className="flex items-center gap-1.5 text-xs">
                     <span
@@ -254,7 +248,7 @@ const TeamPage = () => {
                   </span>
                 </div>
 
-                {/* Actions */}
+
                 <div className="col-span-2 relative">
                   <button
                     onClick={() =>
@@ -292,9 +286,9 @@ const TeamPage = () => {
           )}
         </div>
 
-        {/* Right Column */}
+
         <div className="space-y-5">
-          {/* Activity Log */}
+
           <div className="bg-[#131418] border border-secondary/10 rounded-xl p-5">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
@@ -323,7 +317,7 @@ const TeamPage = () => {
             </div>
           </div>
 
-          {/* Quick Stats */}
+
           <div className="bg-[#131418] border border-secondary/10 rounded-xl p-5 relative overflow-hidden">
             <div className="absolute top-4 right-4 opacity-5">
               <ShieldCheck size={64} className="text-white" />
@@ -357,14 +351,14 @@ const TeamPage = () => {
         </div>
       </div>
 
-      {/* ── Bottom Banner ──────────────────────────────────── */}
+
       <div className="bg-[#131418] border border-secondary/10 rounded-xl p-6 flex flex-col md:flex-row items-start md:items-center gap-5">
-        {/* Mail icon */}
+
         <div className="w-12 h-12 rounded-xl bg-red-500/15 flex items-center justify-center flex-shrink-0">
           <Mail size={22} className="text-red-400" />
         </div>
 
-        {/* Text */}
+
         <div className="flex-1">
           <p className="text-white text-sm font-semibold mb-1">
             Grow your impact.
@@ -375,7 +369,7 @@ const TeamPage = () => {
           </p>
         </div>
 
-        {/* Buttons */}
+
         <div className="flex items-center gap-2 flex-shrink-0">
           <button className="flex items-center gap-2 px-4 py-2.5 border border-secondary/20 text-secondary hover:text-white hover:border-secondary/40 rounded-lg text-sm transition-colors">
             <Download size={14} /> Download Log

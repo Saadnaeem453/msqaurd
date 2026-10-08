@@ -16,7 +16,7 @@ const Stepper = ({ steps, currentStep }: StepperProps) => {
 
         return (
           <div key={index} className="flex items-center flex-1 last:flex-none">
-            {/* Step circle + label */}
+
             <div className="flex items-center gap-3">
               <div
                 className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors ${
@@ -38,7 +38,7 @@ const Stepper = ({ steps, currentStep }: StepperProps) => {
               </span>
             </div>
 
-            {/* Connector line */}
+
             {index < steps.length - 1 && (
               <div
                 className={`flex-1 h-px mx-4 ${

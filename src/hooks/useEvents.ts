@@ -7,7 +7,7 @@ import {
   UpdateEventPayload,
 } from '../services/event.service';
 
-// ─── Types ───────────────────────────────────────────────────────────────────
+
 
 interface PaginationState {
   page: number;
@@ -32,7 +32,7 @@ interface UseEventListReturn {
   setPage: (page: number) => void;
 }
 
-// ─── useEventList ────────────────────────────────────────────────────────────
+
 
 export function useEventList(options: UseEventListOptions = {}): UseEventListReturn {
   const { status, page = 1, limit = 12, autoFetch = true } = options;
@@ -54,7 +54,7 @@ export function useEventList(options: UseEventListOptions = {}): UseEventListRet
     const result = await eventApi.list({ status, page, limit });
 
     if (result.ok && result.data) {
-      // api.get already unwraps json.data, so result.data = { events, total, page, limit, totalPages }
+
       const data = result.data as any;
 
       if (data.events && Array.isArray(data.events)) {
@@ -66,7 +66,7 @@ export function useEventList(options: UseEventListOptions = {}): UseEventListRet
           totalPages: data.totalPages ?? 1,
         });
       } else {
-        // Fallback: maybe the response wasn't unwrapped
+
         const inner = data.data || data;
         if (inner.events && Array.isArray(inner.events)) {
           setEvents(inner.events);
@@ -107,7 +107,7 @@ export function useEventList(options: UseEventListOptions = {}): UseEventListRet
   };
 }
 
-// ─── useEvent (single) ───────────────────────────────────────────────────────
+
 
 export function useEvent(id: string | undefined, autoFetch = true) {
   const [event, setEvent] = useState<Event | null>(null);
@@ -123,14 +123,14 @@ export function useEvent(id: string | undefined, autoFetch = true) {
     const result = await eventApi.get(id);
 
     if (result.ok && result.data) {
-      // api.get unwraps json.data, so result.data = the Event object
+
       const data = result.data as any;
 
       if (data.id) {
-        // Direct event object
+
         setEvent(data);
       } else if (data.data?.id) {
-        // Nested in .data (fallback)
+
         setEvent(data.data);
       } else {
         setError('Invalid event data received');
@@ -156,7 +156,7 @@ export function useEvent(id: string | undefined, autoFetch = true) {
   };
 }
 
-// ─── useEventStats ───────────────────────────────────────────────────────────
+
 
 export function useEventStats(autoFetch = true) {
   const [stats, setStats] = useState<{
@@ -179,7 +179,7 @@ export function useEventStats(autoFetch = true) {
     if (result.ok && result.data) {
       const data = result.data as any;
 
-      // Handle both direct stats and nested response
+
       const statsData = data.total !== undefined ? data : data.data;
 
       if (statsData) {
@@ -213,7 +213,7 @@ export function useEventStats(autoFetch = true) {
   };
 }
 
-// ─── useCreateEvent ──────────────────────────────────────────────────────────
+
 
 export function useCreateEvent() {
   const [creating, setCreating] = useState(false);
@@ -229,7 +229,7 @@ export function useCreateEvent() {
 
     if (result.ok && result.data) {
       const responseData = result.data as any;
-      // api.post unwraps json.data, so result.data = the Event object (or { success, data: Event, detail })
+
       const event = responseData.id ? responseData : responseData.data;
       if (event?.id) {
         return event;
@@ -285,7 +285,7 @@ export function useCreateEventWithFiles() {
   return { createEventWithFiles, creating, error, reset };
 }
 
-// ─── useUpdateEvent ──────────────────────────────────────────────────────────
+
 
 export function useUpdateEvent() {
   const [updating, setUpdating] = useState(false);
@@ -362,7 +362,7 @@ export function useUpdateEventWithFiles() {
   return { updateEventWithFiles, updating, error, reset };
 }
 
-// ─── useEventStatus ──────────────────────────────────────────────────────────
+
 
 export function useEventStatus() {
   const [updating, setUpdating] = useState(false);
@@ -390,7 +390,7 @@ export function useEventStatus() {
   return { updateStatus, updating, error };
 }
 
-// ─── useDeleteEvent ──────────────────────────────────────────────────────────
+
 
 export function useDeleteEvent() {
   const [deleting, setDeleting] = useState(false);
@@ -415,7 +415,7 @@ export function useDeleteEvent() {
   return { deleteEvent, deleting, error };
 }
 
-// ─── useUploadImage ──────────────────────────────────────────────────────────
+
 
 export function useUploadImage() {
   const [uploading, setUploading] = useState(false);

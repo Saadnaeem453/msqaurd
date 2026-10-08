@@ -25,7 +25,7 @@ import {
 import { Event, EventStatus } from "../../../services/event.service";
 import ConfirmModal from "../../../components/ui/ConfirmModal";
 
-// ─── Status configs ──────────────────────────────────────────────────────────
+
 
 const statusFilters: { label: string; value: EventStatus | "all"; path: string }[] = [
   { label: "All Events", value: "all", path: "/organizer/events" },
@@ -56,7 +56,7 @@ const statusActions: Record<string, { label: string; status: EventStatus; color:
   completed: [],
 };
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
+
 
 function formatDate(dateStr: string): string {
   if (!dateStr) return "TBD";
@@ -80,13 +80,13 @@ function totalSold(event: Event): number {
   return (event.tiers || []).reduce((sum, t) => sum + (Number(t.tickets_sold) || 0), 0);
 }
 
-// ─── Component ───────────────────────────────────────────────────────────────
+
 
 const EventList = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Derive the active status filter from the URL path
+
   const activeFilter = useMemo<EventStatus | "all">(() => {
     const path = location.pathname;
     if (path.endsWith("/drafts")) return "draft";
@@ -100,7 +100,7 @@ const EventList = () => {
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Event | null>(null);
 
-  // Reset page to 1 when switching between status tabs
+
   useEffect(() => {
     setCurrentPage(1);
   }, [location.pathname]);
@@ -113,7 +113,7 @@ const EventList = () => {
   const { updateStatus, updating } = useEventStatus();
   const { deleteEvent, deleting } = useDeleteEvent();
 
-  // Filter by search locally (server-side search can be added later)
+
   const filteredEvents = useMemo(() => {
     if (!search.trim()) return events;
     const q = search.toLowerCase();
@@ -150,7 +150,7 @@ const EventList = () => {
   };
 
   const handleDuplicate = (event: Event) => {
-    // Navigate to create with event data (simple approach)
+
     navigate("/organizer/events/create", {
       state: { duplicateFrom: event },
     });
@@ -159,7 +159,7 @@ const EventList = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
+
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-white">
@@ -177,7 +177,7 @@ const EventList = () => {
         </Link>
       </div>
 
-      {/* Status filter tabs */}
+
       <div className="flex gap-2 border-b border-secondary/10 pb-0">
         {statusFilters.map((filter) => {
           const isActive = filter.value === activeFilter;
@@ -197,7 +197,7 @@ const EventList = () => {
         })}
       </div>
 
-      {/* Search bar */}
+
       <div className="relative">
         <Search
           size={16}
@@ -212,14 +212,14 @@ const EventList = () => {
         />
       </div>
 
-      {/* Loading */}
+
       {loading && (
         <div className="flex items-center justify-center py-12">
           <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
         </div>
       )}
 
-      {/* Error */}
+
       {error && !loading && (
         <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4 flex items-start gap-3">
           <AlertCircle size={20} className="text-red-400 flex-shrink-0 mt-0.5" />
@@ -236,7 +236,7 @@ const EventList = () => {
         </div>
       )}
 
-      {/* Empty state */}
+
       {!loading && !error && filteredEvents.length === 0 && (
         <div className="text-center py-16">
           <div className="w-16 h-16 bg-secondary/10 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -261,7 +261,7 @@ const EventList = () => {
         </div>
       )}
 
-      {/* Event grid */}
+
       {!loading && !error && filteredEvents.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
           {filteredEvents.map((event) => (
@@ -281,7 +281,7 @@ const EventList = () => {
         </div>
       )}
 
-      {/* Pagination */}
+
       {!loading && pagination.totalPages > 1 && (
         <div className="flex items-center justify-between pt-4 border-t border-secondary/10">
           <p className="text-secondary text-sm">
@@ -311,7 +311,7 @@ const EventList = () => {
         </div>
       )}
 
-      {/* Delete confirmation modal */}
+
       <ConfirmModal
         open={!!deleteTarget}
         onClose={() => setDeleteTarget(null)}
@@ -325,7 +325,7 @@ const EventList = () => {
   );
 };
 
-// ─── Event Card ──────────────────────────────────────────────────────────────
+
 
 interface EventCardProps {
   event: Event;
@@ -353,7 +353,7 @@ const EventCard = ({
 
   return (
     <div className="bg-[#131418] border border-secondary/10 rounded-xl overflow-hidden hover:border-secondary/20 transition-colors group">
-      {/* Hero image */}
+
       <div className="relative h-36 bg-secondary/5">
         {event.hero_image ? (
           <img
@@ -367,7 +367,7 @@ const EventCard = ({
           </div>
         )}
 
-        {/* Status badge */}
+
         <span
           className={`absolute top-2 left-2 text-[10px] uppercase tracking-wider font-semibold px-2 py-0.5 rounded border ${
             statusColors[event.status] || statusColors.draft
@@ -376,14 +376,14 @@ const EventCard = ({
           {event.status}
         </span>
 
-        {/* Category badge */}
+
         {event.category && (
           <span className="absolute top-2 right-10 text-[10px] uppercase tracking-wider font-semibold px-2 py-0.5 rounded bg-black/50 text-white border border-white/10">
             {event.category}
           </span>
         )}
 
-        {/* Menu button */}
+
         <button
           onClick={(e) => {
             e.stopPropagation();
@@ -394,7 +394,7 @@ const EventCard = ({
           <MoreVertical size={14} />
         </button>
 
-        {/* Dropdown menu */}
+
         {isOpen && (
           <div className="absolute top-8 right-2 w-44 bg-[#1a1c22] border border-secondary/20 rounded-lg shadow-lg py-1 z-20">
             <button
@@ -425,7 +425,7 @@ const EventCard = ({
               <Copy size={14} /> Duplicate
             </button>
 
-            {/* Status actions */}
+
             {(statusActions[event.status] || []).map((action) => (
               <button
                 key={action.status}
@@ -451,7 +451,7 @@ const EventCard = ({
         )}
       </div>
 
-      {/* Content */}
+
       <div className="p-4 space-y-3">
         <div>
           <h3 className="text-white font-semibold truncate">{event.title}</h3>
@@ -460,7 +460,7 @@ const EventCard = ({
           </p>
         </div>
 
-        {/* Meta */}
+
         <div className="flex items-center gap-4 text-xs text-secondary">
           <span className="flex items-center gap-1">
             <Calendar size={12} /> {formatDate(event.event_date)}
@@ -472,7 +472,7 @@ const EventCard = ({
           )}
         </div>
 
-        {/* Capacity bar */}
+
         {capacity > 0 && (
           <div>
             <div className="flex items-center justify-between text-xs mb-1">
@@ -496,7 +496,7 @@ const EventCard = ({
           </div>
         )}
 
-        {/* Quick action */}
+
         <div className="flex gap-2 pt-1">
           <button
             onClick={() => navigate(`/organizer/events/${event.id}/edit`)}

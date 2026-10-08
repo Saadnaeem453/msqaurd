@@ -46,7 +46,7 @@ const MyTicketsPage = () => {
 
   return (
     <div className="w-full py-8">
-      {/*  Header ───────────────────────────────────────── */}
+
       <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-8">
         <div>
           <h1 className="text-3xl md:text-4xl font-bold text-white">My Tickets</h1>
@@ -78,7 +78,7 @@ const MyTicketsPage = () => {
         </div>
       </div>
 
-      {/* ─ Ticket Cards ────────────────────────────────── */}
+
       {filteredTickets.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {filteredTickets.map((ticket) => (
@@ -86,7 +86,7 @@ const MyTicketsPage = () => {
               key={ticket.id}
               className="bg-[#131418] border border-secondary/10 rounded-xl overflow-hidden flex flex-col md:flex-row"
             >
-              {/* Image */}
+
               <div className="relative md:w-48 md:flex-shrink-0 h-40 md:h-auto">
                 <img
                   src={ticket.image}
@@ -100,7 +100,7 @@ const MyTicketsPage = () => {
                 )}
               </div>
 
-              {/* Content */}
+
               <div className="flex-1 p-5 flex flex-col">
                 <div className="flex items-start justify-between gap-3 mb-3">
                   <h3 className="text-white text-lg font-semibold leading-tight">

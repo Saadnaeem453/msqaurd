@@ -125,7 +125,7 @@ export interface DashboardStatsResponse {
     organizations: OrganizationData[];
     stats: {
       total_organizations: number;
-      // More stats will be added
+
     };
   };
   detail: string;

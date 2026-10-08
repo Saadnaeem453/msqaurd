@@ -1,14 +1,11 @@
 import { CreateEventPayload, Event, EventTier, EventGallery, EventSpeaker, EventAgenda } from '../services/event.service';
 
-// ─── Form data type (matches CreateEvent.tsx) ────────────────────────────────
 
 export interface EventFormData {
-  // Basics
   title: string;
   category: string;
   description: string;
   summary: string;
-  // Venue
   eventDate: string;
   timezone: string;
   startTime: string;
@@ -16,7 +13,6 @@ export interface EventFormData {
   venueType: 'physical' | 'online' | 'hybrid';
   venueName: string;
   streetAddress: string;
-  // Tickets
   tiers: Array<{
     name: string;
     description?: string;
@@ -28,13 +24,11 @@ export interface EventFormData {
     premiumDescription?: string;
     isPrimary?: boolean;
   }>;
-  // Design
   heroImage: File | null;
   heroImageUrl?: string;
   gallery: File[];
   galleryUrls?: string[];
   videoUrl: string;
-  // Speakers
   speakers: Array<{
     name: string;
     title: string;
@@ -72,7 +66,6 @@ export const initialFormData: EventFormData = {
   agenda: [],
 };
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
 
 const venueTypeMap: Record<string, 'physical' | 'online' | 'hybrid'> = {
   Physical: 'physical',
@@ -96,12 +89,10 @@ function toVenueLabel(vt?: string): string {
 
 function formatDateToISO(dateStr: string, timeStr: string, timezone: string): string {
   if (!dateStr) return '';
-  // Build ISO datetime: "2024-10-12" + "18:00" → "2024-10-12T18:00:00"
   const time = timeStr || '00:00';
   return `${dateStr}T${time}:00`;
 }
 
-// ─── Form → API payload ─────────────────────────────────────────────────────
 
 export function formToPayload(
   form: EventFormData,
@@ -124,7 +115,6 @@ export function formToPayload(
     status,
   };
 
-  // Tiers
   if (form.tiers.length > 0) {
     payload.tiers = form.tiers.map((t) => ({
       name: t.name.trim(),
@@ -138,7 +128,6 @@ export function formToPayload(
     }));
   }
 
-  // Gallery
   if (form.galleryUrls && form.galleryUrls.length > 0) {
     payload.gallery = form.galleryUrls.map((url, idx) => ({
       image_url: url,
@@ -147,7 +136,6 @@ export function formToPayload(
     }));
   }
 
-  // Speakers
   if (form.speakers.length > 0) {
     payload.speakers = form.speakers
       .filter((s) => s.name.trim())
@@ -159,7 +147,6 @@ export function formToPayload(
       }));
   }
 
-  // Agenda
   if (form.agenda.length > 0) {
     payload.agenda = form.agenda
       .filter((a) => a.title.trim())
@@ -176,20 +163,14 @@ export function formToPayload(
   return payload;
 }
 
-// ─── Form → FormData (multipart) ────────────────────────────────────────────
 
-/**
- * Build FormData for create/update endpoints.
- * Appends text fields as strings, nested arrays as JSON strings,
- * and File objects for hero_image / gallery_images / speaker photos.
- */
 export function formToFormData(
   form: EventFormData,
   status: 'draft' | 'published' = 'draft'
 ): FormData {
   const fd = new FormData();
 
-  // Text fields
+
   fd.append('title', form.title.trim());
   fd.append('category', form.category.trim());
   fd.append('description', form.description.trim());
@@ -204,7 +185,6 @@ export function formToFormData(
   if (form.videoUrl?.trim()) fd.append('video_url', form.videoUrl.trim());
   fd.append('status', status);
 
-  // Nested JSON fields (stringified)
   if (form.tiers.length > 0) {
     const tiers = form.tiers.map((t) => ({
       name: t.name.trim(),
@@ -254,21 +234,18 @@ export function formToFormData(
     fd.append('agenda', JSON.stringify(agenda));
   }
 
-  // Hero image — File object (or URL string for backward compat)
   if (form.heroImage instanceof File) {
     fd.append('hero_image', form.heroImage);
   } else if (form.heroImageUrl) {
     fd.append('hero_image', form.heroImageUrl);
   }
 
-  // Gallery images — multiple File objects
   if (form.gallery.length > 0) {
     form.gallery.forEach((file) => {
       fd.append('gallery_images', file);
     });
   }
 
-  // Speaker photos — File objects (indexed for correct mapping)
   form.speakers.forEach((speaker, idx) => {
     if (speaker.photo instanceof File) {
       fd.append(`speaker_photo_${idx}`, speaker.photo);
@@ -278,7 +255,6 @@ export function formToFormData(
   return fd;
 }
 
-// ─── API Event → Form data (for editing) ────────────────────────────────────
 
 export function eventToForm(event: Event): EventFormData {
   return {
@@ -330,7 +306,6 @@ export function eventToForm(event: Event): EventFormData {
   };
 }
 
-// ─── Validation ──────────────────────────────────────────────────────────────
 
 export interface ValidationErrors {
   [field: string]: string;
@@ -358,19 +333,16 @@ export function validateEventForm(form: EventFormData): ValidationErrors {
     if (!form.venueName.trim()) errors.venueName = 'Venue name is required for physical/hybrid events';
   }
 
-  // Validate tiers
   form.tiers.forEach((tier, idx) => {
     if (!tier.name.trim()) errors[`tier_${idx}_name`] = 'Tier name is required';
     if (!tier.price || tier.price < 0) errors[`tier_${idx}_price`] = 'Price must be 0 or greater';
     if (!tier.capacity || tier.capacity <= 0) errors[`tier_${idx}_capacity`] = 'Capacity must be greater than 0';
   });
 
-  // Validate speakers
   form.speakers.forEach((speaker, idx) => {
     if (!speaker.name.trim()) errors[`speaker_${idx}_name`] = 'Speaker name is required';
   });
 
-  // Validate agenda
   form.agenda.forEach((item, idx) => {
     if (!item.title.trim()) errors[`agenda_${idx}_title`] = 'Session title is required';
     if (!item.time.trim()) errors[`agenda_${idx}_time`] = 'Session time is required';

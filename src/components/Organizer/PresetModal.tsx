@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { X } from "lucide-react";
 
-// ─── Types ───────────────────────────────────────────────────────────────────
+
 
 interface PresetFormData {
   name: string;
@@ -78,7 +78,7 @@ const categories = [
   { value: "general", label: "General Admission" },
 ];
 
-// ── Component ────────────────────────────────────────────────────────────────
+
 
 const PresetModal = ({
   open,
@@ -93,7 +93,7 @@ const PresetModal = ({
   const [errors, setErrors] = useState<Record<string, string>>({});
   const modalRef = useRef<HTMLDivElement>(null);
 
-  // Populate form when preset changes (edit mode)
+
   useEffect(() => {
     if (isEdit && preset) {
       setForm({
@@ -116,7 +116,7 @@ const PresetModal = ({
     setErrors({});
   }, [isEdit, preset, open]);
 
-  // Close on Escape
+
   useEffect(() => {
     if (!open) return;
     const handleKey = (e: KeyboardEvent) => {
@@ -126,7 +126,7 @@ const PresetModal = ({
     return () => document.removeEventListener("keydown", handleKey);
   }, [open, onClose]);
 
-  // Prevent body scroll
+
   useEffect(() => {
     if (open) {
       document.body.style.overflow = "hidden";
@@ -191,18 +191,18 @@ const PresetModal = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      {/* Backdrop */}
+
       <div
         className="absolute inset-0 bg-black/60 backdrop-blur-sm"
         onClick={onClose}
       />
 
-      {/* Modal */}
+
       <div
         ref={modalRef}
         className="relative bg-[#131418] border border-secondary/15 rounded-xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto no-scrollbar"
       >
-        {/* Header */}
+
         <div className="sticky top-0 bg-[#131418] border-b border-secondary/10 px-6 py-4 flex items-center justify-between z-10">
           <h2 className="font-jakarta text-lg font-bold text-white">
             {isEdit ? "Edit Preset" : "Create New Preset"}
@@ -215,9 +215,9 @@ const PresetModal = ({
           </button>
         </div>
 
-        {/* Body */}
+
         <div className="px-6 py-5 space-y-4">
-          {/* Name */}
+
           <div>
             <label className="text-secondary/60 text-[10px] uppercase tracking-wider font-semibold block mb-1.5">
               Name <span className="text-primary">*</span>
@@ -236,7 +236,7 @@ const PresetModal = ({
             )}
           </div>
 
-          {/* Price + Capacity row */}
+
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="text-secondary/60 text-[10px] uppercase tracking-wider font-semibold block mb-1.5">
@@ -277,7 +277,7 @@ const PresetModal = ({
             </div>
           </div>
 
-          {/* Description */}
+
           <div>
             <label className="text-secondary/60 text-[10px] uppercase tracking-wider font-semibold block mb-1.5">
               Description
@@ -291,7 +291,7 @@ const PresetModal = ({
             />
           </div>
 
-          {/* Category */}
+
           <div>
             <label className="text-secondary/60 text-[10px] uppercase tracking-wider font-semibold block mb-1.5">
               Category
@@ -313,7 +313,7 @@ const PresetModal = ({
             </select>
           </div>
 
-          {/* Sales Dates */}
+
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="text-secondary/60 text-[10px] uppercase tracking-wider font-semibold block mb-1.5">
@@ -339,7 +339,7 @@ const PresetModal = ({
             </div>
           </div>
 
-          {/* Booking Fee */}
+
           <div>
             <label className="text-secondary/60 text-[10px] uppercase tracking-wider font-semibold block mb-1.5">
               Booking Fee ($)
@@ -355,9 +355,9 @@ const PresetModal = ({
             />
           </div>
 
-          {/* Toggles */}
+
           <div className="space-y-3 pt-2">
-            {/* Is Premium */}
+
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-white text-sm font-medium">Is Premium</p>
@@ -378,7 +378,7 @@ const PresetModal = ({
               </button>
             </div>
 
-            {/* Premium Description (conditional) */}
+
             {form.is_premium && (
               <div>
                 <label className="text-secondary/60 text-[10px] uppercase tracking-wider font-semibold block mb-1.5">
@@ -396,7 +396,7 @@ const PresetModal = ({
               </div>
             )}
 
-            {/* Is Primary */}
+
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-white text-sm font-medium">Is Primary</p>
@@ -417,7 +417,7 @@ const PresetModal = ({
               </button>
             </div>
 
-            {/* Is Active */}
+
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-white text-sm font-medium">Is Active</p>
@@ -454,7 +454,7 @@ const PresetModal = ({
           </div>
         </div>
 
-        {/* Footer */}
+
         <div className="sticky bottom-0 bg-[#131418] border-t border-secondary/10 px-6 py-4 flex gap-3">
           <button
             onClick={onClose}

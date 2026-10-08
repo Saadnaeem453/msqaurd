@@ -38,13 +38,11 @@ const VerifyEmail = () => {
 
     setSubmitting(false);
 
-    // Check if verification succeeded and we have token+user
     if (!result.ok || !result.token || !result.user) {
       setFormError(result.detail || "Verification failed. Please try again.");
       return;
     }
 
-    // ─── SUCCESS: extract token and user ──────────────────────────────
     const { token, user } = result;
     const isOrganizer = user.role === "organizer";
     const accountType = isOrganizer ? "organizer" : "attendee";
@@ -52,13 +50,10 @@ const VerifyEmail = () => {
       ? true
       : Boolean(user.onboarding_completed ?? false);
 
-    // Store all required data
     localStorage.setItem("token", token);
     localStorage.setItem("user", JSON.stringify(user));
     localStorage.setItem("accountType", accountType);
     localStorage.setItem("onboardingCompleted", String(onboardingCompleted));
-
-    // ─── Redirect based on role and onboarding ─────────────────────────
     if (isOrganizer) {
       navigate("/organizer", { replace: true });
     } else if (onboardingCompleted) {
@@ -86,7 +81,7 @@ const VerifyEmail = () => {
 
   return (
     <div className="min-h-screen bg-[#121317] text-white font-inter flex flex-col items-center justify-center p-4 md:p-6 relative overflow-hidden">
-      {/* Background blur effects – same as before */}
+
       <div className="absolute inset-0">
         <div className="absolute top-1/4 -left-20 w-72 h-72 bg-primary/20 rounded-full blur-3xl"></div>
         <div className="absolute bottom-1/3 -right-20 w-96 h-96 bg-primary/15 rounded-full blur-3xl"></div>
@@ -94,7 +89,7 @@ const VerifyEmail = () => {
         <div className="absolute bottom-0 left-1/3 w-64 h-64 bg-secondary/5 rounded-full blur-3xl"></div>
       </div>
 
-      {/* Main Container */}
+
       <div className="relative z-10 w-full max-w-[440px]">
         <div className="mb-8 text-center md:text-left">
           <h1 className="text-primary text-3xl font-bold font-inter tracking-tight">

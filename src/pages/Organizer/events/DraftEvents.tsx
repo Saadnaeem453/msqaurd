@@ -16,7 +16,7 @@ import {
 import { useEventList } from "../../../hooks/useEvents";
 import { Event } from "../../../services/event.service";
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
+
 
 function formatDateShort(dateStr: string): string {
   if (!dateStr) return "";
@@ -74,27 +74,27 @@ function getCompletionPercent(event: Event): number {
   let filled = 0;
   let total = 10;
 
-  // Basics (3)
+
   if (event.title?.trim()) filled++;
   if (event.category?.trim()) filled++;
   if (event.description?.trim()) filled++;
 
-  // Venue (4)
+
   if (event.event_date) filled++;
   if (event.start_time) filled++;
   if (event.end_time) filled++;
   if (event.venue_name?.trim()) filled++;
 
-  // Tickets (1)
+
   if ((event.tiers || []).length > 0) filled++;
 
-  // Design (1)
+
   if (event.hero_image) filled++;
 
-  // Speakers (1) — optional but counts
+
   if ((event.speakers || []).length > 0) filled++;
 
-  // Agenda (1) — optional but counts
+
   if ((event.agenda || []).length > 0) filled++;
 
   return Math.round((filled / total) * 100);
@@ -121,13 +121,13 @@ const categoryIcons: Record<string, React.ReactNode> = {
   art: <Mic size={18} className="text-red-400" />,
 };
 
-// ─── Component ───────────────────────────────────────────────────────────────
+
 
 const DraftEvents = () => {
   const navigate = useNavigate();
   const { events, loading, refetch } = useEventList({ status: "draft", limit: 50 });
 
-  // Sort: most recently updated first
+
   const sortedDrafts = useMemo(() => {
     return [...events].sort((a, b) => {
       const dateA = new Date(a.updated_at || a.created_at || 0).getTime();
@@ -136,7 +136,7 @@ const DraftEvents = () => {
     });
   }, [events]);
 
-  // Categorize drafts
+
   const drafts = useMemo(() => {
     return sortedDrafts.map((event) => {
       const completion = getCompletionPercent(event);
@@ -151,12 +151,12 @@ const DraftEvents = () => {
 
   const totalIncomplete = drafts.length;
 
-  // Top priority draft (highest completion)
+
   const topPriority = drafts.length > 0 ? drafts.reduce((max, d) => d.completion > max.completion ? d : max, drafts[0]) : null;
 
   return (
     <div className="max-w-[1500px] mx-auto px-4 md:px-6 py-6 space-y-8">
-      {/* Header */}
+
       <div className="flex items-start justify-between">
         <div>
           <h1 className="text-2xl font-bold text-white">Draft Events</h1>
@@ -197,7 +197,7 @@ const DraftEvents = () => {
         </div>
       ) : (
         <>
-          {/* Main draft cards — top 2 */}
+
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
             {drafts.slice(0, 2).map(({ event, completion, issues }) => (
               <DraftCard
@@ -209,7 +209,7 @@ const DraftEvents = () => {
             ))}
           </div>
 
-          {/* Smaller draft cards + Draft Health */}
+
           {drafts.length > 2 && (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {drafts.slice(2, 5).map(({ event, completion, issues }) => (
@@ -221,7 +221,7 @@ const DraftEvents = () => {
                 />
               ))}
 
-              {/* Draft Health Card */}
+
               <div className="bg-[#1a1c22] border border-secondary/10 rounded-xl p-5">
                 <p className="text-secondary/50 text-[10px] uppercase tracking-wider font-semibold mb-4">
                   Draft Health
@@ -253,7 +253,7 @@ const DraftEvents = () => {
   );
 };
 
-// ─── Large Draft Card ────────────────────────────────────────────────────────
+
 
 const DraftCard = ({
   event,
@@ -274,7 +274,7 @@ const DraftCard = ({
   return (
     <div className="bg-[#131418] border border-secondary/10 rounded-xl overflow-hidden hover:border-secondary/20 transition-colors">
       <div className="flex flex-col sm:flex-row">
-        {/* Hero / Image area */}
+
         <div className="relative sm:w-2/5 h-40 sm:h-auto bg-secondary/5 flex-shrink-0">
           {event.hero_image ? (
             <img
@@ -288,7 +288,7 @@ const DraftCard = ({
             </div>
           )}
 
-          {/* Completion badge */}
+
           <div className="absolute top-3 left-3">
             <span className="flex items-center gap-1 px-2.5 py-1 bg-black/60 backdrop-blur-sm text-white text-[10px] font-semibold rounded-full border border-white/10">
               <span className={`w-1.5 h-1.5 rounded-full ${completion >= 60 ? "bg-green-400" : "bg-yellow-400"}`} />
@@ -297,10 +297,10 @@ const DraftCard = ({
           </div>
         </div>
 
-        {/* Content */}
+
         <div className="flex-1 p-5 flex flex-col justify-between">
           <div>
-            {/* Status + Last edited */}
+
             <div className="flex items-start justify-between mb-2">
               <span className={`${statusColor} text-[10px] uppercase tracking-wider font-bold`}>
                 {statusLabel}
@@ -310,12 +310,12 @@ const DraftCard = ({
               </span>
             </div>
 
-            {/* Title */}
+
             <h3 className="text-white font-bold text-lg leading-tight mb-3">
               {event.title || "Untitled Event"}
             </h3>
 
-            {/* Info boxes */}
+
             <div className="grid grid-cols-2 gap-2 mb-3">
               <div className="bg-secondary/5 rounded-lg px-3 py-2">
                 <p className="text-secondary/50 text-[10px] uppercase tracking-wider">Venue</p>
@@ -331,7 +331,7 @@ const DraftCard = ({
               </div>
             </div>
 
-            {/* Issues */}
+
             {issues.length > 0 && issues.length <= 2 && (
               <p className="text-secondary/60 text-xs mb-3">
                 {issues.join(", ")}...
@@ -339,7 +339,7 @@ const DraftCard = ({
             )}
           </div>
 
-          {/* Bottom: avatars + action */}
+
           <div className="flex items-center justify-between">
             <div className="flex items-center -space-x-2">
               <div className="w-7 h-7 rounded-full bg-red-500/20 border-2 border-[#131418] flex items-center justify-center text-[10px] text-red-400 font-bold">
@@ -363,7 +363,7 @@ const DraftCard = ({
   );
 };
 
-// ─── Small Draft Card ────────────────────────────────────────────────────────
+
 
 const SmallDraftCard = ({
   event,
@@ -391,7 +391,7 @@ const SmallDraftCard = ({
         </div>
       </div>
 
-      {/* Status */}
+
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-1.5">
           {isReady ? (
@@ -419,7 +419,7 @@ const SmallDraftCard = ({
         </button>
       </div>
 
-      {/* Progress bar */}
+
       <div className="h-1 bg-secondary/10 rounded-full overflow-hidden">
         <div
           className={`h-full rounded-full transition-all ${

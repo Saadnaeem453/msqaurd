@@ -25,7 +25,7 @@ const ForgetPassword = () => {
         return;
       }
       setSuccessMessage("Reset code sent! Check your email.");
-      // Navigate after a short delay so user sees success message
+
       setTimeout(() => {
         navigate("/resetpassword", { state: { email } });
       }, 1500);
@@ -38,7 +38,7 @@ const ForgetPassword = () => {
 
   return (
     <div className="min-h-screen bg-[#121317] text-white font-inter flex flex-col items-center justify-center p-4 md:p-6 relative overflow-hidden">
-      {/* Background blur effects (same as Login/Signup) */}
+
       <div className="absolute inset-0">
         <div className="absolute top-1/4 -left-20 w-72 h-72 bg-primary/20 rounded-full blur-3xl"></div>
         <div className="absolute bottom-1/3 -right-20 w-96 h-96 bg-primary/15 rounded-full blur-3xl"></div>
@@ -46,16 +46,16 @@ const ForgetPassword = () => {
         <div className="absolute bottom-0 left-1/3 w-64 h-64 bg-secondary/5 rounded-full blur-3xl"></div>
       </div>
 
-      {/* Main Container */}
+
       <div className="relative z-10 w-full max-w-[440px]">
-        {/* MSQUARED Logo (optional, matches other pages) */}
+
         <div className="mb-8 text-center md:text-left">
           <h1 className="text-primary text-3xl font-bold font-inter tracking-tight">
             <Link to="/">MSQUARED</Link>
           </h1>
         </div>
 
-        {/* Form Card */}
+
         <div className="bg-black rounded-xl p-6 md:p-8">
           <h2 className="text-white text-3xl md:text-4xl font-bold leading-tight mb-1">
             Forgot Password?

@@ -53,7 +53,7 @@ const MapView = () => {
 
   return (
     <div className="h-[calc(100vh-140px)] flex overflow-hidden app-container-breakout">
-      {/* ── Map Area ───────────────────────────────────────── */}
+
       <div className="flex-1 relative bg-[#0d0e12]">
         <svg
           viewBox="0 0 100 100"
@@ -62,7 +62,7 @@ const MapView = () => {
         >
           <rect width="100" height="100" fill="#0d0e12" />
 
-          {/* Grid */}
+
           {[20, 40, 60, 80].map((v) => (
             <g key={`g-${v}`}>
               <line x1={v} y1="0" x2={v} y2="100" stroke="#1a1b20" strokeWidth="0.3" />
@@ -70,7 +70,7 @@ const MapView = () => {
             </g>
           ))}
 
-          {/* Roads */}
+
           <path d="M0 50 Q25 45 50 50 T100 50" stroke="#1e1f25" strokeWidth="2" fill="none" />
           <path d="M50 0 Q45 25 50 50 T50 100" stroke="#1e1f25" strokeWidth="2" fill="none" />
           <path d="M0 30 Q30 28 60 35 T100 30" stroke="#1a1b20" strokeWidth="1" fill="none" />
@@ -78,7 +78,7 @@ const MapView = () => {
           <path d="M20 0 Q22 30 25 50 T20 100" stroke="#1a1b20" strokeWidth="1" fill="none" />
           <path d="M80 0 Q78 40 75 60 T80 100" stroke="#1a1b20" strokeWidth="1" fill="none" />
 
-          {/* Thames */}
+
           <path
             d="M0 60 Q20 55 35 62 Q50 68 65 60 Q80 52 100 58"
             stroke="#1a2332"
@@ -87,12 +87,12 @@ const MapView = () => {
             opacity="0.6"
           />
 
-          {/* Parks */}
+
           <ellipse cx="30" cy="40" rx="8" ry="6" fill="#0f1a0f" opacity="0.5" />
           <ellipse cx="70" cy="30" rx="6" ry="5" fill="#0f1a0f" opacity="0.5" />
           <ellipse cx="55" cy="80" rx="10" ry="7" fill="#0f1a0f" opacity="0.5" />
 
-          {/* User pulse */}
+
           <circle cx="50" cy="50" r="8" fill="#ef4444" opacity="0.1">
             <animate attributeName="r" values="4;8;4" dur="2s" repeatCount="indefinite" />
             <animate attributeName="opacity" values="0.2;0.05;0.2" dur="2s" repeatCount="indefinite" />
@@ -100,7 +100,7 @@ const MapView = () => {
           <circle cx="50" cy="50" r="2" fill="#ef4444" />
           <circle cx="50" cy="50" r="1" fill="white" />
 
-          {/* Event markers */}
+
           {MOCK_EVENTS.map((event, i) => {
             const positions = [
               { x: 45, y: 35 },
@@ -131,9 +131,9 @@ const MapView = () => {
         </svg>
       </div>
 
-      {/* ── Events Sidebar (Right) ────────────────────────── */}
+
       <div className="w-72 md:w-80 bg-[#0d0e12] flex flex-col overflow-hidden border-l border-secondary/10">
-        {/* Header */}
+
         <div className="px-4 pt-4 pb-3 flex-shrink-0">
           <div className="flex items-center justify-between mb-1">
             <h2 className="text-white font-semibold text-base">In this area</h2>
@@ -144,7 +144,7 @@ const MapView = () => {
           <p className="text-secondary text-xs">London, Greater London</p>
         </div>
 
-        {/* Events list */}
+
         <div className="flex-1 overflow-y-auto no-scrollbar px-4 pb-4 space-y-3">
           {visibleEvents.map((event) => (
             <div
@@ -179,7 +179,7 @@ const MapView = () => {
           ))}
         </div>
 
-        {/* Load more */}
+
         {visibleCount < MOCK_EVENTS.length && (
           <div className="px-4 pb-4 flex-shrink-0">
             <button

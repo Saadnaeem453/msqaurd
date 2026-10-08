@@ -1,6 +1,5 @@
 import { api } from "../lib/api";
 
-// ─── Types ──────────────────────────────────────────────────────────────
 
 export interface EventTier {
   id?: string;
@@ -49,7 +48,7 @@ export interface EventAgenda {
   time: string;
   duration: string;
   title: string;
-  type: string; // Lecture, Workshop, Networking, Panel, Break
+  type: string;
   speaker_name?: string;
   speaker_id?: string;
   description?: string;
@@ -86,7 +85,6 @@ export interface Event {
   updated_at?: string;
   updatedAt?: string;
   published_at?: string | null;
-  // Nested associations
   tiers?: EventTier[];
   gallery?: EventGallery[];
   speakers?: EventSpeaker[];
@@ -126,7 +124,6 @@ export interface EventStatsResponse {
 
 export type EventStatus = 'draft' | 'published' | 'cancelled' | 'completed';
 
-// ─── Create/Update payload ─────────────────────────────────────────────
 
 export interface CreateEventPayload {
   organization_id?: string;
@@ -154,7 +151,7 @@ export interface CreateEventPayload {
 
 export type UpdateEventPayload = Partial<CreateEventPayload>;
 
-// ─── Service ────────────────────────────────────────────────────────────
+
 
 export const eventApi = {
   /**

@@ -234,7 +234,7 @@ const ReviewStep = ({ data, onSaveDraft, onPublish, isLoading }: Props) => {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      {/* Left — review accordions */}
+
       <div className="lg:col-span-2 space-y-3">
         {sections.map(({ id, label, icon: Icon, content }) => {
           const isOpen = expanded === id;
@@ -268,7 +268,7 @@ const ReviewStep = ({ data, onSaveDraft, onPublish, isLoading }: Props) => {
         })}
       </div>
 
-      {/* Right — readiness sidebar */}
+
       <div className="space-y-4">
         <div className="bg-[#131418] border border-secondary/10 rounded-xl p-5">
           <h3 className="text-white font-semibold mb-4">Readiness Check</h3>

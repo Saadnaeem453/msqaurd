@@ -14,7 +14,7 @@ import {
   ExternalLink,
 } from "lucide-react";
 
-// ── Types ───────────────────────────────────────────────────────────────────
+
 
 interface Payout {
   id: string;
@@ -25,7 +25,7 @@ interface Payout {
   status: "COMPLETED" | "IN PROGRESS" | "PENDING" | "FAILED";
 }
 
-// ── Mock Data ───────────────────────────────────────────────────────────────
+
 
 const allPayouts: Payout[] = [
   { id: "PYT-9283-001", date: "Oct 17, 2023", amount: 4250.0, destination: "HSBC", accountLast4: "8829", status: "COMPLETED" },
@@ -42,7 +42,7 @@ const allPayouts: Payout[] = [
   { id: "PYT-9283-012", date: "Aug 01, 2023", amount: 4100.0, destination: "HSBC", accountLast4: "8829", status: "PENDING" },
 ];
 
-// Generate more mock payouts
+
 const generateMockPayouts = (): Payout[] => {
   const payouts = [...allPayouts];
   const statuses: Payout["status"][] = ["COMPLETED", "COMPLETED", "COMPLETED", "COMPLETED", "IN PROGRESS", "COMPLETED"];
@@ -66,7 +66,7 @@ const generateMockPayouts = (): Payout[] => {
 
 const mockPayouts = generateMockPayouts();
 
-// ── Helpers ─────────────────────────────────────────────────────────────────
+
 
 function formatCurrency(amount: number): string {
   return new Intl.NumberFormat("en-GB", {
@@ -77,7 +77,7 @@ function formatCurrency(amount: number): string {
   }).format(amount);
 }
 
-// ── Schedule Option ─────────────────────────────────────────────────────────
+
 
 const ScheduleOption = ({
   icon: Icon,
@@ -122,7 +122,7 @@ const ScheduleOption = ({
   </button>
 );
 
-// ── Component ───────────────────────────────────────────────────────────────
+
 
 const PayoutsPage = () => {
   const [schedule, setSchedule] = useState<"Daily" | "Weekly" | "Monthly">("Weekly");
@@ -138,7 +138,7 @@ const PayoutsPage = () => {
   const showingFrom = (currentPage - 1) * perPage + 1;
   const showingTo = Math.min(currentPage * perPage, mockPayouts.length);
 
-  // Export CSV
+
   const handleExportCSV = useCallback(() => {
     const headers = ["Payout ID", "Date", "Amount", "Destination", "Account", "Status"];
     const rows = mockPayouts.map((p) => [
@@ -160,7 +160,7 @@ const PayoutsPage = () => {
 
   return (
     <div className="max-w-[1500px] mx-auto px-4 md:px-6 py-6 space-y-6">
-      {/* ── Header ─────────────────────────────────────────── */}
+
       <div className="flex items-start justify-between">
         <div>
           <h1 className="font-jakarta text-3xl font-bold text-white">Payouts</h1>
@@ -169,7 +169,7 @@ const PayoutsPage = () => {
           </p>
         </div>
 
-        {/* Security Badge */}
+
         <div className="flex items-center gap-2 px-4 py-2 bg-green-500/10 border border-green-500/20 rounded-lg">
           <ShieldCheck size={14} className="text-green-400" />
           <div>
@@ -179,11 +179,11 @@ const PayoutsPage = () => {
         </div>
       </div>
 
-      {/* ── Top Row: Available + Linked Account ─────────────── */}
+
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-5">
-        {/* Available for Payout */}
+
         <div className="lg:col-span-3 bg-[#131418] border border-secondary/10 rounded-xl p-6 relative overflow-hidden">
-          {/* Wallet icon background */}
+
           <div className="absolute top-6 right-6 opacity-10">
             <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" className="text-white">
               <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4" />
@@ -225,7 +225,7 @@ const PayoutsPage = () => {
           </button>
         </div>
 
-        {/* Linked Account */}
+
         <div className="lg:col-span-2 bg-[#131418] border border-secondary/10 rounded-xl p-6">
           <div className="flex items-center gap-2 mb-5">
             <Building2 size={16} className="text-secondary/60" />
@@ -234,7 +234,7 @@ const PayoutsPage = () => {
             </p>
           </div>
 
-          {/* Stripe Connect */}
+
           <div className="bg-secondary/5 rounded-xl p-4 mb-4 border border-secondary/10">
             <div className="flex items-center gap-3 mb-3">
               <div className="w-9 h-9 rounded-lg bg-[#635BFF] flex items-center justify-center flex-shrink-0">
@@ -264,9 +264,9 @@ const PayoutsPage = () => {
         </div>
       </div>
 
-      {/* ── Bottom Row: Schedule + Historical Payouts ───────── */}
+
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-5">
-        {/* Payout Schedule */}
+
         <div className="lg:col-span-2 bg-[#131418] border border-secondary/10 rounded-xl p-6">
           <p className="text-secondary/50 text-[10px] uppercase tracking-wider font-semibold mb-4">
             Payout Schedule
@@ -297,7 +297,7 @@ const PayoutsPage = () => {
             * Changes to settlement schedules may take up to 48 hours to reflect. High volume organizers may be eligible for custom cycles.
           </p>
 
-          {/* Support Card */}
+
           <div className="mt-5 pt-5 border-t border-secondary/10">
             <p className="text-white text-sm font-semibold mb-1">Need help with payouts?</p>
             <p className="text-secondary/50 text-xs leading-relaxed mb-3">
@@ -309,7 +309,7 @@ const PayoutsPage = () => {
           </div>
         </div>
 
-        {/* Historical Payouts */}
+
         <div className="lg:col-span-3 bg-[#131418] border border-secondary/10 rounded-xl p-6">
           <div className="flex items-center justify-between mb-5">
             <p className="text-secondary/50 text-[10px] uppercase tracking-wider font-semibold">
@@ -395,7 +395,7 @@ const PayoutsPage = () => {
             </table>
           </div>
 
-          {/* Pagination */}
+
           <div className="flex items-center justify-between mt-4 pt-3 border-t border-secondary/10">
             <p className="text-secondary/40 text-xs">
               Showing {showingFrom} of {mockPayouts.length} payouts

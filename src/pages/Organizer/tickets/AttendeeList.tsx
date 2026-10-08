@@ -2,7 +2,6 @@ import { useState, useMemo } from "react";
 import { Download, MessageSquare, Users, QrCode, Pencil } from "lucide-react";
 import Pagination from "../../../components/Pagination";
 
-// ── Types ───────────────────────────────────────────────────────────────────
 
 interface Attendee {
   id: string;
@@ -15,7 +14,6 @@ interface Attendee {
   status: "Checked In" | "Pending";
 }
 
-// ── Mock Data ──────────────────────────────────────────────────────────────
 
 const allAttendees: Attendee[] = [
   {
@@ -124,7 +122,6 @@ const ITEMS_PER_PAGE = 10;
 const TOTAL_ATTENDEES = 4281;
 const TOTAL_PAGES = Math.ceil(TOTAL_ATTENDEES / ITEMS_PER_PAGE);
 
-// ── Sub-components ──────────────────────────────────────────────────────────
 
 const StatCard = ({
   label,
@@ -198,7 +195,6 @@ const StatusDot = ({ status }: { status: string }) => (
   </span>
 );
 
-// ── Page Component ──────────────────────────────────────────────────────────
 
 const AttendeeList = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -214,7 +210,7 @@ const AttendeeList = () => {
 
   return (
     <div className="max-w-[1500px] mx-auto px-4 md:px-6 py-4 md:py-6 space-y-6">
-      {/* ─ Header ──────────────────────────────────────────── */}
+
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <h1 className="font-jakarta text-2xl md:text-3xl font-bold text-white">
@@ -235,7 +231,7 @@ const AttendeeList = () => {
         </div>
       </div>
 
-      {/* ── Stat Cards ─────────────────────────────────────── */}
+
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <StatCard
           label="TOTAL ATTENDEES"
@@ -275,9 +271,9 @@ const AttendeeList = () => {
         />
       </div>
 
-      {/* ── Attendee Table ─────────────────────────────────── */}
+
       <div className="bg-[#131418] border border-secondary/10 rounded-xl overflow-hidden">
-        {/* Table Header */}
+
         <div className="flex flex-wrap items-center justify-between gap-3 p-5 md:p-6 pb-4">
           <h2 className="font-jakarta text-lg font-bold text-white">
             Attendee Management
@@ -294,7 +290,7 @@ const AttendeeList = () => {
           </div>
         </div>
 
-        {/* Table */}
+
         <div className="overflow-x-auto">
           <table className="w-full min-w-[700px]">
             <thead>
@@ -370,7 +366,7 @@ const AttendeeList = () => {
           </table>
         </div>
 
-        {/* Pagination footer */}
+
         <div className="flex flex-wrap items-center justify-between gap-3 px-5 md:px-6 py-4 border-t border-secondary/10">
           <p className="text-secondary/50 text-[10px] uppercase tracking-wider font-semibold">
             Showing {(currentPage - 1) * ITEMS_PER_PAGE + 1}–

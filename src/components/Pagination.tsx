@@ -32,7 +32,7 @@ const Pagination: React.FC<PaginationProps> = ({
 
   return (
     <div className="flex items-center justify-center gap-2 mt-8">
-      {/* Previous */}
+
       <button
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1}
@@ -41,7 +41,7 @@ const Pagination: React.FC<PaginationProps> = ({
         <ChevronLeft size={16} />
       </button>
 
-      {/* Page numbers */}
+
       {pages.map((page, i) =>
         page === "ellipsis" ? (
           <span key={`e-${i}`} className="w-9 h-9 flex items-center justify-center text-secondary text-sm">
@@ -62,7 +62,7 @@ const Pagination: React.FC<PaginationProps> = ({
         )
       )}
 
-      {/* Next */}
+
       <button
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages}

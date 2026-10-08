@@ -24,7 +24,7 @@ const CustomDropdown = ({
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Close dropdown when clicking outside
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -44,7 +44,7 @@ const CustomDropdown = ({
 
   return (
     <div className="relative" ref={dropdownRef}>
-      {/* Trigger button */}
+
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
@@ -61,7 +61,7 @@ const CustomDropdown = ({
         />
       </button>
 
-      {/* Dropdown menu */}
+
       {isOpen && (
         <div className="absolute top-full left-0 right-0 mt-1 bg-[#0d0e12] border border-[#292a2b] rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto no-scrollbar">
           {options.map((option) => (

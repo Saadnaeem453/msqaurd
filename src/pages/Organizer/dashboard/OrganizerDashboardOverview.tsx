@@ -23,7 +23,7 @@ const OrganizerDashboardOverview = () => {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-white">Dashboard Overview</h1>
+        <h1 className="text-2xl font-jakarta font-bold text-white">Dashboard Overview</h1>
         <div className="relative">
           <button
             onClick={() => setShowDropdown(!showDropdown)}
@@ -50,7 +50,7 @@ const OrganizerDashboardOverview = () => {
         </div>
       </div>
 
-      {/* Stats Cards */}
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <StatCard
           label="Total Events"
@@ -73,7 +73,7 @@ const OrganizerDashboardOverview = () => {
         />
       </div>
 
-      {/* Error banner */}
+
       {statsError && (
         <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-3 flex items-start gap-2">
           <AlertCircle size={16} className="text-red-400 flex-shrink-0 mt-0.5" />
@@ -84,9 +84,9 @@ const OrganizerDashboardOverview = () => {
         </div>
       )}
 
-      {/* Upcoming Events & Quick Stats */}
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Upcoming Events */}
+
         <div className="bg-[#131418] border border-secondary/10 rounded-xl p-6">
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-lg font-semibold text-white">Upcoming Events</h3>
@@ -167,7 +167,7 @@ const OrganizerDashboardOverview = () => {
           </div>
         </div>
 
-        {/* Quick Stats */}
+
         <div className="bg-[#131418] border border-secondary/10 rounded-xl p-6">
           <h3 className="text-lg font-semibold text-white mb-4">Event Breakdown</h3>
           {statsLoading ? (
@@ -220,7 +220,7 @@ const OrganizerDashboardOverview = () => {
   );
 };
 
-// ─── Sub-components ──────────────────────────────────────────────────────────
+
 
 function StatCard({
   label,

@@ -21,9 +21,9 @@ const VenueStep = ({ data, updateData, errors = {} }: Props) => {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-      {/* Left column – 60% */}
+
       <div className="lg:col-span-3 space-y-6">
-        {/* Time & Date Section */}
+
         <div className="bg-[#121314] border border-[#292a2b] rounded-lg p-4">
           <h3 className="text-2xl font-jakarta font-semibold text-white mb-4">Time & Date</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -99,11 +99,11 @@ const VenueStep = ({ data, updateData, errors = {} }: Props) => {
           </div>
         </div>
 
-        {/* Venue Details Section */}
+
         <div className="bg-[#121314] border border-[#292a2b] rounded-lg p-4">
           <h3 className="text-lg font-semibold text-white mb-4">Venue Details</h3>
 
-          {/* Venue Type Toggle */}
+
           <div className="grid grid-cols-3 gap-2 mb-4">
             {venueTypes.map((type) => {
               const isSelected = data.venueType === type.value;
@@ -162,25 +162,25 @@ const VenueStep = ({ data, updateData, errors = {} }: Props) => {
         </div>
       </div>
 
-      {/* Right column – 40% */}
+
       <div className="lg:col-span-2 space-y-6">
-        {/* Venue Preview Card */}
+
         <div className="bg-[#121314] border border-[#292a2b] rounded-lg p-4">
           <h4 className="text-secondary text-[10px] uppercase tracking-[0.15em] font-semibold mb-3">
             VENUE PREVIEW
           </h4>
           <div className="bg-[#1a1b1e] rounded-lg overflow-hidden border border-[#292a2b]">
-            {/* Map SVG */}
+
             <svg
               viewBox="0 0 400 200"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
               className="w-full h-auto"
             >
-              {/* Background */}
+
               <rect width="400" height="200" fill="#2a2b2e" />
 
-              {/* Roads (simple grid) */}
+
               <path
                 d="M0 100 L400 100"
                 stroke="#3a3b3e"
@@ -216,17 +216,17 @@ const VenueStep = ({ data, updateData, errors = {} }: Props) => {
                 opacity="0.5"
               />
 
-              {/* Some building blocks */}
+
               <rect x="30" y="30" width="40" height="30" fill="#3a3b3e" rx="2" />
               <rect x="90" y="80" width="50" height="30" fill="#3a3b3e" rx="2" />
               <rect x="250" y="40" width="60" height="40" fill="#3a3b3e" rx="2" />
               <rect x="320" y="120" width="40" height="25" fill="#3a3b3e" rx="2" />
               <rect x="40" y="150" width="80" height="20" fill="#3a3b3e" rx="2" />
 
-              {/* Green area / park */}
+
               <rect x="150" y="120" width="50" height="40" fill="#2d4a2d" rx="4" opacity="0.6" />
 
-              {/* Red location pin */}
+
               <g transform="translate(210, 100)">
                 <path
                   d="M0 -20 C-12 -20 -20 -10 -20 0 C-20 12 0 30 0 30 C0 30 20 12 20 0 C20 -10 12 -20 0 -20Z"
@@ -235,7 +235,7 @@ const VenueStep = ({ data, updateData, errors = {} }: Props) => {
                 <circle cx="0" cy="-4" r="6" fill="white" />
               </g>
 
-              {/* Label */}
+
               <text
                 x="220"
                 y="120"
@@ -255,7 +255,7 @@ const VenueStep = ({ data, updateData, errors = {} }: Props) => {
           </div>
         </div>
 
-        {/* Organizer Tip */}
+
         <div className="bg-[#121314] border border-[#292a2b] rounded-lg p-4">
           <div className="flex items-start gap-3">
             <Lightbulb size={20} className="text-primary mt-0.5" />

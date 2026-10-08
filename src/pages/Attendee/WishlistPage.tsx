@@ -34,7 +34,7 @@ const WishlistPage = () => {
   const [wishlistEvents, setWishlistEvents] = useState<WishlistEvent[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Fetch wishlist from API
+
   useEffect(() => {
     const fetchWishlist = async () => {
       try {
@@ -84,12 +84,12 @@ const WishlistPage = () => {
 
   return (
     <div className="w-full py-8">
-      {/*  Breadcrumb ─────────────────────────────────── */}
+
       <div className="text-secondary text-sm mb-4">
         Dashboard &gt; Saved Events
       </div>
 
-      {/*  Header ─────────────────────────────────────── */}
+
       <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-8">
         <div>
           <h1 className="font-jakarta text-3xl md:text-4xl font-bold text-white mb-2">
@@ -125,7 +125,7 @@ const WishlistPage = () => {
         </div>
       </div>
 
-      {/* ─ Wishlist Items ─────────────────────────────── */}
+
       {loading ? (
         <div className="flex items-center justify-center py-20">
           <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
@@ -145,7 +145,7 @@ const WishlistPage = () => {
                 viewMode === "list" ? "flex" : ""
               }`}
             >
-              {/* Image */}
+
               <div className={`relative ${viewMode === "list" ? "w-48 flex-shrink-0" : ""}`}>
                 <img
                   src={event.image}
@@ -168,7 +168,7 @@ const WishlistPage = () => {
                 </button>
               </div>
 
-              {/* Content */}
+
               <div className="p-4 flex flex-col flex-1">
                 <h3 className="font-jakarta text-white text-lg font-semibold mb-2 line-clamp-1">
                   {event.title}
@@ -202,7 +202,7 @@ const WishlistPage = () => {
             </div>
           ))}
 
-          {/* Explore More Card */}
+
           {viewMode === "grid" && (
             <div className="border-2 border-dashed border-secondary/20 rounded-xl p-8 flex flex-col items-center justify-center text-center min-h-[320px]">
               <div className="w-12 h-12 rounded-full bg-secondary/10 flex items-center justify-center mb-3">
@@ -229,9 +229,9 @@ const WishlistPage = () => {
         </div>
       )}
 
-      {/* ─ Discover Events Section ────────────────────── */}
+
       <div className="mt-12 relative bg-[#131418] border border-secondary/10 rounded-2xl p-8 md:p-12 overflow-hidden">
-        {/* Gradient effect in top-right corner */}
+
         <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-secondary/20 via-secondary/5 to-transparent rounded-bl-full" />
 
         <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
@@ -254,7 +254,7 @@ const WishlistPage = () => {
             </button>
           </div>
 
-          {/* Decorative images */}
+
           <div className="hidden md:flex items-center gap-3">
             <div className="w-20 h-20 rounded-lg bg-secondary/20 border border-secondary/10 flex items-center justify-center">
               <Grid3x3 size={24} className="text-secondary/40" />

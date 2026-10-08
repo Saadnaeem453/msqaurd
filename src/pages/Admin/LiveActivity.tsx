@@ -1,46 +1,12 @@
-import { useState, useEffect } from "react";
-import {
-  Activity,
-  Shield,
-  ShoppingCart,
-  LogIn,
-  AlertCircle,
-  PlusCircle,
-  Edit3,
-  CheckCircle,
-  TrendingUp,
-  Users,
-} from "lucide-react";
-import {
-  BarChart,
-  Bar,
-  ResponsiveContainer,
-  Cell,
-} from "recharts";
-
-// ─── Chart Data (7 bars) ────────────────────────────────────────────────────
-
-const rpsData = [
-  { time: "1", value: 8 },
-  { time: "2", value: 12 },
-  { time: "3", value: 7 },
-  { time: "4", value: 15 },
-  { time: "5", value: 11 },
-  { time: "6", value: 9 },
-  { time: "7", value: 14 },
-];
-
-const maxRps = Math.max(...rpsData.map((d) => d.value));
-
-// ─── Transactions Data ───────────────────────────────────────────────────────
-
+import { useEffect, useState } from "react";
+import { ShieldHalf, ShoppingCart, UserCheck, OctagonAlert, PlusCircle, SquarePen, CircleCheck, Gauge, Users, Ticket } from "lucide-react";
 const transactionsData = [
   {
     id: "t1",
     icon: "cart" as const,
     description: "Alex M. bought 2 tickets",
     sub: "Cyberpunk Neon Festival 2024",
-    amount: "$162.00",
+    amount: "$142.00",
     time: "JUST NOW",
     timeHighlight: true,
   },
@@ -48,7 +14,7 @@ const transactionsData = [
     id: "t2",
     icon: "entry" as const,
     description: "User #8291 Checked In",
-    sub: "London Underground: Base Session",
+    sub: "London Underground: Bass Session",
     amount: "ENTRY",
     time: "1M AGO",
     timeHighlight: false,
@@ -72,8 +38,6 @@ const transactionsData = [
     timeHighlight: false,
   },
 ];
-
-// ─── Moderation Data ─────────────────────────────────────────────────────────
 
 const moderationData = [
   {
@@ -105,420 +69,156 @@ const moderationData = [
   },
 ];
 
-// ── Map scatter dots ───────────────────────────────────────────────────────
-
 const mapDots = [
-  { cx: 28, cy: 38 },
-  { cx: 42, cy: 30 },
-  { cx: 55, cy: 45 },
-  { cx: 70, cy: 35 },
-  { cx: 80, cy: 52 },
-  { cx: 35, cy: 55 },
-  { cx: 60, cy: 60 },
-  { cx: 75, cy: 42 },
-  { cx: 45, cy: 48 },
-  { cx: 65, cy: 28 },
+  { x: 20.4, y: 35.2 }, { x: 52.3, y: 30.3 },
+  { x: 75.3, y: 40.3 }, { x: 45.2, y: 55.5 },
+  { x: 15.4, y: 70 }, { x: 82.2, y: 65.5 },
 ];
 
-// ── Sub-Components ──────────────────────────────────────────────────────────
-
 const MapVisualization = () => (
-  <svg
-    viewBox="0 0 200 140"
-    className="w-full h-full"
-    preserveAspectRatio="xMidYMid meet"
-  >
-    <defs>
-      <radialGradient id="mapBg" cx="50%" cy="50%" r="55%">
-        <stop offset="0%" stopColor="#0a0f18" />
-        <stop offset="40%" stopColor="#0f1923" />
-        <stop offset="100%" stopColor="#1a2836" />
-      </radialGradient>
-    </defs>
-
-    {/* Background */}
-    <rect width="200" height="140" fill="url(#mapBg)" />
-
-    {/* Concentric rings — dim secondary color */}
-    {[25, 40, 55].map((r, i) => (
-      <circle
-        key={`ring-${i}`}
-        cx={120}
-        cy={60}
-        r={r}
-        fill="none"
-        stroke="#e9bcb6"
-        strokeWidth="0.3"
-        opacity={0.1 - i * 0.025}
-      />
+  <div aria-hidden="true" className="absolute inset-0 overflow-hidden bg-grayblue">
+    <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_65%_34%,var(--tw-gradient-from),var(--tw-gradient-to)_75%)] from-bgray/25 to-grayblue" />
+    {mapDots.map((dot, index) => (
+      <span key={index} className="absolute h-[3px] w-[3px] rounded-full bg-secondary/60" style={{ left: `${dot.x}%`, top: `${dot.y}%` }} />
     ))}
-
-    {/* Scattered activity dots — secondary color */}
-    {mapDots.map((dot, i) => (
-      <g key={i}>
-        <circle
-          cx={dot.cx}
-          cy={dot.cy}
-          r={3}
-          fill="#e9bcb6"
-          opacity="0.12"
-        >
-          <animate
-            attributeName="r"
-            values="2;4;2"
-            dur="3s"
-            begin={`${i * 0.4}s`}
-            repeatCount="indefinite"
-          />
-          <animate
-            attributeName="opacity"
-            values="0.15;0;0.15"
-            dur="3s"
-            begin={`${i * 0.4}s`}
-            repeatCount="indefinite"
-          />
-        </circle>
-        <circle cx={dot.cx} cy={dot.cy} r={1.2} fill="#e9bcb6" opacity="0.5" />
-      </g>
-    ))}
-  </svg>
+  </div>
 );
 
-// ── Main Page ───────────────────────────────────────────────────────────────
+const localTime = () => new Date().toLocaleTimeString("en-GB", { hour12: false });
 
 const LiveActivity = () => {
-  const [currentTime, setCurrentTime] = useState(() => {
-    const now = new Date();
-    return now.toLocaleTimeString("en-US", {
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-      hour12: false,
-    });
-  });
+  const [currentTime, setCurrentTime] = useState(localTime);
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      const now = new Date();
-      setCurrentTime(
-        now.toLocaleTimeString("en-US", {
-          hour: "2-digit",
-          minute: "2-digit",
-          second: "2-digit",
-          hour12: false,
-        })
-      );
-    }, 1000);
-    return () => clearInterval(timer);
+    const timer = window.setInterval(() => setCurrentTime(localTime()), 1000);
+    return () => window.clearInterval(timer);
   }, []);
 
   return (
-    <div className="p-4 md:p-6 lg:p-8 space-y-6 max-w-[1440px] mx-auto">
-      {/* ── Header ─────────────────────────────────────────── */}
-      <div className="flex flex-wrap items-start justify-between gap-4">
+    <div className="admin-page bg-grayblue text-bgray">
+      <header className="mb-[23px] flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="font-jakarta text-xl md:text-2xl font-bold text-white">
-            Live Activity Monitor
-          </h1>
-          <p className="text-secondary/60 text-sm mt-1">
-            Real-time ecosystem pulse and system performance metrics.
-          </p>
+          <h1 className="admin-page-title">Live Activity Monitor</h1>
+          <p className="admin-page-description">Real-time ecosystem pulse and system performance metrics.</p>
         </div>
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 bg-[#1e293b] border border-secondary/10 rounded-full px-4 py-2">
-            <span className="text-secondary/50 text-[10px] uppercase tracking-wider font-medium">
-              Uptime
-            </span>
-            <span className="text-white text-xs font-bold">99.998%</span>
+        <div className="flex items-center gap-2">
+          <div className="flex h-7 items-center gap-2 rounded-[3px] bg-lightgrayblue px-3">
+            <span className="text-[10px] font-bold uppercase tracking-[1px] text-secondary">Uptime</span>
+            <span className="text-[12px] text-secondary">99.998%</span>
           </div>
-          <div className="flex items-center gap-2 bg-[#1e293b] border border-secondary/10 rounded-full px-4 py-2">
-            <span className="text-secondary/50 text-[10px] uppercase tracking-wider font-medium">
-              Local Time
-            </span>
-            <span className="text-white text-xs font-bold font-mono">
-              {currentTime}
-            </span>
+          <div className="flex h-7 items-center gap-2 rounded-[3px] bg-lightgrayblue px-3">
+            <span className="text-[10px] font-bold uppercase tracking-[1px] text-secondary">Local Time</span>
+            <time className="text-[12px] tabular-nums">{currentTime}</time>
           </div>
         </div>
-      </div>
+      </header>
 
-      {/* ─ Top Row: Map + Stat Cards ──────────────────────── */}
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
-        {/* Live Attendance Map */}
-        <div className="lg:col-span-3 bg-[#131418] border border-secondary/10 rounded-xl p-4 md:p-5">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
-              <Activity size={16} className="text-secondary/60" />
-              <h3 className="text-secondary/80 text-sm font-bold font-jakarta">
-                Live Attendance Map
-              </h3>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-secondary/60 animate-pulse" />
-              <span className="text-secondary/50 text-[10px]">
-                Real-time geo-clustering active
-              </span>
-            </div>
-          </div>
-
-          {/* Map area */}
-          <div className="relative w-full h-56 md:h-72 lg:h-80 rounded-lg overflow-hidden">
-            <MapVisualization />
-
-            {/* Bottom-right stat overlays */}
-            <div className="absolute bottom-3 right-3 flex gap-2">
-              <div className="bg-[#1a2332]/90 border border-secondary/10 rounded-lg px-3 py-2 backdrop-blur-sm">
-                <p className="text-secondary/40 text-[8px] uppercase tracking-wider font-medium">
-                  Top Region
-                </p>
-                <p className="text-white text-xs font-bold font-jakarta">
-                  North America
-                </p>
-              </div>
-              <div className="bg-[#1a2332]/90 border border-secondary/10 rounded-lg px-3 py-2 backdrop-blur-sm">
-                <p className="text-secondary/40 text-[8px] uppercase tracking-wider font-medium">
-                  Active Clusters
-                </p>
-                <p className="text-white text-xs font-bold font-jakarta">
-                  1,242
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Right stat cards */}
-        <div className="lg:col-span-2 space-y-4">
-          {/* Requests Per Second */}
-          <div className="bg-[#131418] border border-secondary/10 rounded-xl p-4">
-            <div className="flex items-center justify-between mb-1">
-              <p className="text-secondary/80 text-[10px] uppercase tracking-wider font-semibold">
-                Requests Per Second
-              </p>
-              <TrendingUp size={14} className="text-secondary/40" />
-            </div>
-            <div className="flex items-baseline gap-2 mt-0.5">
-              <span className="text-2xl font-bold text-white font-jakarta">
-                12,841
-              </span>
-              <span className="text-secondary/70 text-xs font-semibold">
-                +4.2%
-              </span>
-            </div>
-            {/* Bar chart — 7 thick bars, dim primary for peak */}
-            <div className="h-12 mt-3">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={rpsData} barSize={22}>
-                  <Bar dataKey="value" radius={[3, 3, 0, 0]}>
-                    {rpsData.map((entry, index) => (
-                      <Cell
-                        key={`cell-${index}`}
-                        fill={
-                          entry.value === maxRps
-                            ? "rgba(229,10,21,0.35)"
-                            : "rgba(233,188,182,0.25)"
-                        }
-                      />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-
-          {/* Payment Success Rate */}
-          <div className="bg-[#131418] border border-secondary/10 rounded-xl p-4">
-            <div className="flex items-center justify-between mb-1">
-              <p className="text-secondary/80 text-[10px] uppercase tracking-wider font-semibold">
-                Payment Success Rate
-              </p>
-              <CheckCircle size={14} className="text-greenish" />
-            </div>
-            <div className="flex items-baseline gap-2 mt-0.5">
-              <span className="text-2xl font-bold text-white font-jakarta">
-                98.4%
-              </span>
-              <span className="text-secondary/70 text-xs">Stable</span>
-            </div>
-            {/* Progress bar */}
-            <div className="mt-3 h-2.5 rounded-full bg-secondary/10 overflow-hidden">
-              <div
-                className="h-full rounded-full bg-greenish transition-all"
-                style={{ width: "98.4%" }}
-              />
-            </div>
-          </div>
-
-          {/* Active Sessions */}
-          <div className="bg-[#131418] border border-secondary/10 rounded-xl p-4">
-            <div className="flex items-center justify-between mb-1">
-              <p className="text-secondary/80 text-[10px] uppercase tracking-wider font-semibold">
-                Active Sessions
-              </p>
-              <Users size={14} className="text-secondary/40" />
-            </div>
-            <span className="text-2xl font-bold text-white font-jakarta block mt-0.5">
-              142,009
-            </span>
-            <p className="text-secondary/50 text-[10px] mt-1.5">
-              Across 14 regions and 200+ organizations.
+      <div className="grid grid-cols-1 gap-3 min-[680px]:grid-cols-[minmax(0,2.05fr)_minmax(0,1fr)]">
+        <section aria-labelledby="attendance-heading" className="relative h-[310px] overflow-hidden rounded-[5px] border border-border_color/40">
+          <MapVisualization />
+          <div className="absolute left-3 top-[10px]">
+            <h2 id="attendance-heading" className="admin-section-title font-jakarta text-[16px] font-semibold leading-6">Live Attendance Map</h2>
+            <p className="mt-1 inline-flex items-center gap-[5px] bg-lightgrayblue/60 px-[6px] py-[2px] text-[10px] leading-4 text-secondary">
+              <span className="h-[6px] w-[6px] rounded-full bg-secondary" />Real-time geo-clustering active
             </p>
           </div>
+          <dl className="absolute bottom-3 right-3 flex gap-[6px]">
+            <div className="rounded-[3px] border border-bgray/5 bg-lightgrayblue px-2 py-[6px]">
+              <dt className="text-[10px] font-semibold uppercase leading-[14px] text-secondary">Top Region</dt>
+              <dd className="text-[12px] font-medium leading-[18px]">North America</dd>
+            </div>
+            <div className="rounded-[3px] border border-bgray/5 bg-lightgrayblue px-2 py-[6px]">
+              <dt className="text-[10px] font-semibold uppercase leading-[14px] text-secondary">Active Clusters</dt>
+              <dd className="text-[12px] font-medium leading-[18px]">1,242</dd>
+            </div>
+          </dl>
+        </section>
+
+        <div className="grid grid-cols-1 gap-3 min-[680px]:block">
+          <section aria-labelledby="requests-heading" className="min-h-[105px] rounded-md bg-lightgrayblue p-[15px]">
+            <div className="flex items-center justify-between gap-1">
+              <h2 id="requests-heading" className="admin-section-title font-jakarta text-[10px] font-medium uppercase leading-4 text-secondary">Requests Per Second</h2>
+              <Gauge aria-hidden="true" size={14} className="text-secondary" />
+            </div>
+            <p className="flex items-baseline gap-1 leading-[27px]"><span className="text-[20px] font-medium">12,841</span><span className="text-[12px] text-green">+4.2%</span></p>
+            <div role="img" aria-label="Requests per second over seven intervals" className="flex h-[29px] items-end gap-[3px]">
+              {[15, 22, 10, 25, 20, 29, 23].map((height, index) => <span key={index} className="flex-1 rounded-t-[1px] bg-secondary/10" style={{ height }} />)}
+            </div>
+          </section>
+          <section aria-labelledby="payment-heading" className="min-h-[83px] rounded-md bg-lightgrayblue p-[15px] min-[680px]:mt-3">
+            <div className="flex items-center justify-between gap-1">
+              <h2 id="payment-heading" className="admin-section-title font-jakarta text-[10px] font-medium uppercase leading-4 text-secondary">Payment Success Rate</h2>
+              <CircleCheck aria-hidden="true" size={14} className="text-green" />
+            </div>
+            <p className="flex items-baseline gap-1 leading-[27px]"><span className="text-[20px] font-medium">98.4%</span><span className="text-[12px] text-secondary">Stable</span></p>
+            <div role="progressbar" aria-label="Payment success rate" aria-valuemin={0} aria-valuemax={100} aria-valuenow={98.4} className="h-[5px] overflow-hidden rounded-full bg-green/10">
+              <div className="h-full w-[98.4%] bg-green" />
+            </div>
+          </section>
+          <section aria-labelledby="sessions-heading" className="min-h-[89px] rounded-md bg-lightgrayblue p-[15px] min-[680px]:mt-3">
+            <div className="flex items-center justify-between gap-1">
+              <h2 id="sessions-heading" className="admin-section-title font-jakarta text-[10px] font-medium uppercase leading-4 text-secondary">Active Sessions</h2>
+              <Users aria-hidden="true" size={14} className="text-secondary" />
+            </div>
+            <p className="text-[20px] font-medium leading-[27px]">142,009</p>
+            <p className="text-[10px] leading-[15px] text-secondary">Across 14 regions and 200+ organizations.</p>
+          </section>
         </div>
       </div>
 
-      {/*  Bottom Row: Transaction Feed + Moderation Queue ─ */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {/* Live Transaction Feed */}
-        <div className="bg-[#131418] border border-secondary/10 rounded-xl p-4 md:p-5">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
-              <ShoppingCart size={16} className="text-secondary/60" />
-              <h3 className="text-secondary/80 text-sm font-bold font-jakarta">
-                Live Transaction Feed
-              </h3>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-secondary/60 animate-pulse" />
-              <span className="text-secondary/60 text-[10px] font-bold uppercase tracking-wider">
-                Streaming Live
-              </span>
-            </div>
-          </div>
-
-          <div className="space-y-1">
+      <div className="mt-3 grid grid-cols-1 gap-3 min-[680px]:grid-cols-2">
+        <section aria-labelledby="transactions-heading" className="overflow-hidden rounded-[5px] bg-lightgrayblue">
+          <header className="flex min-h-11 flex-wrap items-center justify-between gap-2 bg-bgray/5 px-4 py-3">
+            <h2 id="transactions-heading" className="admin-section-title flex items-center gap-[6px] font-jakarta text-[16px] font-semibold leading-6"><Ticket aria-hidden="true" size={13} className="text-secondary" />Live Transaction Feed</h2>
+            <span className="text-[10px] uppercase text-secondary">Streaming Live</span>
+          </header>
+          <ul className="space-y-3 p-3">
             {transactionsData.map((tx) => (
-              <div
-                key={tx.id}
-                className="flex items-center gap-3 py-3 px-3 rounded-lg hover:bg-white/[0.02] transition-colors"
-              >
-                {/* Icon box */}
-                <div
-                  className={`w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 ${
-                    tx.icon === "cart"
-                      ? "bg-greenish/15"
-                      : "bg-secondary/10"
-                  }`}
-                >
-                  {tx.icon === "cart" ? (
-                    <ShoppingCart size={15} className="text-greenish" />
-                  ) : (
-                    <LogIn size={15} className="text-secondary/60" />
-                  )}
+              <li key={tx.id} className="flex min-h-[46px] items-center gap-3 rounded-[2px] bg-grayblue/40 px-2 py-[9px]">
+                <span className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-[9px] ${tx.icon === "cart" ? "bg-green/10 text-green" : "bg-secondary/10 text-secondary"}`}>
+                  {tx.icon === "cart" ? <ShoppingCart aria-hidden="true" size={16} /> : <UserCheck aria-hidden="true" size={16} />}
+                </span>
+                <div className="min-w-0 flex-1">
+                  <p className="text-[12px] font-medium leading-[17px]">{tx.description}</p>
+                  <p className="text-[11px] leading-4 text-secondary">{tx.sub}</p>
                 </div>
-
-                {/* Description */}
-                <div className="flex-1 min-w-0">
-                  <p className="text-white text-xs font-medium truncate">
-                    {tx.description}
-                  </p>
-                  <p className="text-secondary/40 text-[10px] truncate">
-                    {tx.sub}
-                  </p>
+                <div className="shrink-0 text-right">
+                  <p className={`text-[12px] leading-[17px] ${tx.icon === "entry" ? "text-green" : "text-secondary"}`}>{tx.amount}</p>
+                  <p className="text-[10px] leading-[14px] text-secondary">{tx.time}</p>
                 </div>
-
-                {/* Amount / Time — secondary color */}
-                <div className="text-right flex-shrink-0">
-                  <p className="text-secondary/70 text-xs font-bold">
-                    {tx.amount}
-                  </p>
-                  <p
-                    className={`text-[9px] font-bold tracking-wider ${
-                      tx.timeHighlight
-                        ? "text-white"
-                        : "text-secondary/50"
-                    }`}
-                  >
-                    {tx.time}
-                  </p>
-                </div>
-              </div>
+              </li>
             ))}
-          </div>
-        </div>
+          </ul>
+        </section>
 
-        {/* Moderation Queue */}
-        <div className="bg-[#131418] border border-secondary/10 rounded-xl p-4 md:p-5">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
-              <Shield size={16} className="text-secondary/60" />
-              <h3 className="text-secondary/80 text-sm font-bold font-jakarta">
-                Moderation Queue
-              </h3>
-            </div>
-            <span className="bg-secondary/10 text-secondary/70 text-[9px] font-bold uppercase tracking-wider px-2.5 py-1 rounded border border-secondary/20">
-              2 Pending Reports
-            </span>
-          </div>
-
-          <div className="space-y-1">
+        <section aria-labelledby="moderation-heading" className="overflow-hidden rounded-[5px] bg-lightgrayblue">
+          <header className="flex min-h-11 flex-wrap items-center justify-between gap-2 bg-bgray/5 px-4 py-3">
+            <h2 id="moderation-heading" className="admin-section-title flex items-center gap-[6px] font-jakarta text-[16px] font-semibold leading-6"><ShieldHalf aria-hidden="true" size={13} className="text-secondary" />Moderation Queue</h2>
+            <span className="rounded-[2px] bg-secondary/20 px-[6px] py-[2px] text-[10px] font-medium uppercase text-secondary">2 Pending Reports</span>
+          </header>
+          <ul className="space-y-3 p-3">
             {moderationData.map((item) => (
-              <div
-                key={item.id}
-                className={`py-3 px-3 rounded-lg hover:bg-white/[0.02] transition-colors ${
-                  item.id === "m1"
-                    ? "bg-secondary/[0.03] border-l-2 border-l-secondary/40"
-                    : ""
-                }`}
-              >
+              <li key={item.id} className={`rounded-[2px] bg-grayblue/40 px-[9px] py-[9px] ${item.priority ? "border-l-[3px] border-secondary" : ""}`}>
                 <div className="flex items-start gap-3">
-                  {/* Icon box */}
-                  <div
-                    className={`w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5 ${
-                      item.icon === "alert"
-                        ? "bg-secondary/15"
-                        : item.icon === "event"
-                        ? "bg-greenish/15"
-                        : "bg-secondary/10"
-                    }`}
-                  >
-                    {item.icon === "alert" ? (
-                      <AlertCircle size={15} className="text-secondary/70" />
-                    ) : item.icon === "event" ? (
-                      <PlusCircle size={15} className="text-greenish" />
-                    ) : (
-                      <Edit3 size={15} className="text-secondary/60" />
-                    )}
-                  </div>
-
-                  {/* Content */}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between mb-0.5">
-                      <p className="text-white text-xs font-medium">
-                        {item.title}
-                      </p>
-                      {item.priority && (
-                        <span className="text-secondary/70 text-[9px] font-bold uppercase tracking-wider">
-                          {item.priority}
-                        </span>
-                      )}
+                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[9px] bg-secondary/10 text-secondary">
+                    {item.icon === "alert" ? <OctagonAlert aria-hidden="true" size={15} /> : item.icon === "event" ? <PlusCircle aria-hidden="true" size={15} /> : <SquarePen aria-hidden="true" size={15} />}
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-start justify-between gap-2">
+                      <h3 className="font-jakarta text-[11px] font-bold leading-[18px]">{item.title}</h3>
+                      {item.priority && <span className="text-[10px] leading-[18px] text-secondary">{item.priority}</span>}
                     </div>
-                    <p className="text-secondary/50 text-[10px] leading-relaxed">
-                      {item.description}
-                    </p>
-
-                    {/* Action buttons */}
-                    {item.actions && (
-                      <div className="flex items-center gap-2 mt-2.5">
-                        <button className="px-3 py-1 bg-secondary/10 text-secondary/70 text-[10px] font-medium rounded border border-secondary/20 hover:bg-secondary/15 transition-colors">
-                          Review
-                        </button>
-                        <button className="px-3 py-1 bg-secondary/10 text-secondary/60 text-[10px] font-medium rounded border border-secondary/15 hover:bg-secondary/15 transition-colors">
-                          Dismiss
-                        </button>
-                      </div>
-                    )}
-                    {item.time && (
-                      <p className="text-secondary/30 text-[9px] mt-1.5">
-                        {item.time}
-                      </p>
-                    )}
+                    <p className="mt-[2px] text-[11px] leading-4 text-secondary">{item.description}</p>
+                    {item.actions && <div className="mt-2 flex gap-[5px]">
+                      {item.actions.map((action) => <button key={action} type="button" className="rounded-[2px] bg-bgray/10 px-[9px] py-[3px] text-[11px] leading-4 transition-colors hover:bg-bgray/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary">{action}</button>)}
+                    </div>}
+                    {item.time && <p className="mt-[6px] text-[10px] leading-[14px] text-secondary">{item.time}</p>}
                   </div>
                 </div>
-              </div>
+              </li>
             ))}
-          </div>
-        </div>
+          </ul>
+        </section>
       </div>
     </div>
   );

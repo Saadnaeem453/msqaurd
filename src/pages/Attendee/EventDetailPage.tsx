@@ -24,7 +24,7 @@ import {
 } from "../../services/attendee_events.service";
 import { wishlistApi } from "../../services/wishlist.service";
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+
 
 const formatDate = (dateStr: string, timeStr: string) => {
   try {
@@ -51,7 +51,7 @@ const EventDetailPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // ── Fetch event data ──────────────────────────────────────────
+
   useEffect(() => {
     if (!id) return;
     let cancelled = false;
@@ -65,7 +65,7 @@ const EventDetailPage = () => {
         if (cancelled) return;
         if (res.ok && res.data) {
           const data = res.data as any;
-          // api.get unwraps json.data, so res.data = the AttendeeEvent object
+
           setEvent(data.id ? data : data.data);
         } else {
           setError(res.detail || "Event not found");
@@ -84,7 +84,7 @@ const EventDetailPage = () => {
     };
   }, [id]);
 
-  // ── Fetch reviews ────────────────────────────────────────────
+
   useEffect(() => {
     if (!id || !event) return;
     let cancelled = false;
@@ -102,7 +102,7 @@ const EventDetailPage = () => {
         // Silent fail — reviews are non-critical
       });
 
-    // Check if current user has reviewed
+
     attendeeEventsApi
       .getMyReview(id)
       .then((res) => {
@@ -115,7 +115,7 @@ const EventDetailPage = () => {
         // Silent fail
       });
 
-    // Check if event is in wishlist
+
     wishlistApi
       .getWishlist()
       .then((res) => {
@@ -135,7 +135,7 @@ const EventDetailPage = () => {
     };
   }, [id, event]);
 
-  // ─── Actions ───────────────────────────────────────────────────
+
   const handleSaveEvent = async () => {
     if (!event?.id) return;
 
@@ -186,7 +186,7 @@ const EventDetailPage = () => {
     toast.success("Booking initiated! Redirecting to checkout...");
   };
 
-  // ─── Derived data ─────────────────────────────────────────────
+
   const primaryPrice = event?.tiers?.find((t) => t.is_primary)?.price;
   const priceLabel =
     primaryPrice === undefined || primaryPrice === null
@@ -205,7 +205,7 @@ const EventDetailPage = () => {
     event?.hero_image ||
     "https://images.unsplash.com/photo-1542816417-0983c9c9ad53?w=1200&h=700&fit=crop";
 
-  // ── Loading state ────────────────────────────────────────────
+
   if (loading) {
     return (
       <div className="w-full flex items-center justify-center min-h-[60vh]">
@@ -217,7 +217,7 @@ const EventDetailPage = () => {
     );
   }
 
-  // ─── Error state ──────────────────────────────────────────────
+
   if (error || !event) {
     return (
       <div className="w-full flex items-center justify-center min-h-[60vh]">
@@ -240,7 +240,7 @@ const EventDetailPage = () => {
 
   return (
     <div className="w-full">
-      {/* ─ Hero Image ────────────────────────────────────── */}
+
       <div className="relative app-container-breakout">
         <div className="relative h-[45vh] md:h-[55vh] overflow-hidden">
           <img
@@ -248,11 +248,11 @@ const EventDetailPage = () => {
             alt={event.title}
             className="w-full h-full object-cover"
           />
-          {/* Gradient overlay — grayish, blending into content */}
+
           <div className="absolute inset-0 bg-gradient-to-t from-[#0a0b0e] via-[#0a0b0e]/60 to-transparent" />
           <div className="absolute inset-0 bg-gradient-to-r from-[#0a0b0e]/40 to-transparent" />
 
-          {/* Back button */}
+
           <button
             onClick={() => navigate(-1)}
             className="absolute top-4 left-4 w-10 h-10 rounded-full bg-black/30 backdrop-blur flex items-center justify-center text-white hover:bg-black/50 transition-colors z-10"
@@ -262,10 +262,10 @@ const EventDetailPage = () => {
         </div>
       </div>
 
-      {/* ── Content (overlapping hero bottom) ─────────────── */}
+
       <div className="relative -mt-8">
         <div>
-          {/* Category badge */}
+
           <div className="flex items-center gap-2 mb-3">
             <span className="bg-primary/10 border border-primary/20 text-primary text-[11px] font-bold uppercase tracking-widest px-2.5 py-1 rounded">
               {event.category}
@@ -278,12 +278,12 @@ const EventDetailPage = () => {
             )}
           </div>
 
-          {/* Title */}
+
           <h1 className="text-3xl md:text-5xl font-bold text-white leading-tight mb-4">
             {event.title}
           </h1>
 
-          {/* Meta row */}
+
           <div className="flex flex-wrap items-center gap-4 md:gap-6 text-sm text-secondary/70 mb-8">
             <span className="flex items-center gap-1.5">
               <Calendar size={15} className="text-primary" />
@@ -302,11 +302,11 @@ const EventDetailPage = () => {
           </div>
         </div>
 
-        {/* ── Two-column layout ──────────────────────────── */}
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left column (2/3) */}
+
           <div className="lg:col-span-2 space-y-8">
-            {/* About the Event */}
+
             <section>
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-1 h-6 bg-primary rounded-full" />
@@ -317,7 +317,7 @@ const EventDetailPage = () => {
               </p>
             </section>
 
-            {/* Reviews Section */}
+
             <section>
               <div className="bg-[#131418] border border-secondary/10 rounded-xl p-6">
                 {reviews && reviews.total_reviews > 0 ? (
@@ -367,7 +367,7 @@ const EventDetailPage = () => {
               </div>
             </section>
 
-            {/* Lead Speaker */}
+
             {firstSpeaker && (
               <section>
                 <div className="flex items-center gap-3 mb-4">
@@ -391,7 +391,7 @@ const EventDetailPage = () => {
               </section>
             )}
 
-            {/* Event Schedule (from agenda) */}
+
             {event.agenda && event.agenda.length > 0 && (
               <section>
                 <div className="flex items-center gap-3 mb-4">
@@ -428,7 +428,7 @@ const EventDetailPage = () => {
               </section>
             )}
 
-            {/* Gallery */}
+
             {galleryImages.length > 0 && (
               <section>
                 <div className="flex items-center gap-3 mb-4">
@@ -452,7 +452,7 @@ const EventDetailPage = () => {
               </section>
             )}
 
-            {/* Video */}
+
             {event.video_url && (
               <section>
                 <div className="flex items-center gap-3 mb-4">
@@ -473,10 +473,10 @@ const EventDetailPage = () => {
             )}
           </div>
 
-          {/* Right column (1/3) — Booking panel */}
+
           <div className="lg:col-span-1">
             <div className="sticky top-6 space-y-4">
-              {/* Price card */}
+
               <div className="bg-[#131418] border border-secondary/10 rounded-xl p-5 space-y-4">
                 <div>
                   <p className="text-secondary/50 text-[11px] uppercase tracking-wider mb-1">
@@ -506,7 +506,7 @@ const EventDetailPage = () => {
                   Book Your Spot
                 </button>
 
-                {/* Save + Share */}
+
                 <div className="flex items-center gap-3">
                   <button
                     onClick={handleSaveEvent}
@@ -558,7 +558,7 @@ const EventDetailPage = () => {
                 </div>
               </div>
 
-              {/* Location */}
+
               {(event.venue_name || event.street_address) && (
                 <div className="bg-[#131418] border border-secondary/10 rounded-xl overflow-hidden">
                   <div className="px-5 py-3 border-b border-secondary/10">
@@ -567,7 +567,7 @@ const EventDetailPage = () => {
                     </p>
                   </div>
                   <div className="relative h-40 bg-[#1a1b20]">
-                    {/* Simple map placeholder */}
+
                     <svg viewBox="0 0 100 60" className="w-full h-full" preserveAspectRatio="xMidYMid slice">
                       <rect width="100" height="60" fill="#1a1b20" />
                       <path d="M0 30 Q25 25 50 30 T100 30" stroke="#252630" strokeWidth="1.5" fill="none" />

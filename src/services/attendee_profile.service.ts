@@ -1,7 +1,5 @@
 import { api } from "../lib/api";
 
-// ─── Types ──────────────────────────────────────────────────────────────────
-
 export interface AttendeeProfile {
   id: string;
   user_id: string;
@@ -43,28 +41,20 @@ export interface UpdateProfilePayload {
   [key: string]: unknown;
 }
 
-// ─── Service ────────────────────────────────────────────────────────────────
 
 export const attendeeProfileApi = {
-  /**
-   * Get current user's profile.
-   */
+
   get: () =>
     api.get<ProfileResponse>("/attendee/profile", {
       successMessage: false,
       errorMessage: true,
     }),
 
-  /**
-   * Update current user's profile (partial update).
-   * Supports both JSON and FormData (for file uploads).
-   */
+
   update: (data: UpdateProfilePayload) => {
-    // If profile_picture is a File, use FormData
     if (data.profile_picture instanceof File) {
       const formData = new FormData();
 
-      // Append text fields
       if (data.full_name) formData.append("full_name", data.full_name);
       if (data.bio) formData.append("bio", data.bio);
       if (data.interests) formData.append("interests", JSON.stringify(data.interests));
@@ -74,7 +64,6 @@ export const attendeeProfileApi = {
       if (data.marketing_emails !== undefined)
         formData.append("marketing_emails", String(data.marketing_emails));
 
-      // Append profile picture file
       formData.append("profile_picture", data.profile_picture);
 
       return api.put<ProfileResponse>("/attendee/profile", formData, {
@@ -84,7 +73,6 @@ export const attendeeProfileApi = {
       });
     }
 
-    // Otherwise, send as JSON
     const { profile_picture, ...jsonPayload } = data;
     return api.put<ProfileResponse>("/attendee/profile", jsonPayload, {
       loadingMessage: "Updating profile...",

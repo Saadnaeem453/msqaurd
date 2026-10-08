@@ -13,7 +13,6 @@ const AccountSettings = () => {
   const [saving, setSaving] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Form state
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
@@ -24,12 +23,10 @@ const AccountSettings = () => {
   const [language, setLanguage] = useState("en");
   const [timezone, setTimezone] = useState("Europe/London");
 
-  // Search state for timezone
   const [timezoneSearch, setTimezoneSearch] = useState("");
   const [showTimezoneDropdown, setShowTimezoneDropdown] = useState(false);
   const timezoneDropdownRef = useRef<HTMLDivElement>(null);
 
-  // Fetch settings on mount
   useEffect(() => {
     const fetchSettings = async () => {
       try {
@@ -55,7 +52,6 @@ const AccountSettings = () => {
     fetchSettings();
   }, []);
 
-  // Close dropdown on outside click
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (timezoneDropdownRef.current && !timezoneDropdownRef.current.contains(e.target as Node)) {
@@ -71,12 +67,10 @@ const AccountSettings = () => {
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      // Validate file size (max 5MB)
       if (file.size > 5 * 1024 * 1024) {
         toast.error("Image must be less than 5MB");
         return;
       }
-      // Validate file type
       if (!file.type.startsWith("image/")) {
         toast.error("Please select a valid image file (JPG, GIF or PNG)");
         return;
@@ -144,7 +138,6 @@ const AccountSettings = () => {
 
       if (res.ok) {
         const data = res.data as OrganizerSettings;
-        // Update avatar URL from response
         if (data.avatar_url) {
           setAvatarUrl(data.avatar_url);
         }
@@ -165,8 +158,7 @@ const AccountSettings = () => {
   };
 
   const handleDiscard = () => {
-    // Reset to original values (would need to store original values)
-    // For now, just show a toast
+
     toast.info("Changes discarded");
   };
 
@@ -183,7 +175,6 @@ const AccountSettings = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 md:px-8 py-6">
-      {/* Header */}
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-white">Account Settings</h1>
         <p className="text-secondary text-sm mt-1">
@@ -192,7 +183,6 @@ const AccountSettings = () => {
       </div>
 
       <div className="space-y-6">
-        {/* Profile Details */}
         <div className="bg-[#131418] border border-secondary/10 rounded-xl p-6">
           <div className="flex items-center gap-2 mb-6">
             <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
@@ -202,7 +192,6 @@ const AccountSettings = () => {
           </div>
 
           <div className="flex flex-col md:flex-row gap-6">
-            {/* Profile Picture */}
             <div className="flex-shrink-0">
               <div className="relative">
                 <div className="w-24 h-24 rounded-lg bg-secondary/10 overflow-hidden flex items-center justify-center">
@@ -216,7 +205,6 @@ const AccountSettings = () => {
                     <span className="text-secondary text-2xl">?</span>
                   )}
                 </div>
-                {/* Camera button */}
                 <button
                   onClick={() => fileInputRef.current?.click()}
                   className="absolute -bottom-2 -right-2 w-7 h-7 bg-primary rounded-full flex items-center justify-center hover:bg-primary/90 transition-colors"
@@ -245,7 +233,6 @@ const AccountSettings = () => {
               )}
             </div>
 
-            {/* Form Fields */}
             <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="text-secondary text-[10px] uppercase tracking-wider font-semibold block mb-2">
@@ -295,7 +282,6 @@ const AccountSettings = () => {
           </div>
         </div>
 
-        {/* Personal Bio */}
         <div className="bg-[#131418] border border-secondary/10 rounded-xl p-6">
           <div className="flex items-center gap-2 mb-6">
             <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
@@ -320,7 +306,6 @@ const AccountSettings = () => {
           </div>
         </div>
 
-        {/* Language & Region */}
         <div className="bg-[#131418] border border-secondary/10 rounded-xl p-6">
           <div className="flex items-center gap-2 mb-6">
             <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
@@ -395,7 +380,6 @@ const AccountSettings = () => {
           </div>
         </div>
 
-        {/* Action Buttons */}
         <div className="flex items-center justify-end gap-3 pt-4">
           <button
             onClick={handleDiscard}

@@ -20,13 +20,13 @@ import {
   ValidationErrors,
 } from "../../../utils/eventMapper";
 
-// Re-export so step components can import from here (backwards compatible)
+
 export type { EventFormData } from "../../../utils/eventMapper";
 
-// ─── Constants ───────────────────────────────────────────────────────────────
+
 
 const DRAFT_STORAGE_KEY = "msquard_event_draft";
-const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
+const MAX_FILE_SIZE = 5 * 1024 * 1024;
 const MAX_GALLERY_FILES = 10;
 
 const steps = [
@@ -48,7 +48,7 @@ interface CreateEventProps {
 const CreateEvent = ({ editEventId, initialData }: CreateEventProps = {}) => {
   const navigate = useNavigate();
 
-  // ─── Restore draft from localStorage (only for create mode) ──────
+
   const getInitialFormData = (): EventFormData => {
     if (initialData) return initialData;
     if (editEventId) return { ...initialFormData };
@@ -57,7 +57,7 @@ const CreateEvent = ({ editEventId, initialData }: CreateEventProps = {}) => {
       const saved = localStorage.getItem(DRAFT_STORAGE_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
-        // Merge with defaults so new fields don't break
+
         return { ...initialFormData, ...parsed };
       }
     } catch {
@@ -74,9 +74,9 @@ const CreateEvent = ({ editEventId, initialData }: CreateEventProps = {}) => {
   const { createEventWithFiles } = useCreateEventWithFiles();
   const { updateEventWithFiles } = useUpdateEventWithFiles();
 
-  // ─── Persist draft to localStorage (create mode only) ────────────
+
   useEffect(() => {
-    if (editEventId) return; // Don't persist edit mode drafts
+    if (editEventId) return;
 
     try {
       localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(formData));
@@ -94,7 +94,7 @@ const CreateEvent = ({ editEventId, initialData }: CreateEventProps = {}) => {
   const updateFormData = useCallback(
     (data: Partial<EventFormData>) => {
       setFormData((prev) => ({ ...prev, ...data }));
-      // Clear errors for updated fields
+
       setErrors((prev) => {
         const next = { ...prev };
         Object.keys(data).forEach((k) => delete next[k]);
@@ -104,28 +104,28 @@ const CreateEvent = ({ editEventId, initialData }: CreateEventProps = {}) => {
     []
   );
 
-  // ─── File validation ─────────────────────────────────────────────
+
   const validateFiles = (): string | null => {
-    // Hero image size
+
     if (formData.heroImage instanceof File) {
       if (formData.heroImage.size > MAX_FILE_SIZE) {
         return `Hero image "${formData.heroImage.name}" exceeds 5 MB limit.`;
       }
     }
 
-    // Gallery count
+
     if (formData.gallery.length > MAX_GALLERY_FILES) {
       return `Maximum ${MAX_GALLERY_FILES} gallery images allowed.`;
     }
 
-    // Gallery file sizes
+
     for (const file of formData.gallery) {
       if (file.size > MAX_FILE_SIZE) {
         return `Gallery image "${file.name}" exceeds 5 MB limit.`;
       }
     }
 
-    // Speaker photo sizes
+
     for (const speaker of formData.speakers) {
       if (speaker.photo instanceof File && speaker.photo.size > MAX_FILE_SIZE) {
         return `Speaker photo "${speaker.photo.name}" exceeds 5 MB limit.`;
@@ -138,13 +138,13 @@ const CreateEvent = ({ editEventId, initialData }: CreateEventProps = {}) => {
   const validateCurrentStep = (): boolean => {
     const stepErrors = validateEventForm(formData);
 
-    // Only show errors relevant to the current step
+
     const stepFields: Record<number, string[]> = {
       0: ["title", "category", "description"],
       1: ["eventDate", "startTime", "endTime", "venueName"],
-      2: [], // tiers are optional, validate individually if present
-      3: [], // design is optional
-      4: [], // speakers are optional
+      2: [],
+      3: [],
+      4: [],
       5: [], // review
     };
 
@@ -152,7 +152,7 @@ const CreateEvent = ({ editEventId, initialData }: CreateEventProps = {}) => {
     const relevantErrors: ValidationErrors = {};
 
     if (currentStep === 5) {
-      // On review, validate everything
+
       Object.assign(relevantErrors, stepErrors);
     } else {
       for (const field of relevantFields) {
@@ -182,7 +182,7 @@ const CreateEvent = ({ editEventId, initialData }: CreateEventProps = {}) => {
   };
 
   const handleSubmit = async (status: "draft" | "published") => {
-    // Full validation before submission
+
     const allErrors = validateEventForm(formData);
     if (Object.keys(allErrors).length > 0 && status === "published") {
       setErrors(allErrors);
@@ -190,7 +190,7 @@ const CreateEvent = ({ editEventId, initialData }: CreateEventProps = {}) => {
       return;
     }
 
-    // Validate file sizes
+
     const fileError = validateFiles();
     if (fileError) {
       toast.error(fileError);
@@ -200,7 +200,7 @@ const CreateEvent = ({ editEventId, initialData }: CreateEventProps = {}) => {
     setSubmitting(true);
 
     try {
-      // Build FormData (includes files + text fields)
+
       const fd = formToFormData(formData, status);
 
       let event;
@@ -226,7 +226,7 @@ const CreateEvent = ({ editEventId, initialData }: CreateEventProps = {}) => {
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : String(err);
 
-      // Handle file size error from API
+
       if (message.includes("File too large") || message.includes("5 MB")) {
         toast.error("One or more files exceed the 5 MB size limit. Please compress or use smaller images.");
       } else if (message.includes("gallery")) {
@@ -287,7 +287,7 @@ const CreateEvent = ({ editEventId, initialData }: CreateEventProps = {}) => {
 
   return (
     <div className="max-w-[1500px] mx-auto py-6">
-      {/* Header */}
+
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold text-white">
@@ -307,13 +307,13 @@ const CreateEvent = ({ editEventId, initialData }: CreateEventProps = {}) => {
         )}
       </div>
 
-      {/* Stepper */}
+
       <Stepper steps={steps} currentStep={currentStep} />
 
-      {/* Step content */}
+
       <div className="mt-8 p-6 md:p-8">{renderStep()}</div>
 
-      {/* Navigation buttons — publish/save live in Review step sidebar */}
+
       <div className="flex justify-between items-center mt-6">
         <button
           onClick={prevStep}

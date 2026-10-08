@@ -1,4 +1,4 @@
-// Comprehensive timezone list for dropdown selection
+
 
 export const TIMEZONES = [
   {

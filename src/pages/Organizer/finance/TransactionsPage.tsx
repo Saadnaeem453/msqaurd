@@ -14,7 +14,7 @@ import {
   X,
 } from "lucide-react";
 
-// ── Types ───────────────────────────────────────────────────────────────────
+
 
 interface Transaction {
   id: string;
@@ -31,7 +31,7 @@ interface Transaction {
   status: "Completed" | "Pending" | "Refunded" | "Failed";
 }
 
-// ── Mock Data ───────────────────────────────────────────────────────────────
+
 
 const allTransactions: Transaction[] = [
   {
@@ -176,7 +176,7 @@ const allTransactions: Transaction[] = [
   },
 ];
 
-// Generate more mock transactions for pagination demo
+
 const generateMockTransactions = (): Transaction[] => {
   const names = [
     { name: "Zaid Yousuf", email: "zaid@example.com", initials: "ZY", color: "bg-purple-500/20 text-purple-400" },
@@ -220,13 +220,13 @@ const generateMockTransactions = (): Transaction[] => {
 
 const mockTransactions = generateMockTransactions();
 
-// ─── Filter Options ──────────────────────────────────────────────────────────
+
 
 const dateFilters = ["Last 7 Days", "Last 30 Days", "Last 90 Days", "This Month", "Custom Range"];
 const eventFilters = ["All Events", "Youth Gala '23", "Lecture Series", "Community Run", "Tech Workshop", "Spiritual Summit"];
 const amountFilters = ["Any Amount", "Under $50", "$50 – $100", "$100 – $250", "$250+"];
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
+
 
 function formatCurrency(amount: number): string {
   return new Intl.NumberFormat("en-US", {
@@ -237,7 +237,7 @@ function formatCurrency(amount: number): string {
   }).format(amount);
 }
 
-// ─── Custom Dropdown ─────────────────────────────────────────────────────────
+
 
 const FilterDropdown = ({
   icon: Icon,
@@ -294,7 +294,7 @@ const FilterDropdown = ({
   );
 };
 
-// ─── Component ───────────────────────────────────────────────────────────────
+
 
 const TransactionsPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -306,16 +306,16 @@ const TransactionsPage = () => {
 
   const perPage = 25;
 
-  // Apply filters
+
   const filteredTransactions = useMemo(() => {
     let result = mockTransactions;
 
-    // Event filter
+
     if (eventFilter !== "All Events") {
       result = result.filter((t) => t.event === eventFilter);
     }
 
-    // Amount filter
+
     if (amountFilter === "Under $50") {
       result = result.filter((t) => t.amount < 50);
     } else if (amountFilter === "$50 – $100") {
@@ -326,7 +326,7 @@ const TransactionsPage = () => {
       result = result.filter((t) => t.amount >= 250);
     }
 
-    // Search
+
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
       result = result.filter(
@@ -350,13 +350,13 @@ const TransactionsPage = () => {
   const showingFrom = (currentPage - 1) * perPage + 1;
   const showingTo = Math.min(currentPage * perPage, filteredTransactions.length);
 
-  // Stats
+
   const totalVolume = filteredTransactions.length;
   const completedCount = filteredTransactions.filter((t) => t.status === "Completed").length;
   const successfulRate = totalVolume > 0 ? ((completedCount / totalVolume) * 100).toFixed(1) : "0.0";
   const grossRevenue = filteredTransactions.reduce((sum, t) => sum + t.amount, 0);
 
-  // Export CSV
+
   const handleExportCSV = useCallback(() => {
     const headers = ["Order ID", "Date", "Time", "Attendee", "Email", "Event", "Amount", "Method", "Status"];
     const rows = filteredTransactions.map((t) => [
@@ -380,7 +380,7 @@ const TransactionsPage = () => {
     URL.revokeObjectURL(link.href);
   }, [filteredTransactions, dateFilter]);
 
-  // Pagination range
+
   const getPaginationRange = (): (number | "...")[] => {
     const range: (number | "...")[] = [];
     if (totalPages <= 7) {
@@ -399,7 +399,7 @@ const TransactionsPage = () => {
 
   return (
     <div className="max-w-[1500px] mx-auto px-4 md:px-6 py-6 space-y-6">
-      {/* ── Breadcrumb ─────────────────────────────────────── */}
+
       <div className="flex items-center gap-2 text-sm">
         <Link to="/organizer/finance/revenue" className="text-secondary hover:text-white transition-colors">
           Finance
@@ -408,7 +408,7 @@ const TransactionsPage = () => {
         <span className="text-primary font-medium">Transactions</span>
       </div>
 
-      {/* ── Header ─────────────────────────────────────────── */}
+
       <div className="flex items-start justify-between">
         <div>
           <h1 className="font-jakarta text-3xl font-bold text-white">Transaction History</h1>
@@ -421,9 +421,9 @@ const TransactionsPage = () => {
         </button>
       </div>
 
-      {/* ─ Stat Cards ─────────────────────────────────────── */}
+
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Total Volume */}
+
         <div className="bg-[#131418] border border-secondary/10 rounded-xl p-5 relative overflow-hidden">
           <div className="absolute top-4 right-4 opacity-10">
             <BarChart3 size={48} className="text-white" />
@@ -437,7 +437,7 @@ const TransactionsPage = () => {
           </div>
         </div>
 
-        {/* Successful Rate */}
+
         <div className="bg-[#131418] border border-secondary/10 rounded-xl p-5 relative overflow-hidden">
           <div className="absolute top-4 right-4 opacity-10">
             <CheckCircle2 size={48} className="text-white" />
@@ -452,7 +452,7 @@ const TransactionsPage = () => {
           </div>
         </div>
 
-        {/* Gross Revenue */}
+
         <div className="bg-[#131418] border border-secondary/10 rounded-xl p-5 relative overflow-hidden">
           <div className="absolute top-4 right-4 opacity-10">
             <CreditCard size={48} className="text-white" />
@@ -464,7 +464,7 @@ const TransactionsPage = () => {
           </div>
         </div>
 
-        {/* Active Events */}
+
         <div className="bg-[#131418] border border-secondary/10 rounded-xl p-5 relative overflow-hidden">
           <div className="absolute top-4 right-4 opacity-10">
             <Megaphone size={48} className="text-white" />
@@ -480,7 +480,7 @@ const TransactionsPage = () => {
         </div>
       </div>
 
-      {/* ── Filters ────────────────────────────────────────── */}
+
       <div className="flex flex-wrap items-center gap-3">
         <FilterDropdown
           icon={Calendar}
@@ -504,7 +504,7 @@ const TransactionsPage = () => {
           onChange={setAmountFilter}
         />
 
-        {/* Search */}
+
         {showSearch ? (
           <div className="flex items-center gap-1 bg-[#131418] border border-secondary/15 rounded-lg px-3 py-2">
             <Search size={14} className="text-secondary" />
@@ -538,13 +538,13 @@ const TransactionsPage = () => {
           </button>
         )}
 
-        {/* Count */}
+
         <span className="text-secondary/40 text-xs ml-auto">
           Showing {showingFrom} of {filteredTransactions.length.toLocaleString()} Transactions
         </span>
       </div>
 
-      {/* ── Table ──────────────────────────────────────────── */}
+
       <div className="bg-[#131418] border border-secondary/10 rounded-xl overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
@@ -584,18 +584,18 @@ const TransactionsPage = () => {
                     idx % 2 === 1 ? "bg-white/[0.01]" : ""
                   }`}
                 >
-                  {/* Order ID */}
+
                   <td className="py-4 px-5 text-white text-sm font-mono font-medium">
                     {tx.id}
                   </td>
 
-                  {/* Date & Time */}
+
                   <td className="py-4 text-secondary px-4">
                     <p className="text-white text-sm">{tx.date}</p>
                     <p className="text-xs">{tx.time}</p>
                   </td>
 
-                  {/* Attendee */}
+
                   <td className="py-4 px-4">
                     <div className="flex items-center gap-2.5">
                       <div
@@ -610,7 +610,7 @@ const TransactionsPage = () => {
                     </div>
                   </td>
 
-                  {/* Event */}
+
                   <td className="py-4 px-4">
                     {tx.eventBadge === "red" ? (
                       <span className="inline-flex items-center px-2.5 py-1 bg-red-500/10 border border-red-500/20 rounded text-[10px] font-bold text-red-400 uppercase tracking-wider">
@@ -623,12 +623,12 @@ const TransactionsPage = () => {
                     )}
                   </td>
 
-                  {/* Amount */}
+
                   <td className="py-4 px-4 text-right text-white text-sm font-bold">
                     {formatCurrency(tx.amount)}
                   </td>
 
-                  {/* Method */}
+
                   <td className="py-4 px-4">
                     <div className="flex items-center gap-1.5 text-secondary text-sm">
                       <CreditCard size={12} />
@@ -636,7 +636,7 @@ const TransactionsPage = () => {
                     </div>
                   </td>
 
-                  {/* Status */}
+
                   <td className="py-4 px-4">
                     <span className="flex items-center gap-1.5 text-sm font-medium">
                       <span
@@ -666,7 +666,7 @@ const TransactionsPage = () => {
                     </span>
                   </td>
 
-                  {/* Actions */}
+
                   <td className="py-4 px-4">
                     <button className="text-secondary/40 hover:text-white transition-colors">
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -682,7 +682,7 @@ const TransactionsPage = () => {
           </table>
         </div>
 
-        {/* ── Pagination ─────────────────────────────────────── */}
+
         <div className="flex items-center justify-between px-5 py-4 border-t border-secondary/10">
           <p className="text-secondary/50 text-sm">
             Page {currentPage} of {totalPages}

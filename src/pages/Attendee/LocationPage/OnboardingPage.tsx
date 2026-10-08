@@ -1,10 +1,10 @@
-// pages/OnboardingPage/OnboardingPage.tsx
+
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { onboardingApi, OnboardingSubmitData } from '../../../services/onboarding_service';
 
-// --- Step 2 Icons ---
+
 import islamicimg from '/onboarding_icons/islamic.svg';
 import sportsimg from '/onboarding_icons/sports.svg';
 import artimg from '/onboarding_icons/arts.svg';
@@ -12,11 +12,11 @@ import socialimg from '/onboarding_icons/socials.svg';
 import networkingimg from '/onboarding_icons/networking.svg';
 import charityimg from '/onboarding_icons/charity.svg';
 
-// --- Step 3 Image ---
+
 import ummaImage from '/onboarding_icons/umma.png';
 import CompletionPage from './CompletionPage';
 
-// --- Categories (same as before) ---
+
 const categories = [
   'Islamic Talks',
   'Sports',
@@ -35,7 +35,7 @@ const categoryIcons: Record<string, string> = {
   'Arts & Culture': artimg,
 };
 
-// --- Map category name ↔ id (backend expects ids like 'islamic_talks') ---
+
 const categoryIdMap: Record<string, string> = {
   'Islamic Talks': 'islamic_talks',
   Sports: 'sports',
@@ -52,7 +52,7 @@ Object.entries(categoryIdMap).forEach(([name, id]) => {
 const OnboardingPage = () => {
   const navigate = useNavigate();
 
-  // --- State ---
+
   const [step, setStep] = useState(1);
   const [locationInput, setLocationInput] = useState('');
   const [mapLat, setMapLat] = useState(51.505);
@@ -63,14 +63,14 @@ const OnboardingPage = () => {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [ageGroup, setAgeGroup] = useState('');
   const [gender, setGender] = useState('');
-  const [dob, setDob] = useState(''); // optional
+  const [dob, setDob] = useState('');
 
-  // --- Get user info from localStorage ---
+
   const storedUser = localStorage.getItem('user');
   const user = storedUser ? JSON.parse(storedUser) : null;
   const fullName = user?.full_name || 'User';
 
-  // --- Fetch current step on mount ---
+
   useEffect(() => {
     const fetchStep = async () => {
       try {
@@ -101,7 +101,7 @@ const OnboardingPage = () => {
 
         setStep(currentStep);
 
-        // Pre‑fill based on step
+
         if (currentStep === 1) {
           const stepData = stepPayload?.data ?? stepPayload ?? {};
           if (stepData.city) setLocationInput(stepData.city);
@@ -134,7 +134,7 @@ const OnboardingPage = () => {
     fetchStep();
   }, [navigate]);
 
-  // ---------- Step 1: Map functions (unchanged) ----------
+
   const getMapSrc = (lat: number, lng: number, z: number) => {
     const offset = 0.05 / (z / 14);
     return `https://www.openstreetmap.org/export/embed.html?bbox=${lng - offset}%2C${lat - offset}%2C${lng + offset}%2C${lat + offset}&layer=mapnik&marker=${lat}%2C${lng}`;
@@ -152,7 +152,7 @@ const OnboardingPage = () => {
         setMapLat(parseFloat(lat));
         setMapLng(parseFloat(lon));
         setZoom(14);
-        setLocationInput(query.trim()); // keep user-friendly text
+        setLocationInput(query.trim());
       } else {
         alert('Location not found. Please try again.');
       }
@@ -190,14 +190,14 @@ const OnboardingPage = () => {
     if (e.key === 'Enter') geocodeLocation(locationInput);
   };
 
-  // ---------- Step 2 ----------
+
   const toggleCategory = (category: string) => {
     setSelectedCategories((prev) =>
       prev.includes(category) ? prev.filter((c) => c !== category) : [...prev, category]
     );
   };
 
-  // ---------- Final submit ----------
+
   const handleFinalize = async () => {
     const payload: OnboardingSubmitData = {
       city: locationInput,
@@ -223,7 +223,7 @@ const OnboardingPage = () => {
     }
   };
 
-  // ---------- Navigation ----------
+
   const goToNextStep = () => {
     if (step === 3) {
       handleFinalize();
@@ -234,7 +234,7 @@ const OnboardingPage = () => {
 
   const goToPrevStep = () => setStep(step - 1);
 
-  // ---------- Shared UI ----------
+
   const currentYear = new Date().getFullYear();
 
   const TopBar = () => (
@@ -265,7 +265,7 @@ const OnboardingPage = () => {
     </footer>
   );
 
-  // ---------- Step 1 (modified: use goToNextStep) ----------
+
   const Step1 = () => (
     <div className="flex-1 flex flex-col lg:flex-row max-w-7xl mx-auto w-full px-4 py-8 lg:py-12 gap-8 lg:gap-12">
       <div className="lg:w-1/2 flex flex-col justify-center">
@@ -346,7 +346,7 @@ const OnboardingPage = () => {
     </div>
   );
 
-  // ---------- Step 2 (use goToNextStep) ----------
+
   const Step2 = () => (
     <div className="flex-1 flex items-center justify-center px-4 py-8">
       <div className="w-full max-w-3xl">
@@ -395,7 +395,7 @@ const OnboardingPage = () => {
     </div>
   );
 
-  // ---------- Step 3 (use goToNextStep and goToPrevStep) ----------
+
   const Step3 = () => (
     <div className="flex-1 flex items-center justify-center px-4 py-8">
       <div className="w-full max-w-4xl">
@@ -514,7 +514,7 @@ const OnboardingPage = () => {
     </div>
   );
 
-  // ---------- Render ----------
+
   if (fetching) {
     return (
       <div className="min-h-screen bg-[#121317] flex items-center justify-center text-white">

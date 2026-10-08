@@ -1,4 +1,4 @@
-// pages/Forget Password/ResetPassword.tsx
+
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import secureimg from '/secure.svg';
@@ -31,8 +31,8 @@ const ResetPassword = () => {
         return;
       }
       setSuccess(true);
-      // Navigate to new password page after a short delay
-   
+
+
     } catch (err: any) {
       setError(err.message || 'An unexpected error occurred.');
     } finally {
@@ -44,7 +44,7 @@ const ResetPassword = () => {
 
   return (
     <div className="min-h-screen bg-[#121317] text-white font-inter flex flex-col">
-      {/* Top Bar - MSQUARED left, Question icon right */}
+
       <div className="w-full max-w-7xl mx-auto px-4 py-6 flex justify-between items-center">
         <h1 className="text-primary text-xl font-jakrata md:text-2xl font-bold font-inter tracking-tight">
           <Link to="/">MSQUARED</Link>
@@ -57,10 +57,10 @@ const ResetPassword = () => {
         </div>
       </div>
 
-      {/* Main Content - Centered */}
+
       <div className="flex-1 flex items-center justify-center px-4 py-8">
         <div className="w-full max-w-[440px]">
-          {/* Form Container */}
+
           <div className="bg-black border border-border_color rounded-xl p-6 md:p-8 py-10">
             <h2 className="text-white text-2xl md:text-3xl font-bold leading-tight mb-2">
               Reset Your Password
@@ -104,7 +104,7 @@ const ResetPassword = () => {
               </button>
             </form>
 
-            {/* Centered text under button */}
+
             <div className="mt-16 text-secondary/60 text-sm text-center space-y-2">
               <p className="flex items-center justify-center gap-2 mb-4">
                 <span className="text-primary">•</span>
@@ -117,7 +117,7 @@ const ResetPassword = () => {
             </div>
           </div>
 
-          {/* Secure Access & Need Help - Row below form */}
+
           <div className="grid grid-cols-2 gap-4 mt-6">
             <div className="bg-black rounded-xl p-4 border border-secondary/20 flex items-center gap-3">
               <div className="bg-white/10 p-2.5 rounded-xl flex items-center justify-center">
@@ -141,7 +141,7 @@ const ResetPassword = () => {
         </div>
       </div>
 
-      {/* Footer - Full width, same as login */}
+
       <footer className="border-t border-secondary/10 bg-[#121317] py-6 px-4 text-xs flex flex-col md:flex-row justify-between items-center gap-4 w-full mx-auto">
         <div className="flex flex-col items-center md:items-start gap-1">
           <span className="text-white font-medium"><Link to="/">MSQUARED</Link></span>

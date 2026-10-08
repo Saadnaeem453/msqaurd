@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import {
   Users,
   Signal,
@@ -15,58 +15,17 @@ import {
   ChevronsRight,
   List,
   LayoutGrid,
+  X,
+  Save,
 } from "lucide-react";
+import {
+  adminApi,
+  AdminUser,
+  AdminUserRole,
+  AdminUsersPagination,
+} from "../../services/admin_service";
 
-// ─── Types ───────────────────────────────────────────────────────────────────
-
-type UserRole = "ADMIN" | "ORGANIZER" | "ATTENDEE";
 type UserStatus = "ACTIVE" | "PENDING" | "SUSPENDED";
-
-interface User {
-  id: string;
-  userId: string;
-  name: string;
-  email: string;
-  role: UserRole;
-  status: UserStatus;
-  joinedDate: string;
-  active: boolean;
-}
-
-// ─── Mock Data ───────────────────────────────────────────────────────────────
-
-const generateUsers = (): User[] => {
-  const firstNames = ["Felix", "Sarah", "Marco", "Elena", "Ahmad", "Fatima", "Omar", "Aisha", "Hassan", "Maryam", "Yusuf", "Zainab", "Ibrahim", "Khadija", "Ali", "Safiya"];
-  const lastNames = ["Vought", "Jennings", "Belmonte", "Rodriguez", "Khan", "Al-Rashid", "Hassan", "Ibrahim", "Omar", "Siddiqui", "Farooq", "Nakamura", "Chen", "Patel", "Singh", "Williams"];
-  const roles: UserRole[] = ["ADMIN", "ORGANIZER", "ATTENDEE", "ATTENDEE", "ATTENDEE", "ORGANIZER", "ATTENDEE", "ATTENDEE"];
-  const statuses: UserStatus[] = ["ACTIVE", "ACTIVE", "ACTIVE", "PENDING", "SUSPENDED", "ACTIVE", "ACTIVE", "ACTIVE"];
-  const domains = ["msquared.io", "isoc.net", "gmail.com", "outlook.com", "yahoo.com", "proton.me"];
-
-  const users: User[] = [];
-  for (let i = 0; i < 250; i++) {
-    const firstName = firstNames[i % firstNames.length];
-    const lastName = lastNames[i % lastNames.length];
-    const role = roles[i % roles.length];
-    const status = statuses[i % statuses.length];
-    const domain = domains[i % domains.length];
-
-    users.push({
-      id: `user-${i + 1}`,
-      userId: `#USR-${String(1000 + i).padStart(4, "0")}`,
-      name: `${firstName} ${lastName}`,
-      email: `${firstName.toLowerCase()}.${lastName.toLowerCase()}@${domain}`,
-      role,
-      status,
-      joinedDate: new Date(2023, i % 12, (i % 28) + 1).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
-      active: status === "ACTIVE",
-    });
-  }
-  return users;
-};
-
-const allUsers = generateUsers();
-
-// ─── Helpers ─────────────────────────────────────────────────────────────────
 
 const statusColor = (status: UserStatus) => {
   if (status === "ACTIVE") return "text-green-400";
@@ -80,8 +39,8 @@ const statusDot = (status: UserStatus) => {
   return "bg-red-400";
 };
 
-const roleBadge = (role: UserRole) => {
-  if (role === "ADMIN") return "bg-primary/20 text-primary border border-primary/30";
+const roleBadge = (role: AdminUserRole) => {
+  if (role === "admin") return "bg-primary text-white border border-primary/30";
   return "bg-gray-700/20 text-gray-400 border border-gray-600/30";
 };
 
@@ -90,7 +49,20 @@ const userDot = (status: UserStatus) => {
   return "bg-green-500";
 };
 
-// ── Stat Card ───────────────────────────────────────────────────────────────
+const formatDate = (value: string | null) => {
+  if (!value) return "Never";
+  const date = new Date(value);
+  return Number.isNaN(date.getTime())
+    ? "Invalid date"
+    : date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+};
+
+const displayRole = (role: AdminUserRole) => role.toUpperCase();
+
+const statusPayload = (status: UserStatus) => ({
+  is_active: status !== "SUSPENDED",
+  email_verified: status === "ACTIVE",
+});
 
 const StatCard = ({
   label,
@@ -107,69 +79,164 @@ const StatCard = ({
   sub?: string;
   icon: React.ReactNode;
 }) => (
-  <div className="bg-[#1a1b20] border border-secondary/10 rounded-xl p-4">
+  <div className="bg-[#151c25] rounded-xl p-4">
     <div className="flex items-center justify-between mb-3">
-      <p className="text-secondary/50 text-[9px] uppercase tracking-[0.15em] font-semibold">
+      <p className="text-bgray/50 text-[11px] uppercase tracking-[0.15em] font-semibold">
         {label}
       </p>
-      <span className="text-secondary/30">{icon}</span>
+      <span className="text-bgray/30">{icon}</span>
     </div>
     <div className="flex items-baseline gap-2">
-      <span className="text-2xl font-bold text-gray-200 font-jakarta">{value}</span>
+      <span className="text-2xl font-bold text-bgray font-jakarta">{value}</span>
       {change && <span className={`text-xs font-semibold ${changeColor}`}>{change}</span>}
     </div>
-    {sub && <p className="text-secondary/40 text-[10px] mt-1">{sub}</p>}
+    {sub && <p className="text-bgray/40 text-xs mt-1">{sub}</p>}
   </div>
 );
 
-// ─── Main Page ───────────────────────────────────────────────────────────────
+const ModalShell = ({
+  title,
+  onClose,
+  children,
+}: {
+  title: string;
+  onClose: () => void;
+  children: React.ReactNode;
+}) => (
+  <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <button aria-label="Close modal" className="absolute inset-0 bg-black/50" onClick={onClose} />
+    <div className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-xl bg-border_color border border-bgray/20 shadow-2xl">
+      <div className="flex items-center justify-between border-b border-bgray/10 px-6 py-4">
+        <h2 className="admin-section-title font-jakarta text-lg font-semibold text-bgray">{title}</h2>
+        <button onClick={onClose} className="text-bgray/60 hover:text-bgray" aria-label="Close">
+          <X size={18} />
+        </button>
+      </div>
+      {children}
+    </div>
+  </div>
+);
 
 const AllUsers = () => {
   const [search, setSearch] = useState("");
-  const [roleFilter, setRoleFilter] = useState("ALL");
+  const [roleFilter, setRoleFilter] = useState<"all" | AdminUserRole>("all");
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [page, setPage] = useState(1);
-  const [perPage, setPerPage] = useState(10);
+  const [perPage, setPerPage] = useState(20);
   const [viewMode, setViewMode] = useState<"list" | "grid">("list");
 
-  // Filter users
-  const filteredUsers = useMemo(() => {
-    return allUsers.filter((user) => {
-      const matchesSearch =
-        search === "" ||
-        user.name.toLowerCase().includes(search.toLowerCase()) ||
-        user.email.toLowerCase().includes(search.toLowerCase()) ||
-        user.userId.toLowerCase().includes(search.toLowerCase());
-      const matchesRole = roleFilter === "ALL" || user.role === roleFilter;
-      const matchesStatus = statusFilter === "ALL" || user.status === statusFilter;
-      return matchesSearch && matchesRole && matchesStatus;
-    });
-  }, [search, roleFilter, statusFilter]);
+  const [users, setUsers] = useState<AdminUser[]>([]);
+  const [totalUsers, setTotalUsers] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null);
+  const [modalMode, setModalMode] = useState<"details" | "edit" | null>(null);
+  const [editStatus, setEditStatus] = useState<UserStatus>("ACTIVE");
+  const [saving, setSaving] = useState(false);
 
-  // Pagination
-  const totalPages = Math.ceil(filteredUsers.length / perPage);
-  const paginatedUsers = filteredUsers.slice((page - 1) * perPage, page * perPage);
-  const startIdx = (page - 1) * perPage + 1;
-  const endIdx = Math.min(page * perPage, filteredUsers.length);
+  useEffect(() => {
+    const timeoutId = window.setTimeout(async () => {
+      setLoading(true);
+      setError(null);
+
+      const result = await adminApi.getUsers({
+        page,
+        limit: perPage,
+        role: roleFilter,
+        search: search.trim() || undefined,
+      });
+
+      if (result.ok && Array.isArray(result.data)) {
+        const pagination = result.pagination as Partial<AdminUsersPagination> | undefined;
+        setUsers(result.data);
+        setTotalUsers(pagination?.total ?? result.data.length);
+        setTotalPages(pagination?.total_pages ?? (result.data.length ? 1 : 0));
+      } else {
+        setUsers([]);
+        setTotalUsers(0);
+        setTotalPages(0);
+        setError(result.detail || "Failed to load users.");
+      }
+
+      setLoading(false);
+    }, 300);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [page, perPage, roleFilter, search]);
+
+  const getStatus = (user: AdminUser): UserStatus => {
+    if (!user.is_active) return "SUSPENDED";
+    if (!user.email_verified) return "PENDING";
+    return "ACTIVE";
+  };
+
+  const openDetails = (user: AdminUser) => {
+    setSelectedUser(user);
+    setModalMode("details");
+  };
+
+  const openEdit = (user: AdminUser) => {
+    setSelectedUser(user);
+    setEditStatus(getStatus(user));
+    setModalMode("edit");
+  };
+
+  const closeModal = () => {
+    if (!saving) {
+      setSelectedUser(null);
+      setModalMode(null);
+    }
+  };
+
+  const saveUser = async () => {
+    if (!selectedUser) return;
+
+    setSaving(true);
+    const result = await adminApi.updateUser(selectedUser.id, {
+      ...statusPayload(editStatus),
+    });
+    setSaving(false);
+
+    if (!result.ok) {
+      setError(result.detail || "Failed to update user.");
+      return;
+    }
+
+    if (result.data) {
+      setUsers((currentUsers) => currentUsers.map((user) => (
+        user.id === result.data?.id ? result.data : user
+      )));
+    }
+    setModalMode(null);
+    setSelectedUser(null);
+  };
+
+  const filteredUsers = users.filter((user) => {
+    const status = getStatus(user);
+    return statusFilter === "ALL" || status === statusFilter;
+  });
+  const startIdx = totalUsers === 0 ? 0 : (page - 1) * perPage + 1;
+  const endIdx = Math.min(page * perPage, totalUsers);
 
   const goToPage = (p: number) => {
     if (p >= 1 && p <= totalPages) setPage(p);
   };
 
   return (
-    <div className="p-4 md:p-6 lg:p-8 space-y-6 max-w-[1440px] mx-auto">
-      {/* ── Header ────────────────────────────────────────── */}
+    <div className="admin-page space-y-6">
+
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="font-jakarta text-xl md:text-2xl font-bold text-gray-200">
+          <h1 className="admin-page-title">
             All Users Directory
           </h1>
-          <p className="text-secondary/60 text-sm mt-1">
+          <p className="admin-page-description">
             Manage platform accounts across the global MSQUARED ecosystem.
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <button className="flex items-center gap-2 px-4 py-2 bg-[#1a1b20] border border-secondary/15 text-secondary/70 hover:text-gray-200 rounded-lg text-xs font-medium transition-colors">
+          <button className="flex items-center gap-2 px-4 py-2 bg-[#1a1b20] border border-bgray/15 text-bgray/70 hover:text-bgray rounded-lg text-sm font-medium transition-colors">
             <Download size={14} />
             Export CSV
           </button>
@@ -180,77 +247,72 @@ const AllUsers = () => {
         </div>
       </div>
 
-      {/* ── Stat Cards ────────────────────────────────────── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
           label="Total Users"
-          value="12,482"
-          change="+2.4%"
-          changeColor="text-greenish"
+          value={totalUsers.toLocaleString()}
+          sub="Matching current filters"
           icon={<Users size={16} />}
         />
         <StatCard
           label="Active Now"
-          value="1,842"
-          sub="Platform Peak"
+          value={users.filter((user) => getStatus(user) === "ACTIVE").length.toLocaleString()}
+          sub="On current page"
           icon={<Signal size={16} />}
         />
         <StatCard
           label="Verification"
-          value="128"
-          sub="Pending"
+          value={users.filter((user) => getStatus(user) === "PENDING").length.toLocaleString()}
+          sub="Pending on current page"
           changeColor="text-red-400"
           icon={<Shield size={16} />}
         />
         <StatCard
           label="Suspended"
-          value="34"
-          sub="Compliance"
+          value={users.filter((user) => getStatus(user) === "SUSPENDED").length.toLocaleString()}
+          sub="On current page"
           icon={<Clock size={16} />}
         />
       </div>
 
-      {/* ─ Filters ───────────────────────────────────────── */}
-      <div className="bg-[#1a1b20] border border-secondary/10 rounded-xl p-4">
+      <div className="bg-[#151c25] rounded-xl p-4 mb-0">
         <div className="flex flex-wrap items-center gap-3">
-          {/* Search */}
+
           <div className="relative flex-1 min-w-[200px]">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-secondary/30" size={16} />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-bgray/30" size={16} />
             <input
               type="text"
-              placeholder="Filter by Name, Email or ID..."
+              placeholder="Search name, username or email..."
               value={search}
               onChange={(e) => {
                 setSearch(e.target.value);
                 setPage(1);
               }}
-              className="w-full bg-[#0f1014] border border-secondary/10 rounded-lg py-2 pl-10 pr-4 text-sm text-gray-300 placeholder:text-secondary/30 focus:outline-none focus:border-secondary/30 transition-colors"
+              className="w-full bg-[#0f1014] border border-bgray/10 rounded-lg py-2 pl-10 pr-4 text-sm text-gray-300 placeholder:text-bgray/30 focus:outline-none focus:border-bgray/30 transition-colors"
             />
           </div>
 
-          {/* Role Filter */}
           <select
             value={roleFilter}
             onChange={(e) => {
-              setRoleFilter(e.target.value);
+              setRoleFilter(e.target.value as "all" | AdminUserRole);
               setPage(1);
             }}
-            className="bg-[#0f1014] border border-secondary/10 rounded-lg py-2 px-3 text-sm text-gray-300 focus:outline-none focus:border-secondary/30 transition-colors cursor-pointer"
+            className="bg-[#0f1014] border border-bgray/10 rounded-lg py-2 px-3 text-sm text-gray-300 focus:outline-none focus:border-bgray/30 transition-colors cursor-pointer"
           >
-            <option value="ALL">All Roles</option>
-            <option value="ADMIN">Admin</option>
-            <option value="ORGANIZER">Organizer</option>
-            <option value="ATTENDEE">Attendee</option>
+            <option value="all">All Roles</option>
+            <option value="admin">Admin</option>
+            <option value="organizer">Organizer</option>
+            <option value="attendee">Attendee</option>
           </select>
 
-          {/* Status Filter */}
           <select
             value={statusFilter}
             onChange={(e) => {
               setStatusFilter(e.target.value);
               setPage(1);
             }}
-            className="bg-[#0f1014] border border-secondary/10 rounded-lg py-2 px-3 text-sm text-gray-300 focus:outline-none focus:border-secondary/30 transition-colors cursor-pointer"
+            className="bg-[#0f1014] border border-bgray/10 rounded-lg py-2 px-3 text-sm text-gray-300 focus:outline-none focus:border-bgray/30 transition-colors cursor-pointer"
           >
             <option value="ALL">All Statuses</option>
             <option value="ACTIVE">Active</option>
@@ -258,22 +320,20 @@ const AllUsers = () => {
             <option value="SUSPENDED">Suspended</option>
           </select>
 
-          {/* Count */}
-          <span className="text-secondary/50 text-xs ml-auto hidden md:block">
-            Displaying {startIdx}-{endIdx} of {filteredUsers.length.toLocaleString()}
+          <span className="text-bgray/50 text-xs ml-auto hidden md:block">
+            Displaying {startIdx}-{endIdx} of {totalUsers.toLocaleString()}
           </span>
 
-          {/* View Mode */}
-          <div className="flex items-center gap-1 bg-[#0f1014] rounded-lg p-1 border border-secondary/10">
+          <div className="flex items-center gap-1 bg-[#0f1014] rounded-lg p-1 border border-bgray/10">
             <button
               onClick={() => setViewMode("list")}
-              className={`p-1.5 rounded transition-colors ${viewMode === "list" ? "bg-secondary/20 text-gray-200" : "text-secondary/40 hover:text-gray-300"}`}
+              className={`p-1.5 rounded transition-colors ${viewMode === "list" ? "bg-bgray/20 text-bgray" : "text-bgray/40 hover:text-gray-300"}`}
             >
               <List size={14} />
             </button>
             <button
               onClick={() => setViewMode("grid")}
-              className={`p-1.5 rounded transition-colors ${viewMode === "grid" ? "bg-secondary/20 text-gray-200" : "text-secondary/40 hover:text-gray-300"}`}
+              className={`p-1.5 rounded transition-colors ${viewMode === "grid" ? "bg-bgray/20 text-bgray" : "text-bgray/40 hover:text-gray-300"}`}
             >
               <LayoutGrid size={14} />
             </button>
@@ -281,120 +341,143 @@ const AllUsers = () => {
         </div>
       </div>
 
-      {/* ── Table ─────────────────────────────────────────── */}
-      <div className="bg-[#1a1b20] border border-secondary/10 rounded-xl overflow-hidden">
+      <div className="bg-[#151c25]  rounded-xl overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-secondary/10 bg-[#15161a]">
-                <th className="text-gray-500 text-[9px] uppercase tracking-wider font-medium text-left py-3 px-4">
+              <tr className="bg-[#202630]">
+                <th className="text-bgray/60 text-[11px] uppercase tracking-wider font-medium text-left py-3 px-4">
                   User ID
                 </th>
-                <th className="text-gray-500 text-[9px] uppercase tracking-wider font-medium text-left py-3 px-4">
+                <th className="text-bgray/60 text-[11px] uppercase tracking-wider font-medium text-left py-3 px-4">
                   Full Name
                 </th>
-                <th className="text-gray-500 text-[9px] uppercase tracking-wider font-medium text-left py-3 px-4 hidden md:table-cell">
+                <th className="text-bgray/60 text-[11px] uppercase tracking-wider font-medium text-left py-3 px-4 hidden md:table-cell">
                   Email Address
                 </th>
-                <th className="text-gray-500 text-[9px] uppercase tracking-wider font-medium text-left py-3 px-4">
+                <th className="text-bgray/60 text-[11px] uppercase tracking-wider font-medium text-left py-3 px-4">
                   Role
                 </th>
-                <th className="text-gray-500 text-[9px] uppercase tracking-wider font-medium text-left py-3 px-4">
+                <th className="text-bgray/60 text-[11px] uppercase tracking-wider font-medium text-left py-3 px-4">
                   Status
                 </th>
-                <th className="text-gray-500 text-[9px] uppercase tracking-wider font-medium text-left py-3 px-4 hidden lg:table-cell">
+                <th className="text-bgray/60 text-[11px] uppercase tracking-wider font-medium text-left py-3 px-4 hidden lg:table-cell">
                   Joined Date
                 </th>
-                <th className="text-gray-500 text-[9px] uppercase tracking-wider font-medium text-center py-3 px-4">
+                <th className="text-bgray/60 text-[11px] uppercase tracking-wider font-medium text-center py-3 px-4">
                   Actions
                 </th>
               </tr>
             </thead>
             <tbody>
-              {paginatedUsers.map((user) => (
-                <tr key={user.id} className="border-b border-secondary/5 hover:bg-white/[0.01] transition-colors">
+              {loading && (
+                <tr>
+                  <td colSpan={7} className="py-12 text-center text-bgray/50 text-sm">Loading users...</td>
+                </tr>
+              )}
+              {!loading && error && (
+                <tr>
+                  <td colSpan={7} className="py-12 text-center text-red-400 text-sm">{error}</td>
+                </tr>
+              )}
+              {!loading && !error && filteredUsers.length === 0 && (
+                <tr>
+                  <td colSpan={7} className="py-12 text-center text-bgray/50 text-sm">No users found.</td>
+                </tr>
+              )}
+              {!loading && !error && filteredUsers.map((user) => {
+                const status = getStatus(user);
+                return (
+                <tr key={user.id} className="border-b border-bgray/5 hover:bg-white/[0.01] transition-colors">
                   <td className="py-3 px-4">
                     <div className="flex items-center gap-2">
-                      <span className={`w-1.5 h-1.5 rounded-full ${userDot(user.status)}`} />
-                      <span className="text-gray-600 text-xs font-mono">{user.userId}</span>
+                      <span className={`w-1.5 h-1.5 rounded-full ${userDot(status)}`} />
+                      <span className="text-bgray/60  text-sm font-mono">{user.id}</span>
                     </div>
                   </td>
                   <td className="py-3 px-4">
-                    <span className="text-gray-400 text-xs font-medium">{user.name}</span>
+                    <span className="text-bgray/80 text-sm font-medium">{user.full_name}</span>
                   </td>
                   <td className="py-3 px-4 hidden md:table-cell">
-                    <span className="text-gray-500 text-xs">{user.email}</span>
+                    <span className="text-bgray/60  text-sm">{user.email}</span>
                   </td>
                   <td className="py-3 px-4">
-                    <span className={`inline-block text-[8px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ${roleBadge(user.role)}`}>
-                      {user.role}
+                    <span className={`inline-block text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ${roleBadge(user.role)}`}>
+                      {displayRole(user.role)}
                     </span>
                   </td>
                   <td className="py-3 px-4">
                     <div className="flex items-center gap-1.5">
-                      <span className={`w-1.5 h-1.5 rounded-full ${statusDot(user.status)}`} />
-                      <span className={`text-xs font-medium ${statusColor(user.status)}`}>
-                        {user.status}
+                      <span className={`w-1.5 h-1.5 rounded-full ${statusDot(status)}`} />
+                      <span className={`text-sm font-medium ${statusColor(status)}`}>
+                        {status}
                       </span>
                     </div>
                   </td>
                   <td className="py-3 px-4 hidden lg:table-cell">
-                    <span className="text-gray-500 text-xs">{user.joinedDate}</span>
+                    <span className="text-bgray/60  text-sm">{formatDate(user.created_at)}</span>
                   </td>
                   <td className="py-3 px-4 text-center">
                     <div className="flex items-center justify-center gap-2">
-                      <button className="text-gray-500 hover:text-gray-300 transition-colors">
+                      <button
+                        onClick={() => openEdit(user)}
+                        className="text-bgray/50 hover:text-bgray transition-colors"
+                        aria-label={`Edit ${user.full_name}`}
+                      >
                         <Edit3 size={14} />
                       </button>
-                      <button className="text-gray-500 hover:text-gray-300 transition-colors">
+                      <button
+                        onClick={() => openDetails(user)}
+                        className="text-bgray/50 hover:text-bgray transition-colors"
+                        aria-label={`View ${user.full_name}`}
+                      >
                         <Eye size={14} />
                       </button>
                     </div>
                   </td>
                 </tr>
-              ))}
+                );
+              })}
             </tbody>
           </table>
         </div>
 
-        {/* ── Pagination ──────────────────────────────────── */}
-        <div className="flex flex-wrap items-center justify-between gap-4 px-4 py-3 border-t border-secondary/10 bg-[#15161a]">
-          {/* Rows per page */}
+        <div className="flex flex-wrap items-center justify-between gap-4 px-4 py-3 border-t border-bgray/10 bg-[#15161a]">
+
           <div className="flex items-center gap-2">
-            <span className="text-secondary/50 text-xs">Rows per page:</span>
+            <span className="text-bgray/50 text-xs">Rows per page:</span>
             <select
               value={perPage}
               onChange={(e) => {
                 setPerPage(Number(e.target.value));
                 setPage(1);
               }}
-              className="bg-[#0f1014] border border-secondary/10 rounded px-2 py-1 text-xs text-gray-300 focus:outline-none cursor-pointer"
+              className="bg-[#0f1014] border border-bgray/10 rounded px-2 py-1 text-xs text-gray-300 focus:outline-none cursor-pointer"
             >
               <option value={10}>10</option>
+              <option value={20}>20</option>
               <option value={25}>25</option>
               <option value={50}>50</option>
               <option value={100}>100</option>
             </select>
           </div>
 
-          {/* Page controls */}
           <div className="flex items-center gap-1">
             <button
               onClick={() => goToPage(1)}
               disabled={page === 1}
-              className="p-1.5 rounded text-secondary/40 hover:text-gray-200 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              className="p-1.5 rounded text-bgray/40 hover:text-bgray disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
             >
               <ChevronsLeft size={16} />
             </button>
             <button
               onClick={() => goToPage(page - 1)}
               disabled={page === 1}
-              className="p-1.5 rounded text-secondary/40 hover:text-gray-200 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              className="p-1.5 rounded text-bgray/40 hover:text-bgray disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
             >
               <ChevronLeft size={16} />
             </button>
 
-            {/* Page numbers */}
             {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
               let pageNum: number;
               if (totalPages <= 5) {
@@ -410,10 +493,10 @@ const AllUsers = () => {
                 <button
                   key={pageNum}
                   onClick={() => goToPage(pageNum)}
-                  className={`w-7 h-7 rounded text-xs font-medium transition-colors ${
+                  className={`w-7 h-7 rounded text-sm font-medium transition-colors ${
                     page === pageNum
                       ? "bg-primary text-gray-100"
-                      : "text-secondary/50 hover:text-gray-200 hover:bg-secondary/10"
+                      : "text-bgray/50 hover:text-bgray hover:bg-bgray/10"
                   }`}
                 >
                   {pageNum}
@@ -422,15 +505,15 @@ const AllUsers = () => {
             })}
 
             {totalPages > 5 && page < totalPages - 2 && (
-              <span className="text-secondary/30 text-xs px-1">...</span>
+              <span className="text-bgray/30 text-xs px-1">...</span>
             )}
             {totalPages > 5 && (
               <button
                 onClick={() => goToPage(totalPages)}
-                className={`w-7 h-7 rounded text-xs font-medium transition-colors ${
+                className={`w-7 h-7 rounded text-sm font-medium transition-colors ${
                   page === totalPages
                     ? "bg-primary text-gray-100"
-                    : "text-secondary/50 hover:text-gray-200 hover:bg-secondary/10"
+                    : "text-bgray/50 hover:text-bgray hover:bg-bgray/10"
                 }`}
               >
                 {totalPages}
@@ -440,20 +523,85 @@ const AllUsers = () => {
             <button
               onClick={() => goToPage(page + 1)}
               disabled={page === totalPages}
-              className="p-1.5 rounded text-secondary/40 hover:text-gray-200 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              className="p-1.5 rounded text-bgray/40 hover:text-bgray disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
             >
               <ChevronRight size={16} />
             </button>
             <button
               onClick={() => goToPage(totalPages)}
               disabled={page === totalPages}
-              className="p-1.5 rounded text-secondary/40 hover:text-gray-200 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              className="p-1.5 rounded text-bgray/40 hover:text-bgray disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
             >
               <ChevronsRight size={16} />
             </button>
           </div>
         </div>
       </div>
+
+      {selectedUser && modalMode === "details" && (
+        <ModalShell title="User Details" onClose={closeModal}>
+          <div className="grid grid-cols-1 gap-5 p-6 sm:grid-cols-2">
+            <div className="sm:col-span-2 flex items-center gap-4">
+              {selectedUser.avatar_url ? (
+                <img src={selectedUser.avatar_url} alt={selectedUser.full_name} className="h-14 w-14 rounded-full object-cover" />
+              ) : (
+                <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary text-lg font-bold text-bgray">
+                  {selectedUser.full_name.charAt(0).toUpperCase()}
+                </div>
+              )}
+              <div>
+                <h3 className="text-base font-semibold text-bgray">{selectedUser.full_name}</h3>
+                <p className="text-sm text-bgray/60">@{selectedUser.username}</p>
+              </div>
+            </div>
+            {[
+              ["User ID", selectedUser.id],
+              ["Email", selectedUser.email],
+              ["Role", displayRole(selectedUser.role)],
+              ["Status", getStatus(selectedUser)],
+              ["Email Verified", selectedUser.email_verified ? "Yes" : "No"],
+              ["Auth Provider", selectedUser.auth_provider],
+              ["Last Login", formatDate(selectedUser.last_login_at)],
+              ["Created", formatDate(selectedUser.created_at)],
+              ["Updated", formatDate(selectedUser.updated_at)],
+            ].map(([label, value]) => (
+              <div key={label} className="rounded-lg bg-bgray/[0.04] px-4 py-3">
+                <p className="text-xs uppercase tracking-wider text-bgray/50">{label}</p>
+                <p className="mt-1 break-words text-sm text-bgray">{value}</p>
+              </div>
+            ))}
+          </div>
+        </ModalShell>
+      )}
+
+      {selectedUser && modalMode === "edit" && (
+        <ModalShell title={`Edit ${selectedUser.full_name}`} onClose={closeModal}>
+          <div className="space-y-5 p-6">
+            <div>
+              <label className="mb-2 block text-sm font-medium text-bgray/70" htmlFor="user-status">Status</label>
+              <select
+                id="user-status"
+                value={editStatus}
+                onChange={(event) => setEditStatus(event.target.value as UserStatus)}
+                className="w-full rounded-lg border border-bgray/15 bg-border_color px-3 py-2.5 text-sm text-bgray outline-none focus:border-secondary"
+              >
+                <option value="ACTIVE">Active</option>
+                <option value="PENDING">Pending</option>
+                <option value="SUSPENDED">Suspended</option>
+              </select>
+            </div>
+            <div className="flex justify-end gap-3 border-t border-bgray/10 pt-5">
+              <button onClick={closeModal} disabled={saving} className="rounded-lg border border-bgray/15 px-4 py-2.5 text-sm text-bgray/70 hover:text-bgray disabled:opacity-50">
+                Cancel
+              </button>
+              <button onClick={saveUser} disabled={saving} className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-bgray hover:bg-primary/90 disabled:opacity-50">
+                <Save size={15} />
+                {saving ? "Saving..." : "Save Changes"}
+              </button>
+            </div>
+          </div>
+        </ModalShell>
+      )}
     </div>
   );
 };

@@ -15,7 +15,6 @@ import {
   ChevronRight,
 } from "lucide-react";
 
-// ── Mock Data ───────────────────────────────────────────────────────────────
 
 const organizers = [
   {
@@ -62,19 +61,18 @@ const listings = [
   },
 ];
 
-// ── Component ───────────────────────────────────────────────────────────────
 
 const OrganizationProfile = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 md:px-6 py-6 space-y-8">
-      {/* ── Profile Header ─────────────────────────────────── */}
+
       <div className="relative">
-        {/* Banner gradient */}
+
         <div className="h-32 bg-gradient-to-r from-red-900/30 via-[#131418] to-[#131418] rounded-t-xl" />
 
-        {/* Content row */}
+
         <div className="flex flex-col md:flex-row items-start md:items-end gap-4 px-6 -mt-10 relative z-10">
-          {/* Logo */}
+
           <div className="w-20 h-20 rounded-xl bg-[#1a1c22] border border-secondary/10 flex-shrink-0 overflow-hidden flex items-center justify-center">
             <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M3 21h18" />
@@ -83,7 +81,7 @@ const OrganizationProfile = () => {
             </svg>
           </div>
 
-          {/* Name + meta */}
+
           <div className="flex-1">
             <h1 className="font-jakarta text-3xl font-bold text-white">
               Islamic Society of London
@@ -98,7 +96,7 @@ const OrganizationProfile = () => {
             </div>
           </div>
 
-          {/* Action buttons */}
+
           <div className="flex items-center gap-2">
             <button className="px-5 py-2 border border-secondary/20 text-secondary hover:text-white hover:border-secondary/40 rounded-lg text-sm font-medium transition-colors">
               Follow
@@ -110,11 +108,11 @@ const OrganizationProfile = () => {
         </div>
       </div>
 
-      {/* ── Main Content Grid ──────────────────────────────── */}
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left column (2/3) */}
+
         <div className="lg:col-span-2 space-y-6">
-          {/* About */}
+
           <div className="bg-[#131418] border border-secondary/10 rounded-xl p-6">
             <div className="flex items-center gap-2 mb-4">
               <div className="w-7 h-7 rounded-lg bg-red-500/10 flex items-center justify-center">
@@ -133,7 +131,7 @@ const OrganizationProfile = () => {
               The Islamic Society of London is a premier community-driven organization dedicated to fostering cultural understanding, spiritual growth, and professional development. We pride ourselves on creating high-impact events that bridge the gap between traditional heritage and modern urban living. From large-scale community conferences to intimate lecture series, our mission is to empower the next generation of leaders.
             </p>
 
-            {/* Info Cards */}
+
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <InfoCard
                 label="Focus Areas"
@@ -150,7 +148,7 @@ const OrganizationProfile = () => {
             </div>
           </div>
 
-          {/* Stats */}
+
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="bg-[#131418] border border-secondary/10 rounded-xl p-6">
               <div className="flex items-center gap-2 mb-3">
@@ -182,9 +180,9 @@ const OrganizationProfile = () => {
           </div>
         </div>
 
-        {/* Right column (1/3) */}
+
         <div className="space-y-5">
-          {/* Connect With Us */}
+
           <div className="bg-[#131418] border border-secondary/10 rounded-xl p-5">
             <p className="text-secondary/50 text-[10px] uppercase tracking-[0.15em] font-bold mb-4">
               Connect With Us
@@ -196,7 +194,7 @@ const OrganizationProfile = () => {
             </div>
           </div>
 
-          {/* Active Organizers */}
+
           <div className="bg-[#131418] border border-secondary/10 rounded-xl p-5">
             <div className="flex items-center justify-between mb-4">
               <p className="text-secondary/50 text-[10px] uppercase tracking-[0.15em] font-bold">
@@ -233,7 +231,7 @@ const OrganizationProfile = () => {
             </button>
           </div>
 
-          {/* Annual Conference Card */}
+
           <div className="bg-gradient-to-br from-red-900/30 to-[#1a1c22] border border-red-500/10 rounded-xl p-5">
             <p className="text-white text-sm font-bold mb-1">Annual Conference 2024</p>
             <p className="text-secondary/50 text-xs">Tickets launching soon</p>
@@ -241,7 +239,7 @@ const OrganizationProfile = () => {
         </div>
       </div>
 
-      {/* ── Active Public Listings ─────────────────────────── */}
+
       <div>
         <div className="flex items-center justify-between mb-5">
           <h2 className="font-jakarta text-xl font-bold text-white">
@@ -263,7 +261,7 @@ const OrganizationProfile = () => {
               key={idx}
               className="bg-[#131418] border border-secondary/10 rounded-xl overflow-hidden hover:border-secondary/20 transition-colors group"
             >
-              {/* Hero area */}
+
               <div className="relative h-36 bg-gradient-to-br from-secondary/10 to-[#0d0e12]">
                 <span
                   className={`absolute top-3 right-3 px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider text-white ${listing.typeColor}`}
@@ -272,7 +270,7 @@ const OrganizationProfile = () => {
                 </span>
               </div>
 
-              {/* Content */}
+
               <div className="p-4">
                 <div className="flex items-center gap-1.5 text-secondary/50 text-[10px] mb-2">
                   <Clock size={10} />
@@ -297,7 +295,7 @@ const OrganizationProfile = () => {
             </div>
           ))}
 
-          {/* Create New Listing Card */}
+
           <div className="border-2 border-dashed border-secondary/15 rounded-xl flex flex-col items-center justify-center p-8 hover:border-primary/30 transition-colors cursor-pointer group min-h-[280px]">
             <div className="w-14 h-14 rounded-full bg-secondary/10 flex items-center justify-center mb-4 group-hover:bg-primary/10 transition-colors">
               <Plus size={24} className="text-secondary group-hover:text-primary transition-colors" />
@@ -313,7 +311,6 @@ const OrganizationProfile = () => {
   );
 };
 
-// ── Info Card ───────────────────────────────────────────────────────────────
 
 const InfoCard = ({ label, value }: { label: string; value: string }) => (
   <div className="bg-secondary/5 rounded-lg p-3.5 border border-secondary/5">
@@ -324,7 +321,6 @@ const InfoCard = ({ label, value }: { label: string; value: string }) => (
   </div>
 );
 
-// ── Connect Link ────────────────────────────────────────────────────────────
 
 const ConnectLink = ({
   icon: Icon,

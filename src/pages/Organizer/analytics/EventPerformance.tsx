@@ -27,9 +27,9 @@ import {
   CartesianGrid,
 } from "recharts";
 
-// ─ Mock Data ───────────────────────────────────────────────────────────────
 
-// Ticket Sales Pacing (weeks)
+
+
 const salesPacingData = [
   { week: "W1", current: 80, avg: 60 },
   { week: "W2", current: 180, avg: 150 },
@@ -91,7 +91,7 @@ const agendaFeedback = [
   },
 ];
 
-// ── Helpers ─────────────────────────────────────────────────────────────────
+
 
 function formatNumber(n: number): string {
   if (n >= 1000) return `${(n / 1000).toFixed(1)}K`;
@@ -107,7 +107,7 @@ function formatCurrency(amount: number): string {
   }).format(amount);
 }
 
-// ── Stat Card ───────────────────────────────────────────────────────────────
+
 
 const StatCard = ({
   label,
@@ -147,7 +147,7 @@ const StatCard = ({
   </div>
 );
 
-// ── Component ───────────────────────────────────────────────────────────────
+
 
 const EventPerformance = () => {
   const maxFunnelValue = conversionFunnelData[0].value;
@@ -155,7 +155,7 @@ const EventPerformance = () => {
 
   return (
     <div className="max-w-[1500px] mx-auto px-4 md:px-6 py-6 space-y-6">
-      {/* ── Top Stats ─────────────────────────────────────── */}
+
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
           label="Total Tickets Sold"
@@ -187,9 +187,9 @@ const EventPerformance = () => {
         />
       </div>
 
-      {/* ── Sales Pacing + Conversion Funnel ──────────────── */}
+
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-5">
-        {/* Ticket Sales Pacing */}
+
         <div className="lg:col-span-3 bg-[#131418] border border-secondary/10 rounded-xl p-6">
           <div className="flex items-center justify-between mb-1">
             <h2 className="font-jakarta text-lg font-bold text-white">
@@ -256,7 +256,7 @@ const EventPerformance = () => {
           </div>
         </div>
 
-        {/* Conversion Funnel */}
+
         <div className="lg:col-span-2 bg-[#131418] border border-secondary/10 rounded-xl p-6">
           <h2 className="font-jakarta text-lg font-bold text-white mb-6">
             Conversion Funnel
@@ -293,9 +293,9 @@ const EventPerformance = () => {
         </div>
       </div>
 
-      {/* ── Social Impact + Agenda Feedback ───────────────── */}
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-        {/* Social Impact */}
+
         <div className="bg-[#131418] border border-secondary/10 rounded-xl p-6">
           <div className="flex items-center justify-between mb-6">
             <h2 className="font-jakarta text-lg font-bold text-white">Social Impact</h2>
@@ -304,7 +304,7 @@ const EventPerformance = () => {
             </span>
           </div>
 
-          {/* Sentiment Icons */}
+
           <div className="flex items-center justify-around mb-6">
             <div className="text-center">
               <div className="w-12 h-12 rounded-full bg-red-500/10 flex items-center justify-center mx-auto mb-2">
@@ -329,7 +329,7 @@ const EventPerformance = () => {
             </div>
           </div>
 
-          {/* Featured Quote */}
+
           <div className="bg-secondary/5 rounded-xl p-4 border border-secondary/10">
             <div className="flex items-start gap-3">
               <Quote size={16} className="text-red-400 flex-shrink-0 mt-0.5" />
@@ -345,7 +345,7 @@ const EventPerformance = () => {
           </div>
         </div>
 
-        {/* Agenda Feedback Summary */}
+
         <div className="bg-[#131418] border border-secondary/10 rounded-xl p-6">
           <h2 className="font-jakarta text-lg font-bold text-white mb-5">
             Agenda Feedback Summary
@@ -384,7 +384,7 @@ const EventPerformance = () => {
         </div>
       </div>
 
-      {/* ── Attendee Origin ──────────────────────────────── */}
+
       <div className="bg-[#131418] border border-secondary/10 rounded-xl p-6">
         <div className="flex items-start justify-between mb-5">
           <div>
@@ -402,12 +402,12 @@ const EventPerformance = () => {
           </div>
         </div>
 
-        {/* Map placeholder */}
+
         <div className="relative h-52 bg-[#1a1c22] rounded-lg overflow-hidden flex items-center justify-center border border-secondary/5">
           <div className="absolute inset-0 bg-gradient-to-b from-secondary/5 to-transparent" />
 
           <div className="relative flex items-center gap-8 z-10">
-            {/* Globe icon */}
+
             <div className="w-14 h-14 rounded-full bg-secondary/10 flex items-center justify-center">
               <Globe size={28} className="text-secondary/40" />
             </div>

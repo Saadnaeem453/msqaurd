@@ -59,7 +59,6 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
       .then((res) => {
         setIsAuthenticated(res.ok);
         if (!res.ok) {
-          // Clear ALL auth data so PublicRoute doesn't redirect back
           tokenStore.clear();
           localStorage.removeItem("token");
           localStorage.removeItem("accountType");
@@ -70,7 +69,6 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
         }
       })
       .catch(() => {
-        // Network error or unexpected failure — also clear to break loops
         tokenStore.clear();
         localStorage.removeItem("token");
         localStorage.removeItem("accountType");

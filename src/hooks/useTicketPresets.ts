@@ -7,7 +7,7 @@ import {
   UpdatePresetPayload,
 } from "../services/preset.service";
 
-// ─── useTicketPresets (list management) ──────────────────────────────────────
+
 
 interface UseTicketPresetsReturn {
   presets: TicketPreset[];

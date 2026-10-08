@@ -20,8 +20,6 @@ import {
   X,
 } from "lucide-react";
 
-// ─── Types ───────────────────────────────────────────────────────────────────
-
 interface NavItem {
   label: string;
   path: string;
@@ -32,8 +30,6 @@ interface NavSection {
   icon: React.ReactNode;
   items: NavItem[];
 }
-
-// ─── Nav Sections ────────────────────────────────────────────────────────────
 
 const navSections: NavSection[] = [
   {
@@ -50,102 +46,114 @@ const navSections: NavSection[] = [
     icon: <Users size={18} />,
     items: [
       { label: "All Users", path: "/admin/users" },
-      { label: "Organizers", path: "/admin/users/organizers" },
       { label: "Attendees", path: "/admin/users/attendees" },
+      { label: "Organizers", path: "/admin/users/organizers" },
+      { label: "Verification Requests", path: "/admin/users/verification" },
       { label: "Suspended", path: "/admin/users/suspended" },
-      { label: "Roles", path: "/admin/users/roles" },
     ],
   },
   {
     title: "Events",
     icon: <Calendar size={18} />,
     items: [
-      { label: "All Events", path: "/admin/events" },
-      { label: "Pending Review", path: "/admin/events/pending" },
-      { label: "Featured", path: "/admin/events/featured" },
-      { label: "Flagged", path: "/admin/events/flagged" },
-      { label: "Calendar View", path: "/admin/events/calendar" },
+      { label: "ALL Event", path: "/admin/events" },
+      { label: "Pending Approval", path: "/admin/events/pending" },
+      { label: "Published Events", path: "/admin/events/published" },
+      { label: "Reported Events", path: "/admin/events/reported" },
+      { label: "Rejected Events", path: "/admin/events/rejected" },
     ],
   },
   {
     title: "Moderation",
     icon: <Shield size={18} />,
     items: [
-      { label: "Reports Queue", path: "/admin/moderation/reports" },
+      { label: "Event Reports", path: "/admin/moderation/reports" },
+      { label: "User Reports", path: "/admin/moderation/user-reports" },
       { label: "Content Review", path: "/admin/moderation/content" },
-      { label: "Disputes", path: "/admin/moderation/disputes" },
-      { label: "Moderation Log", path: "/admin/moderation/log" },
+      { label: "Moderation Queue", path: "/admin/moderation/queue" },
     ],
   },
   {
     title: "Finance",
     icon: <DollarSign size={18} />,
     items: [
-      { label: "Revenue Overview", path: "/admin/finance" },
+      { label: "Revenue Dashboard", path: "/admin/finance" },
+      { label: "Transactions", path: "/admin/finance/transactions" },
       { label: "Payouts", path: "/admin/finance/payouts" },
       { label: "Refunds", path: "/admin/finance/refunds" },
-      { label: "Tax Reports", path: "/admin/finance/tax" },
     ],
   },
   {
     title: "Analytics",
     icon: <BarChart3 size={18} />,
     items: [
-      { label: "Platform Metrics", path: "/admin/analytics" },
-      { label: "Growth", path: "/admin/analytics/growth" },
-      { label: "Engagement", path: "/admin/analytics/engagement" },
-      { label: "Demographics", path: "/admin/analytics/demographics" },
+      { label: "User Analytics", path: "/admin/analytics/users" },
+      { label: "Events Analytics", path: "/admin/analytics/events" },
+      { label: "Revenue Analytics", path: "/admin/analytics/revenue" },
+      { label: "Growth Trends", path: "/admin/analytics/growth" },
     ],
   },
   {
     title: "Communications",
     icon: <Megaphone size={18} />,
     items: [
-      { label: "Broadcasts", path: "/admin/communications/broadcasts" },
-      { label: "Templates", path: "/admin/communications/templates" },
       { label: "Push Notifications", path: "/admin/communications/push" },
       { label: "Email Campaigns", path: "/admin/communications/email" },
+      { label: "System Announcements", path: "/admin/communications/broadcasts" },
     ],
   },
   {
     title: "Organizations",
     icon: <Building2 size={18} />,
     items: [
-      { label: "Directory", path: "/admin/organizations" },
+      { label: "All Organizations", path: "/admin/organizations" },
+      { label: "Masjids", path: "/admin/organizations/masjids" },
+      { label: "ISOCs", path: "/admin/organizations/isocs" },
+      { label: "Event Organizers", path: "/admin/organizations/event-organizers" },
       { label: "Verification Requests", path: "/admin/organizations/verification" },
-      { label: "Partnerships", path: "/admin/organizations/partnerships" },
     ],
   },
   {
     title: "Platform Settings",
     icon: <Settings size={18} />,
     items: [
-      { label: "General", path: "/admin/settings" },
-      { label: "API Keys", path: "/admin/settings/api-keys" },
-      { label: "Feature Flags", path: "/admin/settings/features" },
-      { label: "Integrations", path: "/admin/settings/integrations" },
+      { label: "Categories", path: "/admin/settings/plateform/categories" },
+      { label: "Event types", path: "/admin/settings/plateform/event-types" },
+      { label: "Ticket Settings", path: "/admin/settings/plateform/ticket-settings" },
+      { label: "Payment Settings", path: "/admin/settings/plateform/payment-infrastructure" },
+      { label: "Notification Settings", path: "/admin/settings/plateform/notification-engine" },
+      { label: "AI Rules", path: "/admin/settings/plateform/ai-rules" },
     ],
   },
   {
     title: "Security & Audit",
     icon: <ShieldCheck size={18} />,
     items: [
-      { label: "Access Logs", path: "/admin/security" },
-      { label: "Incident Reports", path: "/admin/security/incidents" },
-      { label: "Compliance", path: "/admin/security/compliance" },
+      { label: "Admin Activity Log", path: "/admin/settings/security/activity" },
+      { label: "Login History", path: "/admin/settings/security/login-history" },
+      { label: "Access Roles", path: "/admin/settings/security/access-roles" },
+      { label: "Permission", path: "/admin/settings/security/permissions" },
+      { label: "Api keys", path: "/admin/settings/security/api-keys" },
     ],
   },
 ];
 
-// ── Component ────────────────────────────────────────────────────────────────
-
-const AdminSidebar = () => {
+const AdminSidebar = ({ onNavigate }: { onNavigate?: () => void }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const [expandedSections, setExpandedSections] = useState<Set<string>>(
     new Set(["Dashboard"])
   );
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+
+  useEffect(() => {
+    const activeSection = navSections.find((section) =>
+      section.items.some((item) => item.path === location.pathname)
+    );
+    if (activeSection) {
+      setExpandedSections((previous) => new Set([...previous, activeSection.title]));
+    }
+  }, [location.pathname]);
 
   useEffect(() => {
     if (!showLogoutModal) return;
@@ -184,13 +192,13 @@ const AdminSidebar = () => {
   };
 
   return (
-    <aside className="w-64 bg-[#192029] border-r border-secondary/10 h-screen flex flex-col flex-shrink-0">
-      {/* Scrollable nav area */}
-      <div className="flex-1 overflow-y-auto no-scrollbar">
-        {/* Brand Header */}
+    <aside className="flex h-full min-h-0 w-64 max-w-full shrink-0 flex-col border-r border-secondary/10 bg-lightgrayblue">
+
+      <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain no-scrollbar">
+
         <div className="p-4 pb-3 border-b border-secondary/10">
           <div className="flex items-center gap-2.5">
-            {/* Red square logo with 4-grid pattern */}
+
             <div className="w-7 h-7 bg-primary rounded-sm flex items-center justify-center">
               <div className="grid grid-cols-2 gap-0.5 w-4 h-4">
                 <div className="bg-white rounded-[1px]" />
@@ -213,7 +221,6 @@ const AdminSidebar = () => {
           </div>
         </div>
 
-        {/* Navigation */}
         <nav className="py-2 px-2">
           {navSections.map((section) => {
             const isExpanded = expandedSections.has(section.title);
@@ -223,8 +230,10 @@ const AdminSidebar = () => {
 
             return (
               <div key={section.title} className="mb-0.5">
-                {/* Section Header */}
+
                 <button
+                  type="button"
+                  aria-expanded={isExpanded}
                   onClick={() => toggleSection(section.title)}
                   className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-colors ${
                     hasActiveItem
@@ -247,7 +256,6 @@ const AdminSidebar = () => {
                   )}
                 </button>
 
-                {/* Sub-items */}
                 {isExpanded && (
                   <div className="mt-0.5 space-y-0.5">
                     {section.items.map((item) => {
@@ -256,10 +264,12 @@ const AdminSidebar = () => {
                         <Link
                           key={item.path}
                           to={item.path}
+                          onClick={onNavigate}
+                          aria-current={isActive ? "page" : undefined}
                           className={`block px-3 py-1.5 pl-9 rounded-md text-xs transition-colors ${
                             isActive
                               ? "text-secondary font-bold"
-                              : "text-white hover:text-secondary/80 hover:bg-white/3"
+                              : "text-bgray/60 hover:text-secondary/80 hover:bg-bgray/[0.03]"
                           }`}
                         >
                           {item.label}
@@ -274,15 +284,13 @@ const AdminSidebar = () => {
         </nav>
       </div>
 
-      {/* Bottom section (sticky) */}
       <div className="p-3 border-t border-secondary/15 space-y-2 bg-[#151b22]">
-        {/* New System Alert Button */}
+
         <button className="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white rounded-lg py-2.5 text-xs font-semibold transition-colors shadow-lg shadow-primary/20">
           <Bell size={14} />
           New System Alert
         </button>
 
-        {/* Support & Logs */}
         <div className="flex items-center gap-4 px-1">
           <button className="flex items-center gap-1.5 text-secondary/50 hover:text-white text-xs transition-colors">
             <HelpCircle size={13} />
@@ -294,7 +302,6 @@ const AdminSidebar = () => {
           </button>
         </div>
 
-        {/* Admin User */}
         <button
           type="button"
           onClick={() => setShowLogoutModal(true)}
@@ -314,7 +321,6 @@ const AdminSidebar = () => {
         </button>
       </div>
 
-      {/* Logout modal */}
       {showLogoutModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div

@@ -49,7 +49,7 @@ const AdminLogin = () => {
         return;
       }
 
-      // Store auth data
+
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
       localStorage.setItem("accountType", "admin");
@@ -71,11 +71,11 @@ const AdminLogin = () => {
   return (
     <div className="min-h-screen bg-[#0a0b0e] text-white overflow-hidden flex flex-col">
       <div className="flex flex-col lg:flex-row flex-1">
-        {/* ── LEFT SIDE – Command Center Visual ─────────────────── */}
+
         <div className="relative lg:w-1/2 flex flex-col justify-between p-8 md:p-12 lg:p-10 overflow-hidden min-h-[50vh] lg:min-h-screen">
-          {/* Layered background */}
+
           <div className="absolute inset-0 bg-[#0d0e12]">
-            {/* Subtle grid pattern */}
+
             <div
               className="absolute inset-0 opacity-[0.04]"
               style={{
@@ -84,13 +84,13 @@ const AdminLogin = () => {
                 backgroundSize: "48px 48px",
               }}
             />
-            {/* Radial glow */}
+
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_30%_50%,rgba(229,10,21,0.08)_0%,transparent_60%)]" />
-            {/* Gradient overlay */}
+
             <div className="absolute inset-0 bg-gradient-to-br from-[#0d0e12] via-transparent to-[#0a0b0e]" />
           </div>
 
-          {/* Top-left brand */}
+
           <div className="relative z-10">
             <Link to="/" className="flex items-center gap-2.5 group">
               <div className="w-8 h-8 bg-primary rounded-sm flex items-center justify-center shadow-lg shadow-primary/20">
@@ -112,9 +112,9 @@ const AdminLogin = () => {
             </Link>
           </div>
 
-          {/* Center content */}
+
           <div className="relative z-10 flex-1 flex flex-col justify-center lg:ml-8 py-8 max-w-md">
-            {/* Badge */}
+
             <div className="flex items-center gap-2 bg-primary/10 border border-primary/20 rounded-full px-3 py-1.5 mb-6 w-fit">
               <Shield size={12} className="text-primary" />
               <span className="text-primary text-[10px] font-bold uppercase tracking-[0.15em]">
@@ -134,7 +134,7 @@ const AdminLogin = () => {
               configuration.
             </p>
 
-            {/* Status indicators */}
+
             <div className="space-y-2.5">
               <div className="flex items-center gap-3">
                 <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
@@ -151,7 +151,7 @@ const AdminLogin = () => {
             </div>
           </div>
 
-          {/* Bottom decorative element */}
+
           <div className="relative z-10 flex items-center gap-3">
             <div className="h-px flex-1 max-w-[60px] bg-gradient-to-r from-primary/40 to-transparent" />
             <p className="text-secondary/30 text-[10px] uppercase tracking-[0.2em]">
@@ -160,9 +160,9 @@ const AdminLogin = () => {
           </div>
         </div>
 
-        {/* ── RIGHT SIDE – Login Form ───────────────────────────── */}
+
         <div className="lg:w-1/2 flex flex-col items-center justify-start p-8 md:p-12 lg:p-8 bg-[#0a0b0e]">
-          {/* Top-right support link */}
+
           <div className="w-full max-w-[420px] flex justify-end">
             <div className="flex items-center gap-2 text-secondary/50 hover:text-secondary/80 transition-colors cursor-pointer">
               <svg
@@ -183,9 +183,9 @@ const AdminLogin = () => {
             </div>
           </div>
 
-          {/* Login Card */}
+
           <div className="w-full max-w-[420px] bg-[#131418] border border-secondary/10 rounded-xl p-6 md:p-8 mt-4">
-            {/* Header */}
+
             <div className="flex items-center gap-3 mb-6">
               <div className="w-10 h-10 rounded-lg bg-primary/15 border border-primary/20 flex items-center justify-center">
                 <Lock size={18} className="text-primary" />
@@ -200,9 +200,9 @@ const AdminLogin = () => {
               </div>
             </div>
 
-            {/* Form */}
+
             <form onSubmit={handleSubmit} className="space-y-5">
-              {/* Email */}
+
               <div>
                 <label className="text-secondary/50 text-[10px] uppercase tracking-[0.15em] font-medium block mb-2">
                   Administrator Email
@@ -224,7 +224,7 @@ const AdminLogin = () => {
                 </div>
               </div>
 
-              {/* Password */}
+
               <div>
                 <div className="flex justify-between items-center mb-2">
                   <label className="text-secondary/50 text-[10px] uppercase tracking-[0.15em] font-medium block">
@@ -261,14 +261,14 @@ const AdminLogin = () => {
                 </div>
               </div>
 
-              {/* Error */}
+
               {error && (
                 <div className="bg-red-500/10 border border-red-500/20 rounded-lg px-4 py-2.5">
                   <p className="text-red-400 text-sm">{error}</p>
                 </div>
               )}
 
-              {/* Submit */}
+
               <button
                 type="submit"
                 disabled={loading}
@@ -306,7 +306,7 @@ const AdminLogin = () => {
               </button>
             </form>
 
-            {/* Divider */}
+
             <div className="flex items-center gap-3 mt-6">
               <div className="h-px flex-1 bg-secondary/10" />
               <span className="text-secondary/25 text-[10px] uppercase tracking-widest">
@@ -315,7 +315,7 @@ const AdminLogin = () => {
               <div className="h-px flex-1 bg-secondary/10" />
             </div>
 
-            {/* Security notice */}
+
             <div className="flex items-start gap-2.5 mt-4">
               <Lock size={12} className="text-secondary/25 mt-0.5 flex-shrink-0" />
               <p className="text-secondary/30 text-[11px] leading-relaxed">
@@ -325,7 +325,7 @@ const AdminLogin = () => {
             </div>
           </div>
 
-          {/* Footer */}
+
           <div className="w-full max-w-[420px] mt-6 text-center">
             <p className="text-secondary/30 text-[10px]">
               © {currentYear} MSQUARED ADMIN PORTAL. ALL RIGHTS RESERVED.

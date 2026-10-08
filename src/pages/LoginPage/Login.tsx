@@ -1,4 +1,4 @@
-// pages/LoginPage/Login.tsx
+
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { authApi } from '../../services/auth_service';
@@ -48,7 +48,7 @@ const Login = () => {
         normalizedDetail.includes('otp') ||
         normalizedDetail.includes('code');
 
-      // ─── EMAIL NOT VERIFIED – redirect before generic credential handling ─────
+
       if (verificationRequired && !isEmailVerified) {
         const accountType = user?.role === 'organizer' ? 'organizer' : 'attendee';
         navigate('/verify-email', {
@@ -58,29 +58,29 @@ const Login = () => {
         return;
       }
 
-      // A failed signin response should surface as a credential error,
-      // not as a redirect to the verify-email page.
+
+
       if (!ok || !(token && user)) {
         setError(detail || 'Login failed. Please check your credentials.');
         return;
       }
 
-      // ─── SUCCESSFUL LOGIN ────────────────────────────────────────────────
 
-      // Determine account type
+
+
       const isOrganizer = user.role === 'organizer';
       const accountType = isOrganizer ? 'organizer' : 'attendee';
 
-      // Organizers skip onboarding — set completed to true
+
       const onboardingCompleted = isOrganizer ? true : Boolean(user.onboarding_completed ?? false);
 
-      // Store token and user
+
       localStorage.setItem('token', token);
       localStorage.setItem('user', JSON.stringify(user));
       localStorage.setItem('accountType', accountType);
       localStorage.setItem('onboardingCompleted', String(onboardingCompleted));
 
-      // If email is not verified (should have been caught above, but just in case)
+
       if (!isEmailVerified) {
         navigate('/verify-email', {
           replace: true,
@@ -89,7 +89,7 @@ const Login = () => {
         return;
       }
 
-      // Redirect based on role and onboarding
+
       if (isOrganizer) {
         navigate('/organizer', { replace: true });
       } else if (onboardingCompleted) {
@@ -110,7 +110,7 @@ const Login = () => {
   return (
     <div className="min-h-screen bg-black text-white font-inter overflow-hidden flex flex-col">
       <div className="flex flex-col lg:flex-row flex-1">
-        {/* LEFT SIDE - Content with Background (unchanged) */}
+
         <div className="relative lg:w-1/2 flex flex-col justify-between p-8 md:p-12 lg:p-8 overflow-hidden min-h-[50vh] lg:min-h-screen">
           <div className="absolute inset-0 bg-[#131418]">
             <div className="absolute inset-0 bg-gradient-to-br from-[#131418] via-[#0f1013] to-[#0a0b0e]"></div>
@@ -138,7 +138,7 @@ const Login = () => {
           </div>
         </div>
 
-        {/* RIGHT SIDE - Form (unchanged) */}
+
         <div className="lg:w-1/2 flex flex-col items-center justify-start p-8 md:p-12 lg:p-8 bg-black">
           <div className="w-full max-w-[420px] flex justify-end">
             <div className="flex items-center gap-2 text-secondary/70 hover:text-secondary transition-colors cursor-pointer">

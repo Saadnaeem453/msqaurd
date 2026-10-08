@@ -44,7 +44,7 @@ const ProfilePage = () => {
   const [interests, setInterests] = useState<string[]>([]);
   const [isPremium] = useState(true);
 
-  // Fetch profile data from API
+
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -122,11 +122,11 @@ const ProfilePage = () => {
 
   return (
     <div className="w-full py-24">
-      {/* ─ Header Section ─────────────────────────────────── */}
+
       <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6 mb-8">
-        {/* Left: Profile Info */}
+
         <div className="flex items-start gap-5">
-          {/* Profile Picture */}
+
           <div className="relative">
             <div className="w-20 h-20 md:w-24 md:h-24 rounded-xl bg-secondary/10 overflow-hidden flex items-center justify-center">
               {profileData?.avatar_url ? (
@@ -146,7 +146,7 @@ const ProfilePage = () => {
             )}
           </div>
 
-          {/* Name & Bio */}
+
           <div className="flex-1">
             <div className="flex items-center gap-3 mb-2">
               <h1 className="text-2xl font-jakarta md:text-3xl font-bold text-white">
@@ -166,7 +166,7 @@ const ProfilePage = () => {
           </div>
         </div>
 
-        {/* Right: Action Buttons */}
+
         <div className="flex items-center gap-3 md:mt-2">
           <button
             onClick={() => navigate("/home/profile/edit")}
@@ -181,11 +181,11 @@ const ProfilePage = () => {
         </div>
       </div>
 
-      {/* ─ Two-Column Layout ─────────────────────────────── */}
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* ─ Left Column ────────────────────────────────── */}
+
         <div className="lg:col-span-1 space-y-6">
-          {/* Identity Metrics */}
+
           <div className="bg-gradient-to-br from-[#191a1e] to-[#0e0f14] border border-secondary/10 rounded-xl px-5 py-8">
             <h3 className="text-[10px] uppercase tracking-[0.15em] font-normal text-primary mb-4">
               Identity Metrics
@@ -215,7 +215,7 @@ const ProfilePage = () => {
             </div>
           </div>
 
-          {/* Core Interests */}
+
           <div className="bg-gradient-to-br from-[#191a1e] to-[#0e0f14] border border-secondary/10 rounded-xl p-5">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-[12px] uppercase tracking-[0.15em] font-normal text-secondary">
@@ -244,7 +244,7 @@ const ProfilePage = () => {
             </button>
           </div>
 
-          {/* Achievements */}
+
           <div className="bg-gradient-to-br from-[#191a1e] to-[#0e0f14] border border-secondary/10 rounded-xl p-5">
             <h3 className="text-[10px] uppercase tracking-[0.15em] font-normal text-secondary mb-4">
               Achievements
@@ -273,11 +273,11 @@ const ProfilePage = () => {
           </div>
         </div>
 
-        {/* ─ Right Column ───────────────────────────────── */}
+
         <div className="lg:col-span-2 space-y-6">
-          {/* Next Event */}
+
           <div className="relative bg-gradient-to-br from-[#191a1e] to-[#0e0f14] border border-secondary/10 rounded-xl p-5 overflow-hidden">
-            {/* Red gradient corner */}
+
             <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-red-600/20 via-red-600/5 to-transparent rounded-bl-full" />
             <div className="flex items-center gap-2 mb-4 relative z-10">
               <span className="w-1.5 h-1.5 rounded-full bg-primary" />
@@ -300,7 +300,7 @@ const ProfilePage = () => {
                     09:00 AM – 06:00 PM
                   </span>
                 </div>
-                {/* Attendee avatars */}
+
                 <div className="flex items-center gap-2">
                   <div className="flex -space-x-2">
                     {[1, 2, 3].map((i) => (
@@ -315,7 +315,7 @@ const ProfilePage = () => {
                   <span className="text-secondary text-xs">+48</span>
                 </div>
               </div>
-              {/* Date badge */}
+
               <div className="flex-shrink-0 text-center">
                 <div className="bg-primary/10 border border-primary/20 rounded-xl px-3 py-2">
                   <p className="text-primary text-2xl font-bold">24</p>
@@ -331,7 +331,7 @@ const ProfilePage = () => {
             </div>
           </div>
 
-          {/* Recent Activity */}
+
           <div className="bg-gradient-to-br from-[#191a1e] to-[#0e0f14] border border-secondary/10 rounded-xl p-5">
             <div className="flex items-center justify-between mb-5">
               <h3 className="text-[10px] uppercase tracking-[0.15em] font-semibold text-secondary">

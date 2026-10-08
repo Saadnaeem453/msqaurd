@@ -1,4 +1,4 @@
-// pages/OnboardingPage/CompletionPage.tsx
+
 import React, { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -18,7 +18,7 @@ const CompletionPage: React.FC<CompletionPageProps> = ({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const navigate = useNavigate();
 
-  // Confetti animation
+
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -99,13 +99,13 @@ const CompletionPage: React.FC<CompletionPageProps> = ({
 
   return (
     <div className="min-h-screen bg-[#121317] text-white font-inter flex flex-col relative overflow-hidden">
-      {/* Confetti */}
+
       <canvas ref={canvasRef} className="absolute inset-0 pointer-events-none z-0" />
 
-      {/* Main Content - Centered */}
+
       <div className="relative z-10 flex-1 flex items-center justify-center px-4 py-8">
         <div className="w-full max-w-2xl text-center">
-          {/* Tick */}
+
           <div className="flex justify-center mb-4">
             <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center">
               <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -114,28 +114,28 @@ const CompletionPage: React.FC<CompletionPageProps> = ({
             </div>
           </div>
 
-          {/* Title */}
+
           <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-2">
             You're all set, <span className="text-primary">{displayName}</span>!
           </h1>
 
-          {/* Description */}
+
           <p className="text-secondary text-sm md:text-base font-light leading-relaxed max-w-lg mx-auto mb-8">
             Based on your interest in{' '}
             <span className="text-white font-medium">{topInterest}</span> and location in{' '}
             <span className="text-white font-medium">{displayLocation}</span>, we've found 12 events for you.
           </p>
 
-          {/* Event Cards with subtle primary gradient background */}
+
           <div className="relative">
-            {/* Gradient glow behind the cards */}
+
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
               <div className="w-[120%] h-[120%] bg-primary/5 rounded-full blur-3xl"></div>
               <div className="absolute w-[80%] h-[80%] bg-primary/10 rounded-full blur-2xl"></div>
             </div>
 
             <div className="relative space-y-4 text-left">
-              {/* Top Match Card */}
+
               <div className="bg-black/80 backdrop-blur-sm rounded-xl p-5 border border-secondary/10">
                 <div className="flex items-center gap-2 mb-2">
                   <span className="text-primary text-[10px] font-bold uppercase tracking-wider">TOP MATCH</span>
@@ -147,7 +147,7 @@ const CompletionPage: React.FC<CompletionPageProps> = ({
                 </p>
               </div>
 
-              {/* Two smaller cards */}
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="bg-black/80 backdrop-blur-sm rounded-xl p-4 border border-secondary/10">
                   <h4 className="text-white text-sm font-semibold mb-0.5">Youth Leadership Circle</h4>
@@ -156,12 +156,12 @@ const CompletionPage: React.FC<CompletionPageProps> = ({
                     VIEW DETAILS
                   </button>
                 </div>
-                {/* Empty card placeholder – we'll use the button below */}
+
               </div>
             </div>
           </div>
 
-          {/* Explore Events Near You - Primary Background Button */}
+
           <div className="mt-6">
             <button
               type="button"
@@ -172,7 +172,7 @@ const CompletionPage: React.FC<CompletionPageProps> = ({
             </button>
           </div>
 
-          {/* Review My Preferences */}
+
           <div className="mt-4 text-center">
             <button
               onClick={onReviewPreferences}

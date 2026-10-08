@@ -8,10 +8,10 @@ const OrganizerDashboardLayout = () => {
 
   return (
     <div className="flex h-screen bg-[#0a0b0e] text-white overflow-hidden">
-      {/* Sidebar – full height */}
+
       <Sidebar />
 
-      {/* Right column: Navbar + content */}
+
       <div className="flex-1 flex flex-col overflow-hidden">
         <Navbar
           onTimeframeChange={(tf) => setTimeframe(tf)}
