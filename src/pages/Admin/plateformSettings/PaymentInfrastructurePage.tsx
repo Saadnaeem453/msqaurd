@@ -57,7 +57,6 @@ interface ToggleState {
 
 /* ================== Mock data (swap with real API later) ================== */
 
-const API_KEY_FULL = "";
 const API_KEY_MASKED = "";
 const WEBHOOK_SECRET = "";
 
@@ -206,7 +205,7 @@ const PaymentInfrastructurePage = () => {
                 </p>
                 <div className="mt-2 flex items-center gap-2 rounded-sm bg-bgray/10 px-3 py-2.5">
                   <span className="truncate font-mono text-[12px] text-bgray/80">
-                    {showKey ? API_KEY_FULL : API_KEY_MASKED}
+                    {showKey ? "API_KEY_FULL" : API_KEY_MASKED}
                   </span>
                   <button
                     type="button"
