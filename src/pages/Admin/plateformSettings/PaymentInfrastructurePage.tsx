@@ -57,9 +57,9 @@ interface ToggleState {
 
 /* ================== Mock data (swap with real API later) ================== */
 
-const API_KEY_FULL = "sk_live_51MvRBKj2NqRp9X4mB2v7QzL";
-const API_KEY_MASKED = "sk_live_51MvRBKj2NqRp9X...";
-const WEBHOOK_SECRET = "whsec_R2937409218472";
+const API_KEY_FULL = "";
+const API_KEY_MASKED = "";
+const WEBHOOK_SECRET = "";
 
 const latencyBars: LatencyBar[] = [
   { id: "b1", ms: 140, highlight: false },
