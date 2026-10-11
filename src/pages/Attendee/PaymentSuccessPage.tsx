@@ -1,115 +1,206 @@
-import { FiCheck, FiHome, FiMapPin } from "react-icons/fi";
+import { useCallback, useEffect, useState } from "react";
+import { FiCheck, FiHome, FiMapPin, FiRefreshCw } from "react-icons/fi";
 import { FaTicketAlt } from "react-icons/fa";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import {
+  attendeePaymentApi,
+  CheckoutSessionStatus,
+} from "../../services/attendee_payment.service";
 
-/* ============================= Types ============================= */
+const formatGBP = (amount: number) =>
+  new Intl.NumberFormat("en-GB", { style: "currency", currency: "GBP" }).format(amount);
 
-interface OrderSummary {
-  orderNumber: string;
-  date: string;
-  badge: string;
-  title: string;
-  venue: string;
-  ticketType: string;
-  totalPaid: string;
-}
+const PaymentSuccessPage = () => {
+  const navigate = useNavigate();
+  const { id: eventId } = useParams<{ id: string }>();
+  const [searchParams] = useSearchParams();
+  const sessionId = searchParams.get("session_id");
+  const [status, setStatus] = useState<CheckoutSessionStatus | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-/* ================== Mock data (swap with real API later) ================== */
+  const verifyOrder = useCallback(async () => {
+    if (!sessionId) {
+      setError("This return link is missing its checkout session. Check your tickets or contact support.");
+      setLoading(false);
+      return;
+    }
 
-const order: OrderSummary = {
-  orderNumber: "MSQ-8829A19",
-  date: "March 24, 2024",
-  badge: "Live Experience",
-  title: "Neon Horizon: The Underground Collective",
-  venue: "Cyber District Main Hall, Metropolis",
-  ticketType: "VIP Premium Access",
-  totalPaid: "$128.50",
-};
+    setLoading(true);
+    setError("");
+    try {
+      const result = await attendeePaymentApi.getCheckoutSessionStatus(sessionId);
+      if (!result.ok || !result.data) {
+        setError(result.detail || "We couldn't verify this order yet. Please try again.");
+        return;
+      }
+      setStatus(result.data);
+    } catch {
+      setError("We couldn't verify this order right now. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  }, [sessionId]);
 
-/* ============================= Page ============================= */
+  useEffect(() => {
+    void verifyOrder();
+  }, [verifyOrder]);
 
-const PaymentSuccessPage = () => (
-  <div className="flex min-h-screen flex-col items-center bg-surface px-4 py-16 font-inter text-foreground">
-    {/* Success icon with glow */}
-    <div className="relative">
-      <span className="absolute inset-0 rounded-full bg-primary/30 blur-2xl" aria-hidden="true" />
-      <span className="relative flex h-20 w-20 items-center justify-center rounded-full bg-primary">
-        <span className="flex h-12 w-12 items-center justify-center rounded-full bg-foreground">
-          <FiCheck size={24} strokeWidth={3.5} className="text-primary" />
+  const paidAndIssued =
+    status?.payment_status === "paid" &&
+    status.ticket_status === "issued" &&
+    (status.tickets?.length ?? 0) > 0;
+  const expired = status?.payment_status === "expired";
+  const failed = status?.payment_status === "failed" || status?.ticket_status === "failed";
+
+  return (
+    <div className="flex min-h-screen flex-col items-center bg-[#101114] px-4 py-12 font-inter text-[#e8e8eb] sm:py-16">
+      <div className="relative">
+        <span className="absolute inset-0 rounded-full bg-[#f20d22]/30 blur-3xl" aria-hidden="true" />
+        <span className="relative flex h-24 w-24 items-center justify-center rounded-full bg-[#f20d22]">
+          {paidAndIssued ? (
+            <FiCheck size={38} strokeWidth={3} className="text-white" />
+          ) : (
+            <FiRefreshCw size={32} className={`text-white ${loading ? "animate-spin" : ""}`} />
+          )}
         </span>
-      </span>
-    </div>
-
-    <h1 className="mt-8 text-center font-jakarta text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-      Payment Successful!
-    </h1>
-    <p className="mt-3 text-[10px] font-bold uppercase tracking-widest text-primary">
-      Order #{order.orderNumber}
-    </p>
-
-    {/* Ticket card */}
-    <section className="mt-8 w-full max-w-sm rounded-lg border border-border_color bg-surface-elevated p-4 text-left">
-      <div className="flex gap-3">
-        {/* Event artwork placeholder — swap for <img> when the asset exists */}
-        <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-md bg-gradient-to-br from-primary/60 to-primary/20" />
-        <div className="min-w-0 flex-1">
-          <div className="flex items-start justify-between gap-2">
-            <span className="rounded-full bg-primary/15 px-2 py-0.5 text-[8px] font-bold uppercase tracking-wide text-primary">
-              {order.badge}
-            </span>
-            <span className="text-[10px] text-foreground-muted">{order.date}</span>
-          </div>
-          <h2 className="mt-2 text-sm font-semibold leading-snug text-foreground">{order.title}</h2>
-          <p className="mt-1.5 flex items-center gap-1.5 text-[10px] text-foreground-muted">
-            <FiMapPin size={10} className="shrink-0" />
-            {order.venue}
-          </p>
-        </div>
       </div>
 
-      <div className="mt-4 flex items-end justify-between gap-3 border-t border-border_color pt-3">
-        <div>
-          <p className="text-[10px] font-semibold uppercase tracking-widest text-foreground-muted">
-            Ticket Type
-          </p>
-          <p className="mt-1 text-[10px] font-bold text-foreground">{order.ticketType}</p>
+      <h1 className="mt-7 text-center text-3xl font-bold tracking-tight sm:text-4xl">
+        {loading
+          ? "Verifying your payment"
+          : paidAndIssued
+          ? "Payment confirmed"
+          : expired
+          ? "Checkout session expired"
+          : failed
+          ? "Order needs attention"
+          : "Payment is processing"}
+      </h1>
+      <p className="mt-3 max-w-lg text-center text-sm text-[#aaaab0]">
+        {paidAndIssued
+          ? "Your payment and ticket issuance have been confirmed by our server."
+          : expired
+          ? "This Stripe Checkout session has expired. Please start a new checkout."
+          : failed
+          ? "The order or ticket issuance could not be completed. Please contact support."
+          : "We are checking the order with our server. Tickets will appear here only after payment and issuance are confirmed."}
+      </p>
+
+      {error && (
+        <div role="alert" className="mt-5 max-w-lg rounded-md border border-red-500/30 bg-red-500/10 p-3 text-center text-sm text-red-200">
+          {error}
         </div>
-        <div className="text-right">
-          <p className="text-[10px] font-semibold uppercase tracking-widest text-foreground-muted">
-            Total Paid
+      )}
+
+      {paidAndIssued && status && (
+        <>
+          <p className="mt-5 text-[10px] font-bold uppercase tracking-widest text-[#f20d22]">
+            Order {status.order_number ? `#${status.order_number}` : "confirmed"}
           </p>
-          <p className="mt-1 text-sm font-bold text-primary">{order.totalPaid}</p>
-        </div>
+          <section className="mt-7 w-full max-w-[452px] rounded-lg border border-white/10 bg-[#111214] p-5">
+            <div className="flex items-start gap-3">
+              <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-md bg-gradient-to-br from-[#f20d22]/70 via-[#48151b] to-[#17191d]" />
+              <div className="min-w-0 flex-1">
+                <h2 className="text-sm font-semibold leading-snug">
+                  {status.event_title || "Your event"}
+                </h2>
+                <p className="mt-1.5 flex items-center gap-1.5 text-[10px] text-[#aaaab0]">
+                  <FiMapPin size={10} className="shrink-0" />
+                  Ticket issued by MSQUARED
+                </p>
+              </div>
+            </div>
+            <div className="mt-4 flex items-end justify-between gap-3 border-t border-white/10 pt-3">
+              <div>
+                <p className="text-[10px] font-semibold uppercase tracking-widest text-[#aaaab0]">
+                  Ticket Type
+                </p>
+                <p className="mt-1 text-xs font-bold">
+                  {status.ticket_type || "Event ticket"}
+                  {status.quantity && status.quantity > 1 ? ` × ${status.quantity}` : ""}
+                </p>
+              </div>
+              {typeof status.total === "number" && (
+                <div className="text-right">
+                  <p className="text-[10px] font-semibold uppercase tracking-widest text-[#aaaab0]">
+                    Total Paid
+                  </p>
+                  <p className="mt-1 text-sm font-bold text-[#f20d22]">
+                    {formatGBP(status.total)}
+                  </p>
+                </div>
+              )}
+            </div>
+          </section>
+
+          <section className="mt-5 w-full max-w-[452px] space-y-3" aria-label="Issued tickets">
+            {status.tickets?.map((ticket) => (
+              <article key={ticket.id} className="rounded-lg border border-white/10 bg-[#111214] p-4">
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <h2 className="text-sm font-semibold">{ticket.ticket_type}</h2>
+                    {ticket.attendee_name && (
+                      <p className="mt-1 text-xs text-[#aaaab0]">{ticket.attendee_name}</p>
+                    )}
+                    <p className="mt-1 text-[10px] text-[#77777d]">Ticket #{ticket.id}</p>
+                  </div>
+                  {ticket.qr_code_url && (
+                    <img
+                      src={ticket.qr_code_url}
+                      alt={`QR code for ${ticket.ticket_type}`}
+                      className="h-20 w-20 rounded bg-white p-1"
+                    />
+                  )}
+                </div>
+              </article>
+            ))}
+          </section>
+        </>
+      )}
+
+      <div className="mt-6 flex w-full max-w-[452px] gap-3">
+        {expired ? (
+          <button
+            type="button"
+            onClick={() => eventId && navigate(`/home/events/${eventId}/plans`)}
+            className="flex flex-1 items-center justify-center gap-2 rounded-md bg-[#f20d22] py-3 text-xs font-bold transition hover:bg-[#f20d22]/90"
+          >
+            <FaTicketAlt size={13} /> Start a New Checkout
+          </button>
+        ) : (
+          <button
+            type="button"
+            onClick={() => void verifyOrder()}
+            disabled={loading || !sessionId}
+            className="flex flex-1 items-center justify-center gap-2 rounded-md bg-[#f20d22] py-3 text-xs font-bold transition hover:bg-[#f20d22]/90 disabled:opacity-50"
+          >
+            <FiRefreshCw className={loading ? "animate-spin" : ""} /> Verify Order
+          </button>
+        )}
+        <button
+          type="button"
+          onClick={() => navigate("/home")}
+          className="flex flex-1 items-center justify-center gap-2 rounded-md bg-white/10 py-3 text-xs font-bold transition hover:bg-white/15"
+        >
+          <FiHome /> Back to Home
+        </button>
       </div>
-    </section>
 
-    {/* Actions */}
-    <div className="mt-6 flex w-full max-w-sm gap-3">
-      <button
-        type="button"
-        className="flex flex-1 items-center justify-center gap-2 rounded-md bg-primary py-3 text-xs font-bold text-foreground transition hover:bg-primary/90"
-      >
-        <FaTicketAlt size={13} />
-        View My Ticket
-      </button>
-      <button
-        type="button"
-        className="flex flex-1 items-center justify-center gap-2 rounded-md bg-foreground/10 py-3 text-xs font-bold text-foreground transition hover:bg-foreground/15"
-      >
-        <FiHome size={13} />
-        Back to Home
-      </button>
+      {paidAndIssued && (
+        <button
+          type="button"
+          onClick={() => navigate("/home/tickets")}
+          className="mt-3 flex w-full max-w-[452px] items-center justify-center gap-2 rounded-md border border-white/10 py-3 text-xs font-bold transition hover:bg-white/5"
+        >
+          <FaTicketAlt size={13} /> View My Tickets
+        </button>
+      )}
+      <p className="mt-6 text-center text-[10px] text-[#77777d]">
+        Need help? Contact MSQUARED Support.
+      </p>
     </div>
-
-    <p className="mt-6 text-center text-[10px] text-foreground-muted">
-      A confirmation email has been sent to your registered address.
-    </p>
-    <p className="mt-1 text-center text-[10px] text-foreground-muted">
-      Need help?{" "}
-      <button type="button" className="font-semibold text-primary transition hover:underline">
-        Contact MSQUARED Support
-      </button>
-    </p>
-  </div>
-);
+  );
+};
 
 export default PaymentSuccessPage;

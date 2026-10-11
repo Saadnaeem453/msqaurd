@@ -183,7 +183,7 @@ const EventDetailPage = () => {
   };
 
   const handleBookSpot = () => {
-    toast.success("Booking initiated! Redirecting to checkout...");
+    navigate(`/home/events/${event?.id}/plans`);
   };
 
 

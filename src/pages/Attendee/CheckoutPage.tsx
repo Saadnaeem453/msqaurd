@@ -1,250 +1,248 @@
-import { useState } from "react";
-import type { FormEvent } from "react";
-import { loadStripe } from "@stripe/stripe-js";
-import {
-  CardCvcElement,
-  CardExpiryElement,
-  CardNumberElement,
-  Elements,
-  useElements,
-  useStripe,
-} from "@stripe/react-stripe-js";
-import { FiCalendar, FiCreditCard, FiLock, FiShield } from "react-icons/fi";
-import { toast } from "sonner";
+import { FormEvent, useEffect, useRef, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { FiArrowLeft, FiCalendar, FiLock, FiShield } from "react-icons/fi";
+import { AttendeeEventTier } from "../../services/attendee_events.service";
+import { attendeePaymentApi } from "../../services/attendee_payment.service";
 
-/* CRITICAL: set VITE_STRIPE_PUBLISHABLE_KEY; and point fetchClientSecret at your
-   backend POST /api/create-payment-intent (returns a PaymentIntent client_secret). */
-const stripePromise = loadStripe(
-  import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY ?? "pk_test_51PLACEHOLDER0000000000",
-);
+interface BookingSelection {
+  eventId: string;
+  eventTitle?: string;
+  tier: AttendeeEventTier;
+  quantity: number;
+}
 
-const ELEMENT_STYLE = {
-  base: {
-    color: "#F4F6F6",
-    fontSize: "14px",
-    fontFamily: "Inter, sans-serif",
-    "::placeholder": { color: "#8D9296" },
-    iconColor: "#8D9296",
-  },
-  invalid: { color: "#e50a15", iconColor: "#e50a15" },
+interface StoredUser {
+  full_name?: string;
+  email?: string;
+}
+
+const formatGBP = (amount: number) =>
+  new Intl.NumberFormat("en-GB", { style: "currency", currency: "GBP" }).format(amount);
+
+const getStoredUser = (): StoredUser => {
+  try {
+    const stored = localStorage.getItem("user");
+    const user = stored ? JSON.parse(stored) : null;
+    return {
+      full_name: typeof user?.full_name === "string" ? user.full_name : "",
+      email: typeof user?.email === "string" ? user.email : "",
+    };
+  } catch {
+    return {};
+  }
 };
 
-const ORDER_LINES = [
-  { id: "pass", label: "VIP Access Pass (x2)", value: "$250.00", tone: "light" as const },
-  { id: "discount", label: "Early Bird Discount", value: "- $50.00", tone: "primary" as const },
-  { id: "fee", label: "Processing Fee", value: "$12.50", tone: "light" as const },
-];
+const CheckoutPage = () => {
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const [booking, setBooking] = useState<BookingSelection | null>(null);
+  const [name, setName] = useState(() => getStoredUser().full_name || "");
+  const [email, setEmail] = useState(() => getStoredUser().email || "");
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
+  const submittingRef = useRef(false);
 
-const fetchClientSecret = async (): Promise<string> =>
-  "pi_test_00000000000000_secret_00000000000000";
-
-/* ============================= Checkout form ============================= */
-
-const CheckoutForm = () => {
-  const stripe = useStripe();
-  const elements = useElements();
-  const [fullName, setFullName] = useState("");
-  const [email, setEmail] = useState("");
-  const [saveCard, setSaveCard] = useState(false);
-  const [processing, setProcessing] = useState(false);
-
-  const handleSubmit = async (event: FormEvent) => {
-    event.preventDefault();
-    if (!fullName.trim() || !email.includes("@")) {
-      toast.error("Enter your full name and a valid email.");
-      return;
-    }
-    const card = elements?.getElement(CardNumberElement);
-    if (!stripe || !card || !elements) return;
-    setProcessing(true);
+  useEffect(() => {
     try {
-      const clientSecret = await fetchClientSecret();
-      const result = await stripe.confirmCardPayment(clientSecret, {
-        payment_method: {
-          card,
-          billing_details: { name: fullName.trim(), email: email.trim() },
-        },
-        receipt_email: email.trim(),
-        ...(saveCard ? { setup_future_usage: "off_session" } : {}),
-      });
-      if (result.error) toast.error(result.error.message ?? "Payment failed.");
-      else toast.success("Payment confirmed — see you at the Summit!");
+      const saved = JSON.parse(sessionStorage.getItem("bookingSelection") || "null") as
+        | BookingSelection
+        | null;
+      if (
+        saved?.eventId === id &&
+        typeof saved.tier?.id === "string" &&
+        Number.isInteger(saved.quantity) &&
+        saved.quantity > 0
+      ) {
+        setBooking(saved);
+      } else {
+        setBooking(null);
+      }
     } catch {
-      toast.error("Unable to reach the payment service.");
+      setBooking(null);
+    }
+  }, [id]);
+
+  const total = booking ? Number(booking.tier.price) * booking.quantity : 0;
+
+  const submit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!booking || !id || submittingRef.current) return;
+    submittingRef.current = true;
+    setSubmitting(true);
+    setError("");
+
+    try {
+      const result = await attendeePaymentApi.createCheckoutSession({
+        ticket_tier_id: booking.tier.id,
+        quantity: booking.quantity,
+        purchaser: {
+          full_name: name.trim(),
+          email: email.trim(),
+        },
+      });
+
+      if (!result.ok || !result.data?.checkout_url) {
+        const detail = result.detail || "";
+        setError(
+          detail.toLowerCase().includes("expired")
+            ? "This checkout session has expired. Please start checkout again."
+            : detail || "We couldn't start secure checkout. Please try again."
+        );
+        return;
+      }
+
+      const checkoutUrl = new URL(result.data.checkout_url);
+      if (checkoutUrl.protocol !== "https:" || checkoutUrl.hostname !== "checkout.stripe.com") {
+        setError("The secure checkout link returned by the server is invalid.");
+        return;
+      }
+
+      window.location.assign(checkoutUrl.toString());
+    } catch {
+      setError("We couldn't connect to secure checkout. Please try again.");
     } finally {
-      setProcessing(false);
+      submittingRef.current = false;
+      setSubmitting(false);
     }
   };
 
-  return (
-    <form onSubmit={handleSubmit} className="min-w-0">
-      <h1 className="font-jakarta text-3xl font-bold tracking-tight text-foreground">
-        Attendee Information
-      </h1>
-
-      <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <div>
-          <label htmlFor="full-name" className="text-[10px] font-bold uppercase tracking-widest text-secondary">
-            Full Name
-          </label>
-          <input
-            id="full-name"
-            type="text"
-            value={fullName}
-            onChange={(e) => setFullName(e.target.value)}
-            placeholder="John Doe"
-            className="mt-2 w-full rounded-md bg-surface-elevated px-4 py-3 text-sm text-foreground placeholder:text-foreground-muted focus:outline-none focus:ring-1 focus:ring-primary/50"
-          />
-        </div>
-        <div>
-          <label htmlFor="email" className="text-[10px] font-bold uppercase tracking-widest text-secondary">
-            Email Address
-          </label>
-          <input
-            id="email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="john@example.com"
-            className="mt-2 w-full rounded-md bg-surface-elevated px-4 py-3 text-sm text-foreground placeholder:text-foreground-muted focus:outline-none focus:ring-1 focus:ring-primary/50"
-          />
-        </div>
-      </div>
-
-      <div className="mt-8 flex items-center justify-between gap-3">
-        <h2 className="font-jakarta text-2xl font-bold tracking-tight text-foreground">
-          Payment Details
-        </h2>
-        <div className="flex items-center gap-1.5">
-          <span className="rounded-sm bg-surface-elevated px-2 py-1 text-[9px] font-bold text-foreground/70">VISA</span>
-          <span className="rounded-sm bg-surface-elevated px-2 py-1 text-[9px] font-bold text-foreground/70">MC</span>
-        </div>
-      </div>
-
-      <div className="mt-4 rounded-lg bg-surface-elevated p-5">
-        <p className="text-[10px] font-bold uppercase tracking-widest text-secondary">
-          Card Information
-        </p>
-        <div className="mt-3 flex items-center gap-4 rounded-md border border-border_color bg-surface px-4 py-3.5">
-          <FiCreditCard size={16} className="shrink-0 text-foreground/60" />
-          <CardNumberElement
-            options={ELEMENT_STYLE}
-            className="!w-full flex-1"
-          />
-          <CardExpiryElement options={ELEMENT_STYLE} className="!w-16 shrink-0" />
-          <CardCvcElement options={ELEMENT_STYLE} className="!w-12 shrink-0" />
-        </div>
-        <label className="mt-4 flex cursor-pointer items-center gap-2.5">
+  if (!booking) {
+    return (
+      <div className="min-h-screen bg-[#050505] p-10 text-center text-[#aaaab0]">
+        <p>Select a ticket plan before checking out.</p>
+        {id && (
           <button
             type="button"
-            role="checkbox"
-            aria-checked={saveCard}
-            onClick={() => setSaveCard((v) => !v)}
-            className={`flex h-4 w-4 items-center justify-center rounded-sm border transition ${
-              saveCard ? "border-primary bg-primary" : "border-foreground/30 bg-transparent"
-            }`}
+            onClick={() => navigate(`/home/events/${id}/plans`)}
+            className="mt-5 rounded-md bg-[#f20d22] px-5 py-3 text-sm font-bold text-white"
           >
-            {saveCard && <span className="text-[9px] font-bold text-foreground">✓</span>}
+            Choose tickets
           </button>
-          <span className="text-xs text-foreground/80">Save card for future community events</span>
-        </label>
+        )}
       </div>
+    );
+  }
 
-      <div className="mt-6 flex items-start gap-3 rounded-lg bg-surface-elevated p-4">
-        <FiShield size={16} className="mt-0.5 shrink-0 text-primary" />
-        <p className="text-xs leading-relaxed text-foreground/80">
-          Your transaction is secured with 256-bit SSL encryption and processed via Stripe.
-        </p>
-      </div>
-
-      {/* keeps submit reachable when the summary column stacks below on mobile */}
-      <button
-        type="submit"
-        disabled={!stripe || processing}
-        className="mt-6 flex w-full items-center justify-center gap-2 rounded-md bg-primary py-3 text-sm font-semibold text-foreground transition hover:bg-primary/90 disabled:opacity-60 lg:hidden"
-      >
-        <FiLock size={14} />
-        {processing ? "Processing…" : "Complete Payment"}
-      </button>
-    </form>
-  );
-};
-
-/* ============================= Order summary ============================= */
-
-const OrderSummary = () => {
-  const [processing] = useState(false);
   return (
-    <aside className="overflow-hidden rounded-xl border border-border_color bg-surface-elevated">
-      {/* Event artwork — swap for <img> when the asset is available */}
-      <div className="h-32 bg-gradient-to-br from-primary/50 via-primary/20 to-surface" />
-
-      <div className="p-6">
-        <p className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-foreground">
-          <span className="h-1.5 w-1.5 rounded-full bg-primary" aria-hidden="true" />
-          Live Confirmation
-        </p>
-
-        <h2 className="mt-4 text-lg font-semibold text-foreground">
-          Global Leadership Summit 2024
-        </h2>
-        <p className="mt-2 flex items-center gap-2 text-xs text-foreground/80">
-          <FiCalendar size={12} className="text-secondary" />
-          Oct 24 • 09:00 AM • Main Hall
-        </p>
-
-        <ul className="mt-5 space-y-3 border-t border-border_color pt-5">
-          {ORDER_LINES.map((line) => (
-            <li key={line.id} className="flex items-center justify-between gap-2 text-xs">
-              <span className="text-foreground/90">{line.label}</span>
-              <span className={line.tone === "primary" ? "text-primary" : "text-foreground"}>
-                {line.value}
-              </span>
-            </li>
-          ))}
-        </ul>
-
-        <div className="mt-5 border-t border-border_color pt-4">
-          <p className="text-right text-[9px] font-bold uppercase tracking-widest text-foreground-muted">
-            All Taxes Included
-          </p>
-          <p className="mt-1 flex items-center justify-between">
-            <span className="text-base font-semibold text-foreground">Total</span>
-            <span className="text-2xl font-bold text-primary">$212.50</span>
-          </p>
-        </div>
-
+    <div className="min-h-screen bg-[#050505] px-4 py-8 font-inter text-[#e8e8eb] sm:px-6 lg:py-12">
+      <div className="mx-auto max-w-[1120px]">
         <button
           type="button"
-          disabled={processing}
-          className="mt-5 hidden w-full items-center justify-center gap-2 rounded-md bg-primary py-3 text-sm font-semibold text-foreground transition hover:bg-primary/90 disabled:opacity-60 lg:flex"
+          onClick={() => navigate(`/home/events/${id}/plans`)}
+          className="mb-7 flex items-center gap-2 text-xs text-[#aaaab0] hover:text-white"
         >
-          <FiLock size={14} />
-          Complete Payment
+          <FiArrowLeft /> Back to plans
         </button>
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_326px]">
+          <form onSubmit={submit} className="min-w-0">
+            <h1 className="text-2xl font-bold sm:text-3xl">Attendee Information</h1>
+            <p className="mt-2 text-sm text-[#aaaab0]">
+              Enter the purchaser details for your ticket order.
+            </p>
+            <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <label className="text-[10px] font-bold uppercase tracking-wide text-[#c9a8aa]">
+                Full Name
+                <input
+                  required
+                  autoComplete="name"
+                  value={name}
+                  onChange={(event) => setName(event.target.value)}
+                  placeholder="Your full name"
+                  className="mt-2 w-full rounded-md border border-white/10 bg-[#1a1a1b] px-3 py-3 text-sm normal-case tracking-normal text-white outline-none focus:border-[#f20d22]"
+                />
+              </label>
+              <label className="text-[10px] font-bold uppercase tracking-wide text-[#c9a8aa]">
+                Email Address
+                <input
+                  required
+                  type="email"
+                  autoComplete="email"
+                  value={email}
+                  onChange={(event) => setEmail(event.target.value)}
+                  placeholder="you@example.com"
+                  className="mt-2 w-full rounded-md border border-white/10 bg-[#1a1a1b] px-3 py-3 text-sm normal-case tracking-normal text-white outline-none focus:border-[#f20d22]"
+                />
+              </label>
+            </div>
 
-        <p className="mt-4 text-center text-[10px] text-foreground-muted">
-          By clicking "Complete Payment", you agree to our{" "}
-          <span className="underline decoration-foreground-muted underline-offset-2">
-            Terms of Service
-          </span>
-        </p>
-      </div>
-    </aside>
-  );
-};
+            <div className="mt-8 flex items-center justify-between">
+              <h2 className="text-2xl font-bold">Secure Payment</h2>
+              <div className="flex items-center gap-2 text-xs text-[#99999e]">
+                <FiLock /> Stripe Hosted Checkout
+              </div>
+            </div>
+            <div className="mt-5 rounded-lg border border-white/10 bg-[#111112] p-5 text-sm leading-relaxed text-[#c9a8aa]">
+              <p className="flex items-start gap-3">
+                <FiShield className="mt-0.5 shrink-0 text-[#f20d22]" />
+                Card details are entered securely on Stripe. MSQUARED never collects or stores
+                your card number, expiry date, or security code.
+              </p>
+            </div>
 
-/* ============================= Page ============================= */
+            {error && (
+              <p role="alert" className="mt-4 rounded-md border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-200">
+                {error}
+              </p>
+            )}
 
-const CheckoutPage = () => (
-  <Elements stripe={stripePromise}>
-    <div className="min-h-screen bg-surface font-inter text-foreground">
-      <div className="mx-auto grid max-w-6xl grid-cols-1 gap-8 px-4 py-10 sm:px-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,300px)]">
-        <CheckoutForm />
-        <OrderSummary />
+            <button
+              type="submit"
+              disabled={submitting}
+              className="mt-6 flex w-full items-center justify-center gap-2 rounded-md bg-[#f20d22] py-3 text-sm font-bold text-white disabled:cursor-wait disabled:opacity-60 lg:hidden"
+            >
+              <FiLock />
+              {submitting ? "Connecting to Stripe..." : "Pay Securely with Stripe"}
+            </button>
+          </form>
+
+          <aside className="overflow-hidden rounded-lg border border-white/10 bg-[#111112]">
+            <div className="h-32 bg-gradient-to-br from-[#32151a] via-[#171a1d] to-[#0c1014]" />
+            <div className="p-5">
+              <p className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-wide">
+                <span className="h-1.5 w-1.5 rounded-full bg-[#f20d22]" /> Order Summary · GBP
+              </p>
+              <h2 className="mt-6 text-lg font-semibold">{booking.eventTitle || "Event Booking"}</h2>
+              <p className="mt-2 flex items-center gap-2 text-[10px] text-[#c9a8aa]">
+                <FiCalendar size={12} /> Your selected experience
+              </p>
+              <ul className="mt-6 space-y-4 border-t border-white/10 pt-5 text-xs">
+                <li className="flex justify-between gap-3">
+                  <span>{booking.tier.name} (x{booking.quantity})</span>
+                  <span>{formatGBP(total)}</span>
+                </li>
+                <li className="flex justify-between gap-3">
+                  <span>Booking fee</span>
+                  <span className="text-right text-[#aaaab0]">Calculated at checkout</span>
+                </li>
+              </ul>
+              <div className="mt-5 border-t border-white/10 pt-4">
+                <p className="text-right text-[8px] font-bold uppercase tracking-wider text-[#c9a8aa]">
+                  Final amount confirmed by Stripe
+                </p>
+                <p className="mt-1 flex items-center justify-between">
+                  <span className="font-semibold">Total (GBP)</span>
+                  <span className="text-lg font-bold text-[#f20d22]">Confirmed in Stripe</span>
+                </p>
+              </div>
+              <button
+                type="button"
+                disabled={submitting}
+                onClick={() => document.querySelector("form")?.requestSubmit()}
+                className="mt-6 hidden w-full items-center justify-center gap-2 rounded-md bg-[#f20d22] py-3 text-sm font-bold text-white disabled:cursor-wait disabled:opacity-60 lg:flex"
+              >
+                <FiLock />
+                {submitting ? "Connecting to Stripe..." : "Pay Securely with Stripe"}
+              </button>
+              <p className="mt-4 text-center text-[9px] text-[#77777d]">
+                The server calculates the final order amount. No card details are entered on this
+                page.
+              </p>
+            </div>
+          </aside>
+        </div>
       </div>
     </div>
-  </Elements>
-);
+  );
+};
 
 export default CheckoutPage;

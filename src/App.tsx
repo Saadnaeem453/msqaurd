@@ -16,6 +16,10 @@ import EditProfilePage from "./pages/Attendee/EditProfilePage";
 import WishlistPage from "./pages/Attendee/WishlistPage";
 import NotificationsPage from "./pages/Attendee/NotificationsPage";
 import MyTicketsPage from "./pages/Attendee/MyTicketsPage";
+import SelectExperiencePage from "./pages/Attendee/SelectExperiencePage";
+import CheckoutPage from "./pages/Attendee/CheckoutPage";
+import PaymentSuccessPage from "./pages/Attendee/PaymentSuccessPage";
+import PaymentCancelledPage from "./pages/Attendee/PaymentCancelledPage";
 
 import Login from "./pages/LoginPage/Login";
 import Signup from "./pages/SignupPage/Signup";
@@ -255,6 +259,10 @@ function App() {
           <Route path="category/:category" element={<CategoryPage />} />
           <Route path="map" element={<MapView />} />
           <Route path="events/:id" element={<EventDetailPage />} />
+          <Route path="events/:id/plans" element={<SelectExperiencePage />} />
+          <Route path="events/:id/checkout" element={<CheckoutPage />} />
+          <Route path="events/:id/payment-success" element={<PaymentSuccessPage />} />
+          <Route path="events/:id/payment-cancelled" element={<PaymentCancelledPage />} />
           <Route path="events/:id/reviews" element={<EventReviewsPage />} />
           <Route path="profile" element={<ProfilePage />} />
           <Route path="profile/edit" element={<EditProfilePage />} />
