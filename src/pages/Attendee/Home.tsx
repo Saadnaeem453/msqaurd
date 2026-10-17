@@ -1,10 +1,11 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { MapPin } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useRecommendedEvents, useAllEvents } from "../../hooks/useAttendeeEvents";
 import HeroCarousel from "../../components/Attendee/HeroCarousel";
 import CategoryBrowser from "../../components/Attendee/CategoryBrowser";
 import EventCard from "../../components/Attendee/EventCard";
+import { attendeeEventsApi } from "../../services/attendee_events.service";
 
 
 
@@ -14,6 +15,15 @@ const DEFAULT_USER_LON = -0.1278;
 const Home = () => {
   const navigate = useNavigate();
   const [activeCategory, setActiveCategory] = useState("all");
+  const [joinedEventIds, setJoinedEventIds] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    attendeeEventsApi.getPurchased({ page: 1, limit: 100 }).then((result) => {
+      if (result.ok && result.data) {
+        setJoinedEventIds(new Set(result.data.events.map((item) => item.event.id)));
+      }
+    });
+  }, []);
 
 
   const { events: recommended, loading: recommendedLoading, error: recommendedError } =
@@ -129,6 +139,7 @@ const Home = () => {
               <EventCard
                 key={event.id}
                 event={event}
+                joined={joinedEventIds.has(event.id)}
                 userLat={DEFAULT_USER_LAT}
                 userLon={DEFAULT_USER_LON}
               />

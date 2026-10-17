@@ -42,6 +42,7 @@ const EventReviewsPage = () => {
   const [editingReview, setEditingReview] = useState<AttendeeReview | null>(null);
   const [replyTarget, setReplyTarget] = useState<{ id: string; name: string } | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<AttendeeReview | null>(null);
+  const [reviewPermission, setReviewPermission] = useState<{ has_reviewed: boolean; can_review: boolean } | null>(null);
 
 
   const [helpfulVotes, setHelpfulVotes] = useState<Record<string, boolean>>({});
@@ -81,6 +82,15 @@ const EventReviewsPage = () => {
   useEffect(() => {
     fetchReviews();
   }, [id, currentPage, sortBy]);
+
+  useEffect(() => {
+    if (!id) return;
+    attendeeEventsApi.getMyReview(id).then((res) => {
+      if (res.ok && res.data) setReviewPermission(res.data);
+    });
+  }, [id]);
+
+  const canWriteReview = reviewPermission?.has_reviewed !== true;
 
 
   const handleHelpful = async (reviewId: string) => {
@@ -123,6 +133,8 @@ const EventReviewsPage = () => {
   };
 
   const totalPages = reviews ? Math.ceil(reviews.total_reviews / ITEMS_PER_PAGE) : 1;
+  const ratingValue = Number(reviews?.average_rating);
+  const averageRating = Number.isFinite(ratingValue) ? ratingValue : 0;
 
   return (
     <div className="max-w-6xl mx-auto py-8">
@@ -158,7 +170,7 @@ const EventReviewsPage = () => {
         <div className="text-right">
           <div className="flex items-baseline gap-1 justify-end">
             <span className="text-4xl font-bold text-white">
-              {reviews ? reviews.average_rating.toFixed(1) : "—"}
+              {reviews ? averageRating.toFixed(1) : "—"}
             </span>
             <span className="text-secondary/50 text-sm">/5.0</span>
           </div>
@@ -168,11 +180,11 @@ const EventReviewsPage = () => {
                 key={s}
                 size={16}
                 className={
-                  reviews && s <= Math.round(reviews.average_rating)
+                  reviews && s <= Math.round(averageRating)
                     ? "text-primary"
                     : "text-secondary/20"
                 }
-                fill={reviews && s <= Math.round(reviews.average_rating) ? "currentColor" : "none"}
+                fill={reviews && s <= Math.round(averageRating) ? "currentColor" : "none"}
               />
             ))}
           </div>
@@ -187,13 +199,15 @@ const EventReviewsPage = () => {
 
         <div className="lg:col-span-1 space-y-6">
 
-          <button
-            onClick={() => setShowWriteReview(true)}
-            className="w-full bg-primary hover:bg-primary/90 text-white text-sm font-bold uppercase tracking-wider py-3.5 rounded-lg transition-colors flex items-center justify-center gap-2"
-          >
-            <PenLine size={16} />
-            Write a Review
-          </button>
+          {canWriteReview && (
+            <button
+              onClick={() => setShowWriteReview(true)}
+              className="w-full bg-primary hover:bg-primary/90 text-white text-sm font-bold uppercase tracking-wider py-3.5 rounded-lg transition-colors flex items-center justify-center gap-2"
+            >
+              <PenLine size={16} />
+              Write a Review
+            </button>
+          )}
 
 
           <div className="bg-[#131418] border border-secondary/10 rounded-xl p-5">
@@ -429,12 +443,14 @@ const EventReviewsPage = () => {
               <MessageSquare className="text-secondary/30 mx-auto mb-3" size={32} />
               <h3 className="text-white text-lg font-semibold mb-1">No reviews yet</h3>
               <p className="text-secondary text-sm mb-4">Be the first to review this event!</p>
-              <button
-                onClick={() => setShowWriteReview(true)}
-                className="text-sm text-primary border border-primary/30 hover:bg-primary/10 rounded-full px-5 py-2 transition-colors"
-              >
-                Write a Review
-              </button>
+              {canWriteReview && (
+                <button
+                  onClick={() => setShowWriteReview(true)}
+                  className="text-sm text-primary border border-primary/30 hover:bg-primary/10 rounded-full px-5 py-2 transition-colors"
+                >
+                  Write a Review
+                </button>
+              )}
             </div>
           )}
 
@@ -467,7 +483,14 @@ const EventReviewsPage = () => {
           setEditingReview(null);
         }}
         eventId={id || ""}
-        onSuccess={fetchReviews}
+        onSuccess={() => {
+          void fetchReviews();
+          if (id) {
+            attendeeEventsApi.getMyReview(id).then((res) => {
+              if (res.ok && res.data) setReviewPermission(res.data);
+            });
+          }
+        }}
         editReview={editingReview ? {
           id: editingReview.id,
           rating: editingReview.rating,

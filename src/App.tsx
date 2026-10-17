@@ -241,6 +241,12 @@ function App() {
         <Route path="successmessage" element={<PublicRoute><SuccessMessage /></PublicRoute>} />
         <Route path="admin-login" element={<AdminLogin />} />
 
+        {/* Stripe hosted checkout return URLs (the backend uses these paths). */}
+        <Route path="checkout/success" element={<PaymentSuccessPage />} />
+        <Route path="checkout/cancelled" element={<PaymentCancelledPage />} />
+        <Route path="checkout/canceled" element={<PaymentCancelledPage />} />
+        <Route path="checkout/failure" element={<PaymentCancelledPage />} />
+
         <Route path="onboarding" element={<OnboardingPage />} />
 
         <Route

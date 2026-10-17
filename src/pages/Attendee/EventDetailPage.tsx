@@ -50,6 +50,7 @@ const EventDetailPage = () => {
   const [myReview, setMyReview] = useState<{ has_reviewed: boolean; can_review: boolean } | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [alreadyBooked, setAlreadyBooked] = useState(false);
 
 
   useEffect(() => {
@@ -130,6 +131,16 @@ const EventDetailPage = () => {
         // Silent fail
       });
 
+    attendeeEventsApi
+      .getPurchased({ page: 1, limit: 100 })
+      .then((res) => {
+        if (cancelled || !res.ok || !res.data) return;
+        setAlreadyBooked(res.data.events.some((item) => item.event.id === id));
+      })
+      .catch(() => {
+        // Purchased-event status is non-critical to the detail page.
+      });
+
     return () => {
       cancelled = true;
     };
@@ -196,6 +207,8 @@ const EventDetailPage = () => {
       : `$${Number(primaryPrice).toFixed(2)}`;
 
   const firstSpeaker = event?.speakers?.[0] || null;
+  const averageRatingValue = Number(reviews?.average_rating);
+  const averageRating = Number.isFinite(averageRatingValue) ? averageRatingValue : 0;
 
   const galleryImages = (event?.gallery || [])
     .sort((a, b) => a.order - b.order)
@@ -324,7 +337,7 @@ const EventDetailPage = () => {
                   /* Reviews exist — show summary + View Reviews button */
                   <div className="flex flex-wrap items-center gap-6">
                     <div className="flex items-baseline gap-1">
-                      <span className="text-4xl font-bold text-white">{reviews.average_rating.toFixed(1)}</span>
+                      <span className="text-4xl font-bold text-white">{averageRating.toFixed(1)}</span>
                       <span className="text-secondary/50 text-sm">/5.0</span>
                     </div>
                     <div className="flex items-center gap-0.5">
@@ -332,8 +345,8 @@ const EventDetailPage = () => {
                         <Star
                           key={s}
                           size={18}
-                          className={s <= Math.round(reviews.average_rating) ? "text-primary" : "text-secondary/20"}
-                          fill={s <= Math.round(reviews.average_rating) ? "currentColor" : "none"}
+                          className={s <= Math.round(averageRating) ? "text-primary" : "text-secondary/20"}
+                          fill={s <= Math.round(averageRating) ? "currentColor" : "none"}
                         />
                       ))}
                     </div>
@@ -499,12 +512,14 @@ const EventDetailPage = () => {
                   </div>
                 </div>
 
-                <button
-                  onClick={handleBookSpot}
-                  className="w-full bg-primary hover:bg-primary/90 text-white text-sm font-semibold py-3 rounded-lg transition-colors"
-                >
-                  Book Your Spot
-                </button>
+                {!alreadyBooked && (
+                  <button
+                    onClick={handleBookSpot}
+                    className="w-full bg-primary hover:bg-primary/90 text-white text-sm font-semibold py-3 rounded-lg transition-colors"
+                  >
+                    Book Your Spot
+                  </button>
+                )}
 
 
                 <div className="flex items-center gap-3">

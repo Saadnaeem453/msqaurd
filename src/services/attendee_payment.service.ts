@@ -35,10 +35,11 @@ export interface CheckoutSessionStatus {
 }
 
 export const attendeePaymentApi = {
-  createCheckoutSession: (payload: CreateCheckoutSessionPayload) =>
+  createCheckoutSession: (payload: CreateCheckoutSessionPayload, idempotencyKey: string) =>
     api.post<CheckoutSessionResponse>("/payments/checkout-session", payload, {
       successMessage: false,
       errorMessage: false,
+      headers: { "Idempotency-Key": idempotencyKey },
     }),
 
   getCheckoutSessionStatus: (sessionId: string) =>

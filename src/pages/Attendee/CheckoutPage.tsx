@@ -41,6 +41,7 @@ const CheckoutPage = () => {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const submittingRef = useRef(false);
+  const checkoutAttemptRef = useRef<{ selection: string; key: string } | null>(null);
 
   useEffect(() => {
     try {
@@ -64,6 +65,15 @@ const CheckoutPage = () => {
 
   const total = booking ? Number(booking.tier.price) * booking.quantity : 0;
 
+  const getCheckoutIdempotencyKey = () => {
+    if (!booking) return "";
+    const selection = `${booking.eventId}:${booking.tier.id}:${booking.quantity}:${name.trim()}:${email.trim()}`;
+    if (checkoutAttemptRef.current?.selection !== selection) {
+      checkoutAttemptRef.current = { selection, key: crypto.randomUUID() };
+    }
+    return checkoutAttemptRef.current.key;
+  };
+
   const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!booking || !id || submittingRef.current) return;
@@ -79,7 +89,7 @@ const CheckoutPage = () => {
           full_name: name.trim(),
           email: email.trim(),
         },
-      });
+      }, getCheckoutIdempotencyKey());
 
       if (!result.ok || !result.data?.checkout_url) {
         const detail = result.detail || "";

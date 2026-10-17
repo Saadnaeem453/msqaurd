@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   TrendingUp,
   Minus,
@@ -17,6 +17,7 @@ import {
   Tooltip,
   CartesianGrid,
 } from "recharts";
+import { organizerTicketSalesApi, RevenueOverview, RevenueTransaction } from "../../../services/organizer_ticket_sales.service";
 
 
 interface Transaction {
@@ -27,73 +28,13 @@ interface Transaction {
   email: string;
   eventName: string;
   tier: string;
-  tierVariant: "vip" | "standard" | "early";
   price: number;
-  status: "Completed" | "Refunded" | "Pending";
+  status: "pending" | "succeeded" | "failed" | "refunded";
 }
 
 
 const timeOptions = ["7D", "30D", "90D", "1Y"];
 
-const salesVelocityData = [
-  { date: "JUL 01", general: 120, vip: 40 },
-  { date: "JUL 07", general: 250, vip: 65 },
-  { date: "JUL 14", general: 380, vip: 90 },
-  { date: "JUL 21", general: 620, vip: 130 },
-  { date: "JUL 28", general: 890, vip: 175 },
-  { date: "AUG 01", general: 1200, vip: 210 },
-];
-
-const transactions: Transaction[] = [
-  {
-    id: "#TXN-82910",
-    customer: "Jordan Davies",
-    customerInitials: "JD",
-    customerColor: "bg-primary/20 text-primary",
-    email: "jordan.d@gmail.com",
-    eventName: "Midnight City Festival",
-    tier: "VIP ACCESS",
-    tierVariant: "vip",
-    price: 149.0,
-    status: "Completed",
-  },
-  {
-    id: "#TXN-82908",
-    customer: "Sarah Chen",
-    customerInitials: "SC",
-    customerColor: "bg-secondary/20 text-secondary",
-    email: "s.chen@techvco",
-    eventName: "Modern Leadership Summit",
-    tier: "STANDARD",
-    tierVariant: "standard",
-    price: 45.0,
-    status: "Completed",
-  },
-  {
-    id: "#TXN-82905",
-    customer: "Marcus Knight",
-    customerInitials: "MK",
-    customerColor: "bg-secondary/20 text-secondary",
-    email: "markus@getmuse.com",
-    eventName: "Midnight City Festival",
-    tier: "STANDARD",
-    tierVariant: "standard",
-    price: 89.0,
-    status: "Refunded",
-  },
-  {
-    id: "#TXN-82899",
-    customer: "Elena Lopez",
-    customerInitials: "EL",
-    customerColor: "bg-primary/20 text-primary",
-    email: "elena.1@outlook.com",
-    eventName: "AI Future Expo",
-    tier: "EARLY BIRD",
-    tierVariant: "early",
-    price: 120.0,
-    status: "Completed",
-  },
-];
 
 
 function formatCurrency(amount: number): string {
@@ -129,13 +70,13 @@ const StatCard = ({
       {icon}
     </div>
     <div className="flex items-end gap-2 mb-1">
-      <span className="text-2xl md:text-3xl font-bold text-white font-jakarta break-all">
+      <span className={`text-2xl md:text-3xl font-bold font-jakarta break-all ${label === "NET PROFIT" ? "text-primary" : "text-white"}`}>
         {value}
       </span>
       <span
         className={`flex items-center gap-0.5 text-xs font-medium mb-1 ${
           changeType === "up"
-            ? "text-green-400"
+            ? "text-green"
             : changeType === "down"
               ? "text-red-400"
               : "text-secondary/60"
@@ -152,40 +93,54 @@ const StatCard = ({
 
 const TierBadge = ({
   variant,
+  label,
 }: {
-  variant: "vip" | "standard" | "early";
+  variant: "vip" | "standard" | "premium" | "early";
+  label: string;
 }) => {
   const styles = {
     vip: "bg-primary/15 text-primary border border-primary/30",
     standard: "bg-secondary/10 text-secondary border border-secondary/20",
+    premium: "bg-purple-500/15 text-purple-300 border border-purple-400/30",
     early: "bg-primary/10 text-primary border border-primary/20",
   };
   return (
     <span
       className={`inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${styles[variant]}`}
     >
-      {variant === "vip" ? "VIP ACCESS" : variant === "early" ? "EARLY BIRD" : "STANDARD"}
+      {label}
     </span>
   );
 };
 
 const StatusBadge = ({ status }: { status: string }) => {
   const styles: Record<string, string> = {
-    Completed: "text-green-400",
-    Refunded: "text-yellow-400",
-    Pending: "text-secondary/60",
+    succeeded: "text-green",
+    refunded: "text-yellow-400",
+    pending: "text-yellow-400",
+    failed: "text-red-400",
   };
   const dots: Record<string, string> = {
-    Completed: "bg-green-400",
-    Refunded: "bg-yellow-400",
-    Pending: "bg-secondary/40",
+    succeeded: "bg-green",
+    refunded: "bg-yellow-400",
+    pending: "bg-yellow-400",
+    failed: "bg-red-400",
   };
+  const label = status ? `${status.charAt(0).toUpperCase()}${status.slice(1)}` : "Unknown";
   return (
     <span className={`flex items-center gap-1.5 text-sm font-medium ${styles[status] || "text-secondary"}`}>
       <span className={`w-1.5 h-1.5 rounded-full ${dots[status] || "bg-secondary"}`} />
-      {status}
+      {label}
     </span>
   );
+};
+
+const getTierVariant = (tier: string): "vip" | "standard" | "premium" | "early" => {
+  const value = tier.toLowerCase();
+  if (value.includes("vip")) return "vip";
+  if (value.includes("premium")) return "premium";
+  if (value.includes("early")) return "early";
+  return "standard";
 };
 
 
@@ -193,14 +148,42 @@ const TicketSales = () => {
   const [selectedPeriod, setSelectedPeriod] = useState("30D");
   const [showPeriodDropdown, setShowPeriodDropdown] = useState(false);
   const [showFilterDropdown, setShowFilterDropdown] = useState(false);
+  const [overview, setOverview] = useState<RevenueOverview | null>(null);
+  const [apiTransactions, setApiTransactions] = useState<RevenueTransaction[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const period = ({ "7D": "7d", "30D": "30d", "90D": "90d", "1Y": "1y" } as const)[selectedPeriod as "7D" | "30D" | "90D" | "1Y"];
 
-  const totalRevenue = 142850.0;
-  const ticketsSold = 4285;
-  const avgTicketPrice = 33.34;
-  const netProfit = 128565.0;
+  useEffect(() => {
+    let active = true;
+    setLoading(true);
+    Promise.all([
+      organizerTicketSalesApi.overview({ period }),
+      organizerTicketSalesApi.transactions({ period, page: 1, limit: 10, sort: "newest" }),
+    ]).then(([summary, rows]) => {
+      if (!active) return;
+      if (!summary.ok || !summary.data || !rows.ok || !rows.data) {
+        setError(summary.detail || rows.detail || "Unable to load ticket sales.");
+        return;
+      }
+      setOverview(summary.data);
+      setApiTransactions(rows.data.transactions);
+    }).catch(() => active && setError("Unable to load ticket sales.")).finally(() => active && setLoading(false));
+    return () => { active = false; };
+  }, [period]);
+
+  const totalRevenue = overview?.kpis.total_revenue || 0;
+  const ticketsSold = overview?.kpis.tickets_sold || 0;
+  const avgTicketPrice = overview?.kpis.average_ticket_price || 0;
+  const netProfit = overview?.kpis.net_profit || 0;
+  const salesVelocityData = useMemo(() => (overview?.sales_velocity || []).map((point) => ({ date: point.date, general: Object.values(point.tiers)[0] || 0, vip: Object.values(point.tiers)[1] || 0 })), [overview]);
+  const velocityTierNames = useMemo(() => Array.from(new Set((overview?.sales_velocity || []).flatMap((point) => Object.keys(point.tiers || {})))), [overview]);
+  const displayTransactions = useMemo(() => apiTransactions.map((tx) => ({ id: tx.order_id, customer: tx.purchaser?.full_name || "Attendee", customerInitials: (tx.purchaser?.full_name || "U").split(" ").map((part) => part[0]).join("").slice(0, 2), customerColor: "bg-secondary/20 text-secondary", email: tx.purchaser?.email || "", eventName: tx.event || "—", tier: (tx.tier || "—").toUpperCase(), tierVariant: getTierVariant(tx.tier || ""), price: tx.transaction_total_minor / 100, status: tx.payment_status as "pending" | "succeeded" | "failed" | "refunded" })), [apiTransactions]);
 
   return (
     <div className="max-w-[1500px] mx-auto px-4 md:px-6 py-4 md:py-6 space-y-6">
+
+      {error && <div className="rounded-lg border border-red-500/20 bg-red-500/10 p-4 text-sm text-red-300">{error}</div>}
 
       <div>
         <p className="text-secondary/60 text-sm mb-1">
@@ -281,25 +264,25 @@ const TicketSales = () => {
         <StatCard
           label="TOTAL REVENUE"
           value={formatCurrency(totalRevenue)}
-          change="+12.5% vs prev month"
+          change={`${overview?.kpis.percentage_changes.total_revenue ?? 0}% vs previous period`}
           changeType="up"
         />
         <StatCard
           label="TICKETS SOLD"
           value={ticketsSold.toLocaleString()}
-          change="+8.2% vs prev month"
+          change={`${overview?.kpis.percentage_changes.tickets_sold ?? 0}% vs previous period`}
           changeType="up"
         />
         <StatCard
           label="AVG. TICKET PRICE"
           value={`$${avgTicketPrice.toFixed(2)}`}
-          change="Steady since June"
+          change="Current period average"
           changeType="neutral"
         />
         <StatCard
           label="NET PROFIT"
           value={formatCurrency(netProfit)}
-          change="+14.1% vs prev month"
+          change={`${overview?.kpis.percentage_changes.net_profit ?? 0}% vs previous period`}
           changeType="up"
         />
       </div>
@@ -318,11 +301,11 @@ const TicketSales = () => {
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-1.5">
               <div className="w-2.5 h-2.5 rounded-full bg-primary" />
-              <span className="text-secondary text-xs">General Admission</span>
+              <span className="text-secondary text-xs">{velocityTierNames[0] || "General Admission"}</span>
             </div>
             <div className="flex items-center gap-1.5">
               <div className="w-2.5 h-2.5 rounded-full bg-gray-500" />
-              <span className="text-secondary text-xs">VIP Access</span>
+              <span className="text-secondary text-xs">{velocityTierNames[1] || "VIP Access"}</span>
             </div>
             <button className="text-secondary/60 hover:text-white transition-colors">
               <MoreVertical size={16} />
@@ -415,7 +398,7 @@ const TicketSales = () => {
                     onClick={() => setShowFilterDropdown(false)}
                   />
                   <div className="absolute right-0 top-full mt-2 w-40 bg-[#1a1c22] border border-secondary/20 rounded-lg shadow-xl z-50 py-1">
-                    {["All Statuses", "Completed", "Refunded", "Pending"].map(
+                    {["All Statuses", "succeeded", "Refunded", "Pending"].map(
                       (opt) => (
                         <button
                           key={opt}
@@ -462,7 +445,7 @@ const TicketSales = () => {
               </tr>
             </thead>
             <tbody>
-              {transactions.map((tx) => (
+              {displayTransactions.map((tx) => (
                 <tr
                   key={tx.id}
                   className="border-b border-secondary/5 hover:bg-secondary/5 transition-colors"
@@ -491,7 +474,7 @@ const TicketSales = () => {
                     {tx.eventName}
                   </td>
                   <td className="py-3.5 px-4">
-                    <TierBadge variant={tx.tierVariant} />
+                    <TierBadge variant={tx.tierVariant} label={tx.tier} />
                   </td>
                   <td className="py-3.5 px-4 text-right text-white text-sm font-semibold">
                     ${tx.price.toFixed(2)}
@@ -528,7 +511,7 @@ const TicketSales = () => {
         </p>
         <div className="flex items-center gap-3 text-secondary/30 text-[10px] uppercase tracking-wider">
           <span className="flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
+            <span className="w-1.5 h-1.5 rounded-full bg-green animate-pulse" />
             Live Sales Feed
           </span>
           <span className="text-secondary/20">|</span>

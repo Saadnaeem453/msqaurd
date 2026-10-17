@@ -56,9 +56,10 @@ interface EventCardProps {
   userLat?: number;
   userLon?: number;
   compact?: boolean;
+  joined?: boolean;
 }
 
-const EventCard = ({ event, userLat, userLon, compact }: EventCardProps) => {
+const EventCard = ({ event, userLat, userLon, compact, joined = false }: EventCardProps) => {
   const navigate = useNavigate();
   const heroImg = getHeroImage(event);
   const price = getPrimaryPrice(event);
@@ -136,9 +137,9 @@ const EventCard = ({ event, userLat, userLon, compact }: EventCardProps) => {
               e.stopPropagation();
               goToDetail();
             }}
-            className="w-full text-center bg-primary hover:bg-primary/90 text-white text-xs font-bold uppercase tracking-wider py-2.5 rounded-lg transition-colors"
+            className={`w-full text-center text-white text-xs font-bold uppercase tracking-wider py-2.5 rounded-lg transition-colors ${joined ? "bg-secondary/20 hover:bg-secondary/30" : "bg-primary hover:bg-primary/90"}`}
           >
-            Book Now
+            {joined ? "Already Joined" : "Book Now"}
           </button>
         </div>
       </div>

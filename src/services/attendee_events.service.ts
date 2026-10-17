@@ -78,6 +78,25 @@ export interface AttendeeEvent {
   agenda?: AttendeeEventAgenda[];
 }
 
+export interface PurchasedEvent {
+  event: AttendeeEvent;
+  ticket_count: number;
+  booking_date: string;
+  order_reference: string;
+  order_ids: string[];
+  purchased_tiers: {
+    tier_id: string;
+    name: string | null;
+    quantity: number;
+    unit_amount_minor: number;
+  }[];
+}
+
+export interface PurchasedEventsResponse {
+  events: PurchasedEvent[];
+  pagination: { page: number; limit: number; total: number; total_pages: number };
+}
+
 export interface AttendeeReviewReply {
   id: string;
   user_name: string;
@@ -192,6 +211,13 @@ export const attendeeEventsApi = {
     api.get<AttendeeEvent>(`/events/public/${id}`, {
       successMessage: false,
       errorMessage: true,
+    }),
+
+  getPurchased: (params?: { page?: number; limit?: number }) =>
+    api.get<PurchasedEventsResponse>("/attendee/events/purchased", {
+      params,
+      successMessage: false,
+      errorMessage: false,
     }),
 
   /**

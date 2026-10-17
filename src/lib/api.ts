@@ -82,6 +82,8 @@ interface ToastOptions {
   errorMessage?: string | false;
   /** Show a loading toast while the request is in-flight */
   loadingMessage?: string;
+  /** Additional request headers, such as an idempotency key. */
+  headers?: Record<string, string>;
 }
 
 
@@ -136,6 +138,10 @@ async function request<TData = unknown>(
   const token = tokenStore.get();
   if (token && !publicAuthRoutes.has(endpoint)) {
     headers['Authorization'] = `Bearer ${token}`;
+  }
+
+  if (toastOptions.headers) {
+    Object.assign(headers, toastOptions.headers);
   }
 
 
@@ -234,6 +240,18 @@ if (res.status === 401) {
 
 
 export const api = {
+  download: async (endpoint: string, options: { params?: Record<string, string | number | undefined> } = {}): Promise<Blob> => {
+    const searchParams = new URLSearchParams();
+    Object.entries(options.params || {}).forEach(([key, value]) => {
+      if (value !== undefined && value !== '') searchParams.append(key, String(value));
+    });
+    const query = searchParams.toString();
+    const response = await fetch(`${BASE_URL}${endpoint}${query ? `?${query}` : ''}`, {
+      headers: tokenStore.get() ? { Authorization: `Bearer ${tokenStore.get()}` } : {},
+    });
+    if (!response.ok) throw new Error('Failed to download report');
+    return response.blob();
+  },
   get: <TData = unknown>(
     endpoint: string,
     toastOptionsOrParams?: ToastOptions | { params?: Record<string, any>; [key: string]: any },
