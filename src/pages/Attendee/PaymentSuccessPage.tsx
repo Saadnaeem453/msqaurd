@@ -10,6 +10,9 @@ import {
 const formatGBP = (amount: number) =>
   new Intl.NumberFormat("en-GB", { style: "currency", currency: "GBP" }).format(amount);
 
+const POLL_INTERVAL_MS = 2000;
+const MAX_STATUS_POLLS = 15;
+
 const PaymentSuccessPage = () => {
   const navigate = useNavigate();
   const { id: eventId } = useParams<{ id: string }>();
@@ -29,12 +32,24 @@ const PaymentSuccessPage = () => {
     setLoading(true);
     setError("");
     try {
-      const result = await attendeePaymentApi.getCheckoutSessionStatus(sessionId);
-      if (!result.ok || !result.data) {
-        setError(result.detail || "We couldn't verify this order yet. Please try again.");
-        return;
+      for (let attempt = 0; attempt < MAX_STATUS_POLLS; attempt += 1) {
+        const result = await attendeePaymentApi.getCheckoutSessionStatus(sessionId);
+        if (!result.ok || !result.data) {
+          setError(result.detail || "We couldn't verify this order yet. Please try again.");
+          return;
+        }
+
+        setStatus(result.data);
+        const isFinal = result.data.status === "paid" ||
+          result.data.payment_status === "paid" ||
+          result.data.payment_status === "succeeded" ||
+          result.data.payment_status === "failed" ||
+          result.data.payment_status === "expired";
+        if (isFinal) return;
+        if (attempt < MAX_STATUS_POLLS - 1) {
+          await new Promise((resolve) => window.setTimeout(resolve, POLL_INTERVAL_MS));
+        }
       }
-      setStatus(result.data);
     } catch {
       setError("We couldn't verify this order right now. Please try again.");
     } finally {
@@ -47,9 +62,10 @@ const PaymentSuccessPage = () => {
   }, [verifyOrder]);
 
   const paidAndIssued =
-    status?.payment_status === "paid" &&
-    status.ticket_status === "issued" &&
-    (status.tickets?.length ?? 0) > 0;
+    (status?.status === "paid" ||
+      status?.payment_status === "paid" ||
+      status?.payment_status === "succeeded") &&
+    (status.ticket_status === "issued" || (status.ticket_count ?? status.tickets?.length ?? 0) > 0);
   const expired = status?.payment_status === "expired";
   const failed = status?.payment_status === "failed" || status?.ticket_status === "failed";
 
@@ -66,16 +82,16 @@ const PaymentSuccessPage = () => {
         </span>
       </div>
 
-      <h1 className="mt-7 text-center text-3xl font-bold tracking-tight sm:text-4xl">
+      <h1 className="mt-7 text-center font-jakarta text-3xl text-gray-300 font-bold tracking-tight sm:text-4xl">
         {loading
           ? "Verifying your payment"
           : paidAndIssued
-          ? "Payment confirmed"
+          ? "Payment Successful!"
           : expired
           ? "Checkout session expired"
           : failed
           ? "Order needs attention"
-          : "Payment is processing"}
+          : "Payment verification is taking longer than expected"}
       </h1>
       <p className="mt-3 max-w-lg text-center text-sm text-[#aaaab0]">
         {paidAndIssued
@@ -84,7 +100,7 @@ const PaymentSuccessPage = () => {
           ? "This Stripe Checkout session has expired. Please start a new checkout."
           : failed
           ? "The order or ticket issuance could not be completed. Please contact support."
-          : "We are checking the order with our server. Tickets will appear here only after payment and issuance are confirmed."}
+          : "Your payment was submitted, but the server has not confirmed it yet. Please verify again shortly."}
       </p>
 
       {error && (
@@ -103,12 +119,21 @@ const PaymentSuccessPage = () => {
               <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-md bg-gradient-to-br from-[#f20d22]/70 via-[#48151b] to-[#17191d]" />
               <div className="min-w-0 flex-1">
                 <h2 className="text-sm font-semibold leading-snug">
-                  {status.event_title || "Your event"}
+                  {status.event?.title || status.event_title || "Your event"}
                 </h2>
                 <p className="mt-1.5 flex items-center gap-1.5 text-[10px] text-[#aaaab0]">
                   <FiMapPin size={10} className="shrink-0" />
-                  Ticket issued by MSQUARED
+                  {status.event?.venue_name || status.event?.venue_type || "Ticket issued by MSQUARED"}
                 </p>
+                {status.event?.event_date && (
+                  <p className="mt-1 text-[10px] text-[#aaaab0]">
+                    {new Date(`${status.event.event_date}T00:00:00`).toLocaleDateString("en-GB", {
+                      day: "2-digit",
+                      month: "short",
+                      year: "numeric",
+                    })}
+                  </p>
+                )}
               </div>
             </div>
             <div className="mt-4 flex items-end justify-between gap-3 border-t border-white/10 pt-3">
@@ -117,17 +142,17 @@ const PaymentSuccessPage = () => {
                   Ticket Type
                 </p>
                 <p className="mt-1 text-xs font-bold">
-                  {status.ticket_type || "Event ticket"}
+                  {status.items?.map((item) => `${item.tier_name || "Event ticket"} × ${item.quantity}`).join(", ") || status.ticket_type || "Event ticket"}
                   {status.quantity && status.quantity > 1 ? ` × ${status.quantity}` : ""}
                 </p>
               </div>
-              {typeof status.total === "number" && (
+              {(typeof status.total === "number" || typeof status.total_minor === "number") && (
                 <div className="text-right">
                   <p className="text-[10px] font-semibold uppercase tracking-widest text-[#aaaab0]">
                     Total Paid
                   </p>
                   <p className="mt-1 text-sm font-bold text-[#f20d22]">
-                    {formatGBP(status.total)}
+                    {formatGBP(status.total ?? (status.total_minor ?? 0) / 100)}
                   </p>
                 </div>
               )}

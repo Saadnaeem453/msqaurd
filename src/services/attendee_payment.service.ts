@@ -21,8 +21,31 @@ export interface IssuedTicket {
 }
 
 export interface CheckoutSessionStatus {
-  payment_status: "pending" | "paid" | "failed" | "expired";
-  ticket_status: "pending" | "issued" | "failed";
+  order_id?: string;
+  checkout_session_id?: string;
+  status?: "pending" | "paid" | "succeeded" | "failed" | "expired";
+  payment_status: "pending" | "paid" | "succeeded" | "failed" | "expired";
+  ticket_status?: "pending" | "issued" | "failed";
+  ticket_count?: number;
+  total_minor?: number;
+  paid_at?: string | null;
+  event?: {
+    id: string;
+    title: string;
+    event_date?: string;
+    start_time?: string;
+    end_time?: string;
+    venue_name?: string | null;
+    venue_type?: string | null;
+    hero_image?: string | null;
+  } | null;
+  items?: Array<{
+    tier_id: string;
+    tier_name?: string | null;
+    quantity: number;
+    unit_amount_minor: number;
+    total_amount_minor: number;
+  }>;
   order_number?: string;
   event_title?: string;
   ticket_type?: string;

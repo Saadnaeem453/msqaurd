@@ -23,6 +23,7 @@ const Navbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [searchExpanded, setSearchExpanded] = useState(false);
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const profile = getUserProfile();
@@ -91,14 +92,14 @@ const Navbar = () => {
 
   return (
     <header className="w-full bg-[#0a0b0e] border-b-[0.5px] border-secondary/10 py-4 sticky top-0 z-30">
-      <div className="app-container mx-auto max-w-384 flex items-center justify-between">
+      <div className="app-container relative mx-auto flex max-w-384 items-center justify-between">
 
-        <Link to="/" className="text-primary text-2xl font-bold tracking-tight">
+        <Link to="/" className="text-primary text-2xl font-jakarta font-bold tracking-tight">
           MSQUARED
         </Link>
 
 
-        <nav className="hidden md:flex items-center gap-6">
+        <nav className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-6 md:flex">
           {navItems.map((item) => {
             const isActive = location.pathname === item.path;
             return (
@@ -119,12 +120,25 @@ const Navbar = () => {
 
 
         <div className="flex items-center gap-3">
-          <div className="relative hidden sm:block">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-secondary/60" size={16} />
+          <div
+            className={`relative hidden h-8 overflow-hidden rounded-full border border-secondary/10 bg-secondary/5 transition-all duration-200 sm:block ${
+              searchExpanded ? "w-40 lg:w-56" : "w-8"
+            }`}
+            onMouseEnter={() => setSearchExpanded(true)}
+          >
+            <Search
+              className="absolute left-2 top-1/2 -translate-y-1/2 text-secondary/60"
+              size={16}
+            />
             <input
               type="text"
               placeholder="Search events..."
-              className="bg-secondary/5 border border-secondary/10 rounded-full py-1.5 pl-9 pr-3 text-sm text-white placeholder:text-secondary/40 focus:outline-none focus:border-primary/50 transition-colors w-40 lg:w-56"
+              onFocus={() => setSearchExpanded(true)}
+              onBlur={(event) => {
+                if (!event.currentTarget.value) setSearchExpanded(false);
+              }}
+              onClick={() => setSearchExpanded(true)}
+              className="h-full w-full bg-transparent py-1.5 pl-9 pr-3 text-sm text-white placeholder:text-secondary/40 focus:outline-none"
             />
           </div>
 
