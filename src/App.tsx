@@ -20,6 +20,8 @@ import SelectExperiencePage from "./pages/Attendee/SelectExperiencePage";
 import CheckoutPage from "./pages/Attendee/CheckoutPage";
 import PaymentSuccessPage from "./pages/Attendee/PaymentSuccessPage";
 import PaymentCancelledPage from "./pages/Attendee/PaymentCancelledPage";
+import DigitalTicketPage from "./pages/Attendee/DigitalTicketPage";
+import WalletTicketPage from "./pages/Attendee/WalletTicketPage";
 
 import Login from "./pages/LoginPage/Login";
 import Signup from "./pages/SignupPage/Signup";
@@ -274,6 +276,8 @@ function App() {
           <Route path="profile/edit" element={<EditProfilePage />} />
 
           <Route path="tickets" element={<MyTicketsPage />} />
+          <Route path="tickets/:ticketId" element={<DigitalTicketPage />} />
+          <Route path="tickets/:ticketId/wallet" element={<WalletTicketPage />} />
           <Route path="wishlist" element={<WishlistPage />} />
           <Route path="notifications" element={<NotificationsPage />} />
 

@@ -1,11 +1,12 @@
 import { useCallback, useEffect, useState } from "react";
-import { FiCheck, FiHome, FiMapPin, FiRefreshCw } from "react-icons/fi";
+import { FiCheck, FiDownload, FiHome, FiMapPin, FiRefreshCw } from "react-icons/fi";
 import { FaTicketAlt } from "react-icons/fa";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import {
   attendeePaymentApi,
   CheckoutSessionStatus,
 } from "../../services/attendee_payment.service";
+import { attendeeTicketApi, AttendeeTicket } from "../../services/attendee_ticket.service";
 
 const formatGBP = (amount: number) =>
   new Intl.NumberFormat("en-GB", { style: "currency", currency: "GBP" }).format(amount);
@@ -21,6 +22,8 @@ const PaymentSuccessPage = () => {
   const [status, setStatus] = useState<CheckoutSessionStatus | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [tickets, setTickets] = useState<AttendeeTicket[]>([]);
+  const [qrUrl, setQrUrl] = useState<Record<string, string>>({});
 
   const verifyOrder = useCallback(async () => {
     if (!sessionId) {
@@ -45,7 +48,15 @@ const PaymentSuccessPage = () => {
           result.data.payment_status === "succeeded" ||
           result.data.payment_status === "failed" ||
           result.data.payment_status === "expired";
-        if (isFinal) return;
+        if (isFinal) {
+          if (result.data.status === "paid" || result.data.payment_status === "paid" || result.data.payment_status === "succeeded") {
+            const ticketResult = await attendeeTicketApi.list({ page: 1, limit: 100 });
+            if (ticketResult.ok && ticketResult.data) {
+              setTickets(ticketResult.data.filter((ticket) => ticket.order_reference === result.data.order_id));
+            }
+          }
+          return;
+        }
         if (attempt < MAX_STATUS_POLLS - 1) {
           await new Promise((resolve) => window.setTimeout(resolve, POLL_INTERVAL_MS));
         }
@@ -60,6 +71,24 @@ const PaymentSuccessPage = () => {
   useEffect(() => {
     void verifyOrder();
   }, [verifyOrder]);
+
+  useEffect(() => () => Object.values(qrUrl).forEach((url) => URL.revokeObjectURL(url)), [qrUrl]);
+
+  const showQr = async (ticketId: string) => {
+    if (qrUrl[ticketId]) return;
+    const blob = await attendeeTicketApi.qr(ticketId);
+    setQrUrl((current) => ({ ...current, [ticketId]: URL.createObjectURL(blob) }));
+  };
+
+  const downloadQr = async (ticketId: string) => {
+    const blob = await attendeeTicketApi.downloadQr(ticketId);
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `ticket-${ticketId}.png`;
+    link.click();
+    window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+  };
 
   const paidAndIssued =
     (status?.status === "paid" ||
@@ -160,24 +189,17 @@ const PaymentSuccessPage = () => {
           </section>
 
           <section className="mt-5 w-full max-w-[452px] space-y-3" aria-label="Issued tickets">
-            {status.tickets?.map((ticket) => (
+            {tickets.map((ticket) => (
               <article key={ticket.id} className="rounded-lg border border-white/10 bg-[#111214] p-4">
                 <div className="flex items-center justify-between gap-3">
                   <div>
-                    <h2 className="text-sm font-semibold">{ticket.ticket_type}</h2>
-                    {ticket.attendee_name && (
-                      <p className="mt-1 text-xs text-[#aaaab0]">{ticket.attendee_name}</p>
-                    )}
-                    <p className="mt-1 text-[10px] text-[#77777d]">Ticket #{ticket.id}</p>
+                    <h2 className="text-sm font-semibold">{ticket.tier.name}</h2>
+                    <p className="mt-1 text-xs text-[#aaaab0]">{ticket.ticket_code}</p>
+                    <p className="mt-1 text-[10px] text-[#77777d]">Status: {ticket.status.replace("_", " ")}</p>
                   </div>
-                  {ticket.qr_code_url && (
-                    <img
-                      src={ticket.qr_code_url}
-                      alt={`QR code for ${ticket.ticket_type}`}
-                      className="h-20 w-20 rounded bg-white p-1"
-                    />
-                  )}
+                  {ticket.status === "valid" || ticket.status === "checked_in" ? qrUrl[ticket.id] ? <img src={qrUrl[ticket.id]} alt={`QR code for ${ticket.tier.name}`} className="h-24 w-24 rounded bg-white p-1" /> : <button type="button" onClick={() => void showQr(ticket.id)} className="rounded-md bg-[#f20d22] px-3 py-2 text-xs font-bold">Show QR</button> : <span className="text-xs text-[#77777d]">Unavailable</span>}
                 </div>
+                {(ticket.status === "valid" || ticket.status === "checked_in") && qrUrl[ticket.id] && <button type="button" onClick={() => void downloadQr(ticket.id)} className="mt-3 flex items-center gap-2 rounded-md border border-white/10 px-3 py-2 text-xs font-bold"><FiDownload /> Download Ticket</button>}
               </article>
             ))}
           </section>

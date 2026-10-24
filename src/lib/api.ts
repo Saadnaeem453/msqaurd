@@ -16,7 +16,9 @@ import { toast } from 'sonner';
 
 
 // const BASE_URL = 'http://localhost:5000/api';
-const BASE_URL = 'https://msqaurd-backend.onrender.com/api'
+const BASE_URL = 'http://192.168.100.8:5000/api';
+
+// const BASE_URL = 'https://msqaurd-backend.onrender.com/api'
 
 
 

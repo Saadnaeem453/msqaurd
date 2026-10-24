@@ -7,11 +7,17 @@ import {
   ChevronLeft,
   ChevronRight,
   ArrowLeft,
+  Download,
+  X,
 } from "lucide-react";
 import {
   attendeeEventsApi,
   PurchasedEvent,
 } from "../../services/attendee_events.service";
+import {
+  attendeeTicketApi,
+  AttendeeTicket,
+} from "../../services/attendee_ticket.service";
 
 const PAGE_SIZE = 20;
 const formatDate = (value: string) =>
@@ -44,6 +50,10 @@ const MyTicketsPage = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [tickets, setTickets] = useState<AttendeeTicket[]>([]);
+  const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
+  const [qrUrls, setQrUrls] = useState<Record<string, string>>({});
+  const [qrLoading, setQrLoading] = useState<string | null>(null);
 
   const loadPurchasedEvents = useCallback(async () => {
     setLoading(true);
@@ -61,12 +71,37 @@ const MyTicketsPage = () => {
       setEvents(uniqueEvents);
       setTotalPages(result.data.pagination?.total_pages || 1);
     } else setError(result.detail || "Unable to load your purchased events.");
+    const ticketResult = await attendeeTicketApi.list({ page: 1, limit: 100 });
+    if (ticketResult.ok && ticketResult.data) setTickets(ticketResult.data);
     setLoading(false);
   }, [page]);
 
   useEffect(() => {
     void loadPurchasedEvents();
   }, [loadPurchasedEvents]);
+
+  useEffect(() => () => Object.values(qrUrls).forEach((url) => URL.revokeObjectURL(url)), [qrUrls]);
+
+  const loadQr = async (ticketId: string) => {
+    if (qrUrls[ticketId] || qrLoading === ticketId) return;
+    setQrLoading(ticketId);
+    try {
+      const blob = await attendeeTicketApi.qr(ticketId);
+      setQrUrls((current) => ({ ...current, [ticketId]: URL.createObjectURL(blob) }));
+    } finally {
+      setQrLoading(null);
+    }
+  };
+
+  const downloadQr = async (ticketId: string) => {
+    const blob = await attendeeTicketApi.downloadQr(ticketId);
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `ticket-${ticketId}.png`;
+    link.click();
+    window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+  };
 
   const filteredEvents = useMemo(
     () =>
@@ -225,10 +260,12 @@ const MyTicketsPage = () => {
                   <div className="mt-auto flex items-center justify-end border-t border-secondary/10 pt-3">
                     <button
                       type="button"
-                      onClick={() =>
-                        navigate(`/home/events/${ticket.event.id}`)
-                      }
-                      className="flex items-center gap-1.5 rounded-lg bg-red-600 px-3.5 py-2 text-xs font-medium text-white hover:bg-red-700"
+                      onClick={() => {
+                        const issuedTicket = tickets.find((item) => item.event.id === ticket.event.id);
+                        if (issuedTicket) navigate(`/home/tickets/${issuedTicket.id}`);
+                      }}
+                      disabled={!tickets.some((item) => item.event.id === ticket.event.id)}
+                      className="flex items-center gap-1.5 rounded-lg bg-red-600 px-3.5 py-2 text-xs font-medium text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
                     >
                       View Ticket <QrCode size={14} />
                     </button>
@@ -237,6 +274,31 @@ const MyTicketsPage = () => {
               </div>
             );
           })}
+        </div>
+      )}
+      {selectedEventId && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4" role="dialog" aria-modal="true">
+          <section className="max-h-[90vh] w-full max-w-xl overflow-y-auto rounded-xl border border-secondary/10 bg-[#131418] p-5">
+            <div className="flex items-center justify-between gap-3">
+              <h2 className="text-lg font-semibold text-white">Your Digital Tickets</h2>
+              <button type="button" aria-label="Close tickets" onClick={() => setSelectedEventId(null)} className="text-secondary hover:text-white"><X size={20} /></button>
+            </div>
+            <div className="mt-4 space-y-4">
+              {tickets.filter((item) => item.event.id === selectedEventId).map((item) => (
+                <article key={item.id} className="rounded-lg border border-secondary/10 bg-[#0d0e10] p-4">
+                  <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                      <p className="font-semibold text-white">{item.tier.name}</p>
+                      <p className="mt-1 text-xs text-secondary">Ticket {item.ticket_code}</p>
+                      <p className="mt-1 text-xs text-secondary">Status: {item.status.replace("_", " ")}</p>
+                    </div>
+                    {item.status !== "valid" && item.status !== "checked_in" ? null : qrLoading === item.id ? <p className="text-xs text-secondary">Loading QR...</p> : qrUrls[item.id] ? <img src={qrUrls[item.id]} alt={`QR code for ${item.tier.name}`} className="h-32 w-32 rounded bg-white p-2" /> : <button type="button" onClick={() => void loadQr(item.id)} className="rounded-md bg-red-600 px-4 py-2 text-xs font-semibold text-white">Show QR</button>}
+                  </div>
+                  {(item.status === "valid" || item.status === "checked_in") && qrUrls[item.id] && <button type="button" onClick={() => void downloadQr(item.id)} className="mt-3 flex items-center gap-2 rounded-md border border-white/10 px-3 py-2 text-xs text-white hover:bg-white/5"><Download size={14} /> Download Ticket</button>}
+                </article>
+              ))}
+            </div>
+          </section>
         </div>
       )}
       {!loading && !error && totalPages > 1 && (
