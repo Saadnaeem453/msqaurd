@@ -16,9 +16,9 @@ import { toast } from 'sonner';
 
 
 // const BASE_URL = 'http://localhost:5000/api';
-const BASE_URL = 'http://192.168.100.8:5000/api';
+// const BASE_URL = 'https://182e-221-120-217-13.ngrok-free.app/api';
 
-// const BASE_URL = 'https://msqaurd-backend.onrender.com/api'
+const BASE_URL = 'https://msqaurd-backend.onrender.com/api'
 
 
 
@@ -124,6 +124,7 @@ async function request<TData = unknown>(
 
 
   const headers: HeadersInit = {};
+  headers['ngrok-skip-browser-warning'] = 'true';
   const publicAuthRoutes = new Set([
     '/auth/signup',
     '/auth/signin',
@@ -250,7 +251,10 @@ export const api = {
     });
     const query = searchParams.toString();
     const response = await fetch(`${BASE_URL}${endpoint}${query ? `?${query}` : ''}`, {
-      headers: tokenStore.get() ? { Authorization: `Bearer ${tokenStore.get()}` } : {},
+      headers: {
+        'ngrok-skip-browser-warning': 'true',
+        ...(tokenStore.get() ? { Authorization: `Bearer ${tokenStore.get()}` } : {}),
+      },
     });
     if (!response.ok) throw new Error('Failed to download report');
     return response.blob();
