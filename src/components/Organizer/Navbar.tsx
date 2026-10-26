@@ -29,14 +29,14 @@ const Navbar = () => {
   };
 
   return (
-    <header className="bg-[#111214] border-b border-secondary/10 px-6 py-5 flex items-center justify-between sticky top-0 z-20">
-      <div className="flex items-center gap-4">
-        <h2 className="text-primary font-jakarta text-2xl font-semibold">Organizer Dashboard</h2>
+    <header className="sticky top-0 z-20 flex items-center justify-between gap-2 border-b border-secondary/10 bg-[#111214] px-3 py-3 sm:px-6 sm:py-5">
+      <div className="min-w-0 flex-1 pl-12 md:pl-0">
+        <h2 className="truncate text-primary font-jakarta text-base font-semibold sm:text-2xl">Organizer Dashboard</h2>
       </div>
 
-      <div className="flex items-center gap-4">
+      <div className="flex min-w-0 items-center gap-2 sm:gap-4">
 
-        <div className="relative">
+          <div className="relative hidden sm:block">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-secondary/60" size={18} />
           <input
             type="text"

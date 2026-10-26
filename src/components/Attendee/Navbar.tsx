@@ -24,8 +24,10 @@ const Navbar = () => {
   const navigate = useNavigate();
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [searchExpanded, setSearchExpanded] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const profile = getUserProfile();
 
   const userInitial = profile?.full_name?.charAt(0).toUpperCase() || profile?.username?.charAt(0).toUpperCase() || "U";
@@ -62,6 +64,19 @@ const Navbar = () => {
     localStorage.removeItem("mh_token");
     localStorage.removeItem("initialLoaderShown");
     navigate("/login");
+  };
+
+  const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const query = searchQuery.trim();
+    if (!query) {
+      setSearchExpanded(true);
+      searchInputRef.current?.focus();
+      navigate("/home/explore");
+      return;
+    }
+    navigate(`/home/explore?search=${encodeURIComponent(query)}`);
+    setSearchExpanded(true);
   };
 
   const handleMenuItem = (item: string) => {
@@ -120,19 +135,26 @@ const Navbar = () => {
 
 
         <div className="flex items-center gap-3">
-          <div
+          <form
+            onSubmit={handleSearch}
             className={`relative hidden h-8 overflow-hidden rounded-full border border-secondary/10 bg-secondary/5 transition-all duration-200 sm:block ${
               searchExpanded ? "w-40 lg:w-56" : "w-8"
             }`}
             onMouseEnter={() => setSearchExpanded(true)}
           >
-            <Search
-              className="absolute left-2 top-1/2 -translate-y-1/2 text-secondary/60"
-              size={16}
-            />
+            <button
+              type="submit"
+              aria-label="Search events"
+              className="absolute left-1 top-1/2 z-10 flex h-6 w-6 -translate-y-1/2 items-center justify-center text-secondary/60 hover:text-white"
+            >
+              <Search size={16} />
+            </button>
             <input
+              ref={searchInputRef}
               type="text"
               placeholder="Search events..."
+              value={searchQuery}
+              onChange={(event) => setSearchQuery(event.target.value)}
               onFocus={() => setSearchExpanded(true)}
               onBlur={(event) => {
                 if (!event.currentTarget.value) setSearchExpanded(false);
@@ -140,7 +162,7 @@ const Navbar = () => {
               onClick={() => setSearchExpanded(true)}
               className="h-full w-full bg-transparent py-1.5 pl-9 pr-3 text-sm text-white placeholder:text-secondary/40 focus:outline-none"
             />
-          </div>
+          </form>
 
 
           <button

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Search, MapPin, TrendingUp, ArrowRight } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 const RECENT_SEARCHES_KEY = "recent_searches";
 const MAX_RECENT_SEARCHES = 6;
@@ -101,9 +101,14 @@ const suggestedEvents = [
 
 const Explore = () => {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = useState("");
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
 
+
+  useEffect(() => {
+    setSearchQuery(searchParams.get("search") || "");
+  }, [searchParams]);
 
   useEffect(() => {
     const stored = localStorage.getItem(RECENT_SEARCHES_KEY);
@@ -131,8 +136,9 @@ const Explore = () => {
   const handleSearch = () => {
     if (searchQuery.trim()) {
       addToRecentSearches(searchQuery);
-
-      console.log("Searching for:", searchQuery);
+      setSearchParams({ search: searchQuery.trim() });
+    } else {
+      setSearchParams({});
     }
   };
 

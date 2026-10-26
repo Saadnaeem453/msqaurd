@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Filter,
   FileText,
@@ -22,6 +22,7 @@ import {
   PieChart,
   Pie,
 } from "recharts";
+import { organizerAudienceApi, AudienceInsights as AudienceInsightsData } from "../../../services/organizer_audience.service";
 
 
 
@@ -40,68 +41,32 @@ function valueToRedColor(percent: number, maxPercent: number): string {
 
 
 
-const ageDistributionData = [
-  { group: "18-24", count: 1800 },
-  { group: "25-34", count: 4200 },
-  { group: "35-44", count: 3100 },
-  { group: "45-54", count: 1900 },
-  { group: "55+", count: 800 },
-];
-
-const maxAgeCount = Math.max(...ageDistributionData.map((d) => d.count));
-
-const genderData = [
-  { name: "Female", value: 57.2, color: "#ef4444" },
-  { name: "Male", value: 41.8, color: "#374151" },
-  { name: "Non-binary", value: 1.0, color: "#6b7280" },
-];
-
-const interestsData = [
-  { name: "Education", percent: 85 },
-  { name: "Youth", percent: 72 },
-  { name: "Tech", percent: 54 },
-  { name: "Culture", percent: 48 },
-  { name: "Health", percent: 31 },
-];
-
-const maxInterestPercent = Math.max(...interestsData.map((d) => d.percent));
-
-const platformData = [
-  {
-    platform: "iOS (Native App)",
-    users: 5820,
-    avgSession: "12m 45s",
-    conversion: 14.2,
-  },
-  {
-    platform: "Android (Native App)",
-    users: 4115,
-    avgSession: "10m 20s",
-    conversion: 11.8,
-  },
-  {
-    platform: "Mobile Safari / Chrome",
-    users: 2547,
-    avgSession: "4m 15s",
-    conversion: 6.4,
-  },
-];
-
-const trendingCategories = [
-  "#SocialImpact",
-  "#Sustainability",
-  "#Entrepreneurship",
-  "#Volunteerism",
-  "#ArtificialIntelligence",
-];
-
-
-
 const AudienceInsights = () => {
   const [ageRangeFilter, setAgeRangeFilter] = useState("Last 30 Days");
   const [showAgeDropdown, setShowAgeDropdown] = useState(false);
+  const [data, setData] = useState<AudienceInsightsData | null>(null);
 
   const ageRangeOptions = ["Last 7 Days", "Last 30 Days", "Last 90 Days", "This Year"];
+  const periodKey = ({ "Last 7 Days": "7d", "Last 30 Days": "30d", "Last 90 Days": "90d", "This Year": "1y" } as Record<string, string>)[ageRangeFilter] || "30d";
+
+  useEffect(() => {
+    let active = true;
+    setData(null);
+    organizerAudienceApi.get(periodKey).then((response) => {
+      if (!active) return;
+      if (response.ok && response.data) setData(response.data);
+    });
+    return () => { active = false; };
+  }, [periodKey]);
+
+  const ageDistributionData = data?.age_distribution || [];
+  const maxAgeCount = Math.max(...ageDistributionData.map((entry) => entry.count), 1);
+  const genderData = data?.gender_split || [];
+  const interestsData = data?.top_interests || [];
+  const maxInterestPercent = Math.max(...interestsData.map((entry) => entry.percent), 1);
+  const platformData = data?.platform_distribution || [];
+  const trendingCategories = data?.trending_categories || [];
+  const deviceData = useMemo(() => Object.fromEntries((data?.device_breakdown || []).map((entry) => [entry.device_type, entry])), [data]);
 
   return (
     <div className="max-w-[1500px] mx-auto px-4 md:px-6 py-6 space-y-6">
@@ -138,8 +103,8 @@ const AudienceInsights = () => {
           <p className="text-secondary/50 text-[10px] uppercase tracking-wider font-semibold mb-1">
             Total Unique Attendees
           </p>
-          <p className="text-white text-3xl font-bold font-jakarta">12,482</p>
-          <p className="text-secondary/40 text-xs mt-2">vs. 11,092 last month</p>
+          <p className="text-white text-3xl font-bold font-jakarta">{data?.summary.total_unique_attendees.toLocaleString() || "—"}</p>
+          <p className="text-secondary/40 text-xs mt-2">{data?.summary.previous_period_unique_attendees ? `vs. ${data.summary.previous_period_unique_attendees.toLocaleString()} previous period` : "No previous-period data"}</p>
         </div>
 
 
@@ -156,10 +121,10 @@ const AudienceInsights = () => {
             New vs Returning
           </p>
           <p className="text-white text-3xl font-bold font-jakarta">
-            64% <span className="text-base font-normal text-secondary/50">new</span>
+            {data?.summary.new_attendee_percent ?? "—"}% <span className="text-base font-normal text-secondary/50">new</span>
           </p>
           <div className="mt-3 h-2 bg-secondary/10 rounded-full overflow-hidden">
-            <div className="h-full bg-red-500 rounded-full" style={{ width: "64%" }} />
+            <div className="h-full bg-red-500 rounded-full" style={{ width: `${data?.summary.new_attendee_percent || 0}%` }} />
           </div>
         </div>
 
@@ -177,11 +142,11 @@ const AudienceInsights = () => {
             Engagement Score
           </p>
           <p className="text-white text-3xl font-bold font-jakarta">
-            8.4<span className="text-base font-normal text-secondary/40">/10</span>
+            {data?.summary.engagement_score ?? "—"}<span className="text-base font-normal text-secondary/40">{data?.summary.engagement_score == null ? "" : "/10"}</span>
           </p>
 
           <div className="flex items-end gap-1 mt-3 h-8">
-            {[35, 45, 55, 40, 65, 70, 84].map((val, i) => (
+            {(data?.summary.engagement_score == null ? [] : [35, 45, 55, 40, 65, 70, 84]).map((val, i) => (
               <div
                 key={i}
                 className="flex-1 rounded-sm transition-all"
@@ -341,10 +306,10 @@ const AudienceInsights = () => {
 
             <div className="relative text-center z-10">
               <p className="text-secondary/60 text-sm mb-1">
-                Interactive heatmap visualization loading...
+                {data?.attendee_origin.length ? "Attendee origin by profile country" : "No origin data available"}
               </p>
               <p className="text-secondary/40 text-xs">
-                Top Region: Gauteng, South Africa (42%)
+                {data?.attendee_origin[0] ? `Top Region: ${data.attendee_origin[0].name} (${data.attendee_origin[0].percent}%)` : "Complete attendee profiles to see origin data"}
               </p>
             </div>
           </div>
@@ -409,7 +374,7 @@ const AudienceInsights = () => {
               <div className="w-14 h-14 rounded-xl bg-red-500/10 flex items-center justify-center mx-auto mb-3">
                 <Smartphone size={28} className="text-red-400" />
               </div>
-              <p className="text-3xl font-bold text-white font-jakarta">78%</p>
+              <p className="text-3xl font-bold text-white font-jakarta">{deviceData.mobile?.percentage ?? 0}%</p>
               <p className="text-secondary/40 text-[10px] uppercase tracking-wider mt-1">Mobile</p>
             </div>
 
@@ -421,7 +386,7 @@ const AudienceInsights = () => {
               <div className="w-14 h-14 rounded-xl bg-secondary/10 flex items-center justify-center mx-auto mb-3">
                 <Monitor size={28} className="text-secondary" />
               </div>
-              <p className="text-3xl font-bold text-white font-jakarta">22%</p>
+              <p className="text-3xl font-bold text-white font-jakarta">{deviceData.desktop?.percentage ?? 0}%</p>
               <p className="text-secondary/40 text-[10px] uppercase tracking-wider mt-1">Desktop</p>
             </div>
           </div>
@@ -462,14 +427,14 @@ const AudienceInsights = () => {
                   {p.users.toLocaleString()}
                 </span>
                 <span className="text-secondary text-xs w-20 text-right">
-                  {p.avgSession}
+                  {p.avgSession || "—"}
                 </span>
                 <span
                   className={`text-sm font-bold w-16 text-right ${
-                    p.conversion >= 10 ? "text-red-400" : "text-secondary"
+                    p.conversion !== null && p.conversion >= 10 ? "text-red-400" : "text-secondary"
                   }`}
                 >
-                  {p.conversion}%
+                  {p.conversion === null ? "—" : `${p.conversion}%`}
                 </span>
               </div>
             ))}

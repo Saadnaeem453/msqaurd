@@ -1,4 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
 import {
   LayoutDashboard,
   Calendar,
@@ -12,6 +13,8 @@ import {
   Settings,
   Bell,
   Shield,
+  Menu,
+  X,
 } from "lucide-react";
 
 interface NavItem {
@@ -27,6 +30,12 @@ interface NavSection {
 
 const Sidebar = () => {
   const location = useLocation();
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  useEffect(() => {
+    document.body.style.overflow = mobileOpen ? "hidden" : "";
+    return () => { document.body.style.overflow = ""; };
+  }, [mobileOpen]);
 
   const navSections: NavSection[] = [
     {
@@ -98,15 +107,35 @@ const Sidebar = () => {
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <aside className="w-64 bg-[#131418] border-r border-secondary/10 h-screen sticky top-0 overflow-y-auto no-scrollbar flex-shrink-0">
+    <>
+      {!mobileOpen && <button
+        type="button"
+        aria-label={mobileOpen ? "Close organizer menu" : "Open organizer menu"}
+        onClick={() => setMobileOpen((value) => !value)}
+        className="fixed left-3 top-3 z-50 flex h-10 w-10 items-center justify-center rounded-lg border border-secondary/15 bg-[#131418] text-secondary shadow-lg hover:text-white md:hidden"
+      >
+        <Menu size={20} />
+      </button>}
+      {mobileOpen && (
+        <button
+          type="button"
+          aria-label="Close organizer menu"
+          onClick={() => setMobileOpen(false)}
+          className="fixed inset-0 z-30 bg-black/60 md:hidden"
+        />
+      )}
+      <aside className={`fixed inset-y-0 left-0 z-40 w-64 flex-shrink-0 overflow-y-auto border-r border-secondary/10 bg-[#131418] no-scrollbar transition-transform duration-200 md:sticky md:top-0 md:block md:h-screen md:translate-x-0 ${mobileOpen ? "translate-x-0" : "-translate-x-full"}`}>
 
-      <div className="p-6 border-b border-secondary/10">
-        <Link to="/organizer" className="text-primary text-2xl font-bold tracking-tight">
-          MSQUARED
-        </Link>
-        <p className="text-secondary/50 text-[10px] uppercase tracking-[0.2em] font-light mt-0.5">
-          Organizer
-        </p>
+      <div className="flex items-start justify-between border-b border-secondary/10 p-5 sm:p-6">
+        <div>
+          <Link to="/organizer" onClick={() => setMobileOpen(false)} className="text-primary text-2xl font-bold tracking-tight">
+            MSQUARED
+          </Link>
+          <p className="mt-0.5 text-[10px] font-light uppercase tracking-[0.2em] text-secondary/50">Organizer</p>
+        </div>
+        <button type="button" aria-label="Close organizer menu" onClick={() => setMobileOpen(false)} className="rounded-lg p-2 text-secondary hover:bg-white/5 hover:text-white md:hidden">
+          <X size={20} />
+        </button>
       </div>
 
 
@@ -122,9 +151,10 @@ const Sidebar = () => {
               {section.items.map((item, itemIdx) => {
                 const active = isActive(item.path);
                 return (
-                  <Link
+                    <Link
                     key={itemIdx}
                     to={item.path}
+                      onClick={() => setMobileOpen(false)}
                     className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors ${
                       active
                         ? "bg-primary text-white"
@@ -142,7 +172,8 @@ const Sidebar = () => {
           </div>
         ))}
       </nav>
-    </aside>
+      </aside>
+    </>
   );
 };
 

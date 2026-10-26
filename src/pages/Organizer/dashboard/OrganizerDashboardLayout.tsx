@@ -7,17 +7,17 @@ const OrganizerDashboardLayout = () => {
   const [timeframe, setTimeframe] = useState("Last month");
 
   return (
-    <div className="flex h-screen bg-[#0a0b0e] text-white overflow-hidden">
+    <div className="flex h-screen min-w-0 overflow-hidden bg-[#0a0b0e] text-white">
 
       <Sidebar />
 
 
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
         <Navbar
           onTimeframeChange={(tf) => setTimeframe(tf)}
           currentTimeframe={timeframe}
         />
-        <main className="flex-1 overflow-y-auto p-4 lg:p-6 no-scrollbar">
+        <main className="flex-1 overflow-y-auto p-2 text-[13px] sm:p-4 lg:p-6 lg:text-base no-scrollbar">
           <Outlet context={{ timeframe, setTimeframe }} />
         </main>
       </div>
