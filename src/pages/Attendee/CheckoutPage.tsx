@@ -41,6 +41,7 @@ const CheckoutPage = () => {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const submittingRef = useRef(false);
+  const checkoutFormRef = useRef<HTMLFormElement>(null);
   const checkoutAttemptRef = useRef<{ selection: string; key: string } | null>(null);
 
   useEffect(() => {
@@ -144,7 +145,7 @@ const CheckoutPage = () => {
           <FiArrowLeft /> Back to plans
         </button>
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_326px]">
-          <form onSubmit={submit} className="min-w-0">
+          <form ref={checkoutFormRef} onSubmit={submit} className="min-w-0">
             <h1 className="text-2xl font-bold sm:text-3xl">Attendee Information</h1>
             <p className="mt-2 text-sm text-[#aaaab0]">
               Enter the purchaser details for your ticket order.
@@ -237,7 +238,7 @@ const CheckoutPage = () => {
               <button
                 type="button"
                 disabled={submitting}
-                onClick={() => document.querySelector("form")?.requestSubmit()}
+                onClick={() => checkoutFormRef.current?.requestSubmit()}
                 className="mt-6 hidden w-full items-center justify-center gap-2 rounded-md bg-[#f20d22] py-3 text-sm font-bold text-white disabled:cursor-wait disabled:opacity-60 lg:flex"
               >
                 <FiLock />

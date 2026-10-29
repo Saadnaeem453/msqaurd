@@ -50,4 +50,11 @@ export const adminApi = {
       successMessage: "User updated successfully.",
       errorMessage: "Failed to update user.",
     }),
+
+  deleteUser: (id: string) =>
+    api.delete(`/admin/users/${id}`, {
+      loadingMessage: "Deleting user...",
+      successMessage: "User deleted successfully.",
+      errorMessage: "Failed to delete user.",
+    }),
 };

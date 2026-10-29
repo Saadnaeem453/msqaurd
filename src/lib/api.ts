@@ -15,10 +15,10 @@
 import { toast } from 'sonner';
 
 
-// const BASE_URL = 'http://localhost:5000/api';
+const BASE_URL = 'http://localhost:5000/api';
 // const BASE_URL = 'https://182e-221-120-217-13.ngrok-free.app/api';
 
-const BASE_URL = 'https://msqaurd-backend.onrender.com/api'
+// const BASE_URL = 'https://msqaurd-backend.onrender.com/api'
 
 
 
