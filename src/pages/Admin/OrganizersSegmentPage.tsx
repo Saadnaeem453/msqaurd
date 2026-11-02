@@ -18,6 +18,7 @@ import {
 import { HiOutlineCheckBadge } from "react-icons/hi2";
 import { MdCheckCircle } from "react-icons/md";
 import { Bar, BarChart, Cell, ResponsiveContainer, XAxis } from "recharts";
+import { adminApi, AdminUser, AdminUsersPagination } from "../../services/admin_service";
 
 export type StatFooter =
   | { kind: "progress"; percent: number }
@@ -403,7 +404,7 @@ const StatusBadge = ({ status }: { status: OrganizerStatus }) => {
   );
 };
 
-const OrganizersTable = ({ rows }: { rows: Organizer[] }) => (
+const OrganizersTable = ({ rows }: { rows: AdminUser[] }) => (
   <div className="overflow-hidden rounded-md border border-secondary/20 bg-lightgrayblue">
     <div className="overflow-x-auto">
       <table className="w-full min-w-[640px] text-left">
@@ -430,27 +431,27 @@ const OrganizersTable = ({ rows }: { rows: Organizer[] }) => (
               <td className="px-4 py-4">
                 <div className="flex items-center gap-3">
                   <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-none border border-secondary/20 bg-bgray/10 text-xs font-bold text-secondary">
-                    {row.initials}
+                    {(row.full_name || "?").split(" ").map((part) => part[0]).join("").slice(0, 2)}
                   </span>
                   <div>
-                    <p className="text-sm font-semibold text-bgray">{row.name}</p>
-                    <p className="mt-0.5 text-xs text-secondary/70">ID: {row.orgId}</p>
+                    <p className="text-sm font-semibold text-bgray">{row.full_name}</p>
+                    <p className="mt-0.5 text-xs text-secondary/70">ID: {row.id}</p>
                   </div>
                 </div>
               </td>
               <td className="px-4 py-4">
-                <p className="text-sm text-bgray/90">{row.leadName}</p>
-                <p className="mt-0.5 text-xs text-secondary/70">{row.leadEmail}</p>
+                <p className="text-sm text-bgray/90">{row.full_name}</p>
+                <p className="mt-0.5 text-xs text-secondary/70">{row.email}</p>
               </td>
               <td className="px-4 py-4">
-                <StatusBadge status={row.status} />
+                <StatusBadge status={row.email_verified ? "verified" : "pending"} />
               </td>
-              <td className="px-4 py-4 text-sm text-bgray/80">{row.eventsHosted}</td>
-              <td className="px-4 py-4 text-sm font-semibold text-bgray">{row.revenue}</td>
+              <td className="px-4 py-4 text-sm text-bgray/80">—</td>
+              <td className="px-4 py-4 text-sm font-semibold text-bgray">—</td>
               <td className="px-4 py-4">
                 <button
                   type="button"
-                  aria-label={`Actions for ${row.name}`}
+                  aria-label={`Actions for ${row.full_name}`}
                   className="rounded p-1 text-secondary/70 transition hover:bg-bgray/10 hover:text-bgray"
                 >
                   <FiMoreVertical size={16} />
@@ -532,11 +533,42 @@ const OrganizersSegmentPage = () => {
   const [segmentValue, setSegmentValue] = useState("all");
   const [rangeValue, setRangeValue] = useState("30d");
   const [page, setPage] = useState(1);
+  const [organizers, setOrganizers] = useState<AdminUser[]>([]);
+  const [total, setTotal] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [loading, setLoading] = useState(true);
 
-  const totalPages = Math.ceil(TOTAL_ORGANIZERS / PAGE_SIZE);
-  const rangeStart = (page - 1) * PAGE_SIZE + 1;
-  const rangeEnd = Math.min(page * PAGE_SIZE, TOTAL_ORGANIZERS);
-  const displayText = `Displaying ${rangeStart}-${rangeEnd} of ${TOTAL_ORGANIZERS.toLocaleString("en-US")}`;
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    void adminApi.getUsers({ page, limit: PAGE_SIZE, role: "organizer" }).then((result) => {
+      if (cancelled) return;
+      const pagination = result.pagination as Partial<AdminUsersPagination> | undefined;
+      if (result.ok && Array.isArray(result.data)) {
+        setOrganizers(result.data);
+        setTotal(pagination?.total ?? result.data.length);
+        setTotalPages(pagination?.total_pages ?? 1);
+      } else {
+        setOrganizers([]);
+        setTotal(0);
+        setTotalPages(0);
+      }
+      setLoading(false);
+    });
+    return () => { cancelled = true; };
+  }, [page]);
+
+  const filteredOrganizers = organizers.filter((organizer) => {
+    if (segmentValue === "verified") return organizer.email_verified;
+    if (segmentValue === "pending") return !organizer.email_verified;
+    if (segmentValue === "suspended") return !organizer.is_active;
+    return true;
+  });
+
+  const rangeStart = total ? (page - 1) * PAGE_SIZE + 1 : 0;
+  const rangeEnd = Math.min(page * PAGE_SIZE, total);
+  const displayText = `Displaying ${rangeStart}-${rangeEnd} of ${total.toLocaleString("en-US")}`;
+  const dynamicStats = statItems.map((item, index) => ({ ...item, value: index === 0 ? total.toLocaleString("en-US") : index === 1 ? `${total ? Math.round((organizers.filter((u) => u.email_verified).length / organizers.length) * 1000) / 10 : 0}%` : organizers.length.toLocaleString("en-US") }));
 
   return (
     <div className="min-h-full bg-grayblue text-bgray [&_button]:focus-visible:outline [&_button]:focus-visible:outline-2 [&_button]:focus-visible:outline-offset-2 [&_button]:focus-visible:outline-secondary">
@@ -560,7 +592,7 @@ const OrganizersSegmentPage = () => {
         </header>
 
         <section className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-3">
-          {statItems.map((item) => (
+          {dynamicStats.map((item) => (
             <StatCard key={item.id} item={item} />
           ))}
         </section>
@@ -580,7 +612,7 @@ const OrganizersSegmentPage = () => {
         </section>
 
         <section className="mt-6">
-          <OrganizersTable rows={organizerRows} />
+          {loading ? <div className="rounded-md border border-secondary/20 bg-lightgrayblue p-10 text-center text-sm text-secondary">Loading organizers...</div> : <OrganizersTable rows={filteredOrganizers} />}
         </section>
 
         <section className="mt-6 grid grid-cols-1 items-start gap-5 md:grid-cols-2">

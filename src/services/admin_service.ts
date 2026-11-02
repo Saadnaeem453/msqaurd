@@ -36,7 +36,45 @@ export interface AdminUserUpdatePayload {
   email_verified: boolean;
 }
 
+export interface AdminEvent {
+  id: string;
+  title: string;
+  category: string;
+  event_date: string;
+  status: "draft" | "published" | "cancelled" | "completed";
+  venue_type: string;
+  venue_name?: string | null;
+  hero_image?: string | null;
+  organizer_id: string;
+  organizer?: { id: string; full_name: string; email: string };
+  organization?: { id: string; name: string; logo_url?: string | null };
+  tiers?: Array<{ price: number | string; tickets_sold?: number }>;
+}
+
+export interface AdminEventsParams {
+  page?: number;
+  limit?: number;
+  status?: "all" | AdminEvent["status"];
+  category?: string;
+  search?: string;
+  from?: string;
+  to?: string;
+}
+
 export const adminApi = {
+  getEvents: (params?: AdminEventsParams) =>
+    api.get<{ events: AdminEvent[]; total: number; page: number; limit: number; totalPages: number }>("/admin/events", {
+      params,
+      successMessage: false,
+      errorMessage: true,
+    }),
+
+  getEventStats: () =>
+    api.get<{ total: number; published: number; drafts: number; completed: number; upcoming: number }>("/admin/events/stats", {
+      successMessage: false,
+      errorMessage: true,
+    }),
+
   getUsers: (params?: AdminUsersParams) =>
     api.get<AdminUser[]>("/admin/users", {
       params,

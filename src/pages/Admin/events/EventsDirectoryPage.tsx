@@ -16,6 +16,7 @@ import {
 } from "react-icons/fi";
 import { BsCalendarCheck } from "react-icons/bs";
 import { MdSwapVert } from "react-icons/md";
+import { adminApi, AdminEvent } from "../../../services/admin_service";
 
 type StatFooter =
   | { kind: "badge"; label: string; note: string }
@@ -104,8 +105,6 @@ const statusFilters: { id: StatusFilter; label: string }[] = [
   { id: "published", label: "Published" },
   { id: "pending", label: "Pending" },
 ];
-
-const directoryEvents: DirectoryEvent[] = [];
 
 const STATUS_BADGE_CLASSES: Record<EventStatus, string> = {
   published: "bg-green/15 text-green",
@@ -236,29 +235,92 @@ const EventsDirectoryPage = () => {
   const [pageSize, setPageSize] = useState("15");
   const [currentPage, setCurrentPage] = useState(1);
   const [sortAsc, setSortAsc] = useState(true);
+  const [events, setEvents] = useState<AdminEvent[]>([]);
+  const [totalFromApi, setTotalFromApi] = useState(0);
+  const [totalPagesFromApi, setTotalPagesFromApi] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const size = Number(pageSize);
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    void adminApi.getEvents({ page: currentPage, limit: size, status: "all" }).then((result) => {
+      if (cancelled) return;
+      const data = result.data as { events?: AdminEvent[]; total?: number; totalPages?: number } | undefined;
+      if (result.ok && data?.events) {
+        setEvents(data.events);
+        setTotalFromApi(data.total ?? data.events.length);
+        setTotalPagesFromApi(data.totalPages ?? 1);
+        setError(null);
+      } else {
+        setEvents([]);
+        setTotalFromApi(0);
+        setTotalPagesFromApi(0);
+        setError(result.detail || "Failed to load events.");
+      }
+      setLoading(false);
+    });
+    return () => { cancelled = true; };
+  }, [currentPage, size]);
+
+  const directoryEvents: DirectoryEvent[] = events.map((event) => ({
+    id: event.id,
+    title: event.title,
+    location: event.venue_name || event.venue_type,
+    organizer: event.organization?.name || event.organizer?.full_name || event.organizer_id,
+    date: event.event_date,
+    status: event.status === "draft" ? "pending" : event.status === "published" ? "published" : event.status === "cancelled" ? "rejected" : "reported",
+    revenue: (event.tiers || []).reduce((total, tier) => total + Number(tier.price || 0) * Number(tier.tickets_sold || 0), 0),
+    imageUrl: event.hero_image,
+    category: event.category.toLowerCase(),
+  }));
   const filteredRows = useMemo(() => {
-    const now = new Date();
-    const since = rangeValue === "ytd"
-      ? new Date(now.getFullYear(), 0, 1).getTime()
-      : now.getTime() - Number(rangeValue.replace("d", "")) * 86400000;
     return directoryEvents.filter((event) => {
-      const date = Date.parse(event.date);
       return (statusFilter === "all" || event.status === statusFilter)
-        && (categoryValue === "all" || event.category === categoryValue)
-        && date >= since && date <= now.getTime();
+        && (categoryValue === "all" || event.category === categoryValue);
     }).sort((a, b) => sortAsc
       ? a.id.localeCompare(b.id, undefined, { numeric: true })
       : b.id.localeCompare(a.id, undefined, { numeric: true }));
   }, [statusFilter, categoryValue, rangeValue, sortAsc]);
   const totalEvents = filteredRows.length;
-  const totalPages = Math.max(1, Math.ceil(totalEvents / size));
+  const totalPages = Math.max(1, totalPagesFromApi || Math.ceil(totalEvents / size));
   const page = Math.min(currentPage, totalPages);
-  const rangeStart = totalEvents ? (page - 1) * size + 1 : 0;
-  const rangeEnd = Math.min(page * size, totalEvents);
-  const rangeLabel = `${rangeStart}-${rangeEnd} of ${totalEvents.toLocaleString("en-US")}`;
-  const visibleRows = filteredRows.slice((page - 1) * size, page * size);
+  const rangeStart = totalFromApi ? (page - 1) * size + 1 : 0;
+  const rangeEnd = Math.min(page * size, totalFromApi);
+  const rangeLabel = `${rangeStart}-${rangeEnd} of ${totalFromApi.toLocaleString("en-US")}`;
+  const visibleRows = filteredRows;
+  const dynamicStats = statItems.map((item, index) => ({
+    ...item,
+    value: index === 0 ? totalFromApi.toLocaleString("en-US") : index === 1 ? events.filter((event) => event.status === "published").length.toLocaleString("en-US") : "—",
+    footer: index === 0 ? { kind: "badge" as const, label: totalFromApi ? "Live" : "—", note: "from event directory" } : item.footer,
+  }));
+  const exportReport = () => {
+    const headers = ["Event ID", "Event Title", "Organizer", "Date", "Status", "Category", "Location", "Revenue"];
+    const escapeCsv = (value: string | number) => `"${String(value).replace(/"/g, '""')}"`;
+    const lines = [
+      headers.map(escapeCsv).join(","),
+      ...filteredRows.map((event) => [
+        `EVT-${event.id}`,
+        event.title,
+        event.organizer,
+        event.date,
+        event.status,
+        event.category,
+        event.location,
+        formatRevenue(event.revenue),
+      ].map(escapeCsv).join(",")),
+    ];
+    const blob = new Blob([lines.join("\r\n")], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `events-report-${new Date().toISOString().slice(0, 10)}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+  };
   const pagerSquare =
     "flex h-7 w-7 items-center justify-center rounded-md border border-border_color bg-bgray/5 text-bgray/70 transition hover:bg-bgray/10 hover:text-bgray disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-bgray/5";
 
@@ -285,6 +347,7 @@ const EventsDirectoryPage = () => {
             </button>
             <button
               type="button"
+              onClick={exportReport}
               className="flex items-center gap-2 rounded-none bg-primary px-4 py-2 text-xs font-semibold text-bgray transition hover:bg-primary/90"
             >
               <FiDownload size={13} />
@@ -294,7 +357,7 @@ const EventsDirectoryPage = () => {
         </header>
 
         <section className="mt-6 grid grid-cols-1 gap-3 min-[600px]:grid-cols-3">
-          {statItems.map((item) => (
+          {dynamicStats.map((item) => (
             <StatCard key={item.id} item={item} />
           ))}
         </section>
@@ -398,7 +461,13 @@ const EventsDirectoryPage = () => {
                 </tr>
               </thead>
               <tbody>
-                {visibleRows.length === 0 && (
+                {loading && (
+                  <tr><td colSpan={6} className="px-6 py-20 text-center text-sm text-secondary">Loading events...</td></tr>
+                )}
+                {!loading && error && (
+                  <tr><td colSpan={6} className="px-6 py-20 text-center text-sm text-red-400">{error}</td></tr>
+                )}
+                {!loading && !error && visibleRows.length === 0 && (
                   <tr>
                     <td colSpan={6} className="px-6 py-20 text-center">
                       <FiImage aria-hidden="true" size={28} className="mx-auto mb-3 text-secondary/40" />
