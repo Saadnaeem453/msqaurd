@@ -16,6 +16,7 @@ import {
   Menu,
   X,
 } from "lucide-react";
+import { useOrganization } from "../../contexts/OrganizationContext";
 
 interface NavItem {
   label: string;
@@ -30,6 +31,7 @@ interface NavSection {
 
 const Sidebar = () => {
   const location = useLocation();
+  const { role, loading } = useOrganization();
   const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
@@ -105,6 +107,22 @@ const Sidebar = () => {
   ];
 
   const isActive = (path: string) => location.pathname === path;
+  const scopedMember = role === "admin" || role === "moderator";
+  const visibleSections = !scopedMember ? navSections : navSections.map((section) => ({
+    ...section,
+    items: section.items.filter((item) => {
+      if (item.path === "/organizer/organization/profile") return true;
+      if (item.path === "/organizer/organization/team") return role === "admin";
+      if (item.path.startsWith("/organizer/events")) {
+        if (role === "moderator") return ["/organizer/events", "/organizer/events/published", "/organizer/events/past"].includes(item.path);
+        return role === "admin";
+      }
+      if (item.path.startsWith("/organizer/tickets")) return role === "admin" || item.path === "/organizer/tickets/types";
+      if (item.path.startsWith("/organizer/checkin/")) return true;
+      if (item.path.startsWith("/organizer/analytics")) return role === "admin";
+      return false;
+    }),
+  })).filter((section) => section.items.length > 0);
 
   return (
     <>
@@ -140,7 +158,7 @@ const Sidebar = () => {
 
 
       <nav className="p-4 space-y-4">
-        {navSections.map((section, idx) => (
+        {(loading && scopedMember ? [] : visibleSections).map((section, idx) => (
           <div key={idx}>
 
             <h3 className="text-secondary/40 text-[10px] uppercase tracking-[0.15em] font-light px-3 py-1">

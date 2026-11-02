@@ -110,6 +110,8 @@ import LoginHistoryPage from "./pages/Admin/security/LoginHistoryPage";
 import AccessRolesPage from "./pages/Admin/security/AccessRolesPage";
 import PermissionsMatrixPage from "./pages/Admin/security/PermissionsMatrixPage";
 import ApiKeyManagementPage from "./pages/Admin/security/ApiKeyManagementPage";
+import OrganizationInvitationAcceptance from "./pages/Organizer/organization/OrganizationInvitationAcceptance";
+import { organizerApi } from "./services/organizer.service";
 
 const getStoredAccountType = () => {
   if (typeof window === "undefined") return null;
@@ -202,6 +204,28 @@ const RoleRoute = ({ children, allowedRole }: RoleRouteProps) => {
   return <>{children}</>;
 };
 
+const OrganizerMembershipGate = ({ children }: { children: ReactNode }) => {
+  const accountType = getStoredAccountType();
+  const [checking, setChecking] = useState(accountType !== "organizer");
+  const [hasOrganizationAccess, setHasOrganizationAccess] = useState(accountType === "organizer");
+
+  useEffect(() => {
+    if (accountType === "organizer") { setHasOrganizationAccess(true); setChecking(false); return; }
+    if (!accountType) { setHasOrganizationAccess(false); setChecking(false); return; }
+    void organizerApi.getOrganizations().then((result) => {
+      setHasOrganizationAccess(Boolean(result.ok && result.data?.some((organization) => organization.access_role)));
+      setChecking(false);
+    });
+  }, [accountType]);
+
+  if (checking) return <div className="min-h-screen bg-[#0a0b0e] p-8 text-sm text-secondary">Checking organization access...</div>;
+  if (!hasOrganizationAccess) {
+    const destination = accountType === "admin" ? "/admin" : localStorage.getItem("onboardingCompleted") === "true" ? "/home" : "/onboarding";
+    return <Navigate to={destination} replace />;
+  }
+  return <>{children}</>;
+};
+
 function App() {
   const [loading, setLoading] = useState(() => {
     if (typeof window === "undefined") {
@@ -242,6 +266,7 @@ function App() {
         <Route path="newpassword" element={<PublicRoute><NewPassword /></PublicRoute>} />
         <Route path="successmessage" element={<PublicRoute><SuccessMessage /></PublicRoute>} />
         <Route path="admin-login" element={<AdminLogin />} />
+        <Route path="organization-invitations/accept" element={<OrganizationInvitationAcceptance />} />
 
         {/* Stripe hosted checkout return URLs (the backend uses these paths). */}
         <Route path="checkout/success" element={<PaymentSuccessPage />} />
@@ -301,9 +326,9 @@ function App() {
           path="organizer"
           element={
             <ProtectedRoute>
-              <RoleRoute allowedRole="organizer">
+              <OrganizerMembershipGate>
                 <OrganizerDashboardLayout />
-              </RoleRoute>
+              </OrganizerMembershipGate>
             </ProtectedRoute>
           }
         >

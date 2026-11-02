@@ -1,5 +1,12 @@
 import { api } from "../lib/api";
 
+export const blobToDataUrl = (blob: Blob): Promise<string> => new Promise((resolve, reject) => {
+  const reader = new FileReader();
+  reader.onloadend = () => resolve(String(reader.result));
+  reader.onerror = reject;
+  reader.readAsDataURL(blob);
+});
+
 export interface AttendeeTicketEvent {
   id: string;
   title: string;
@@ -7,6 +14,10 @@ export interface AttendeeTicketEvent {
   start_time?: string;
   timezone?: string;
   status?: string;
+  hero_image?: string | null;
+  end_time?: string;
+  venue_name?: string | null;
+  street_address?: string | null;
 }
 
 export interface AttendeeTicketTier {
@@ -25,6 +36,8 @@ export interface AttendeeTicket {
   event: AttendeeTicketEvent;
   tier: AttendeeTicketTier;
   qr_url: string;
+  status_label?: string;
+  attendee?: { id: string; full_name: string; email: string; avatar_url?: string | null };
 }
 
 export const attendeeTicketApi = {

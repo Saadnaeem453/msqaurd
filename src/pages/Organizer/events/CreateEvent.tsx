@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { useOrganization } from "../../../contexts/OrganizationContext";
 import BasicsStep from "../../../components/Organizer/events/BasicsStep";
 import VenueStep from "../../../components/Organizer/events/VenueStep";
 import TicketsStep from "../../../components/Organizer/events/TicketsStep";
@@ -47,6 +48,9 @@ interface CreateEventProps {
 
 const CreateEvent = ({ editEventId, initialData }: CreateEventProps = {}) => {
   const navigate = useNavigate();
+  const { organizations, organization, role } = useOrganization();
+  const organizationOnlyMember = typeof window !== "undefined" && localStorage.getItem("accountType") !== "organizer";
+  const creatableOrganizations = organizations.filter((item) => item.access_role === "owner" || item.access_role === "admin");
 
 
   const getInitialFormData = (): EventFormData => {
@@ -70,6 +74,11 @@ const CreateEvent = ({ editEventId, initialData }: CreateEventProps = {}) => {
   const [formData, setFormData] = useState<EventFormData>(getInitialFormData);
   const [errors, setErrors] = useState<ValidationErrors>({});
   const [submitting, setSubmitting] = useState(false);
+  const [selectedOrganizationId, setSelectedOrganizationId] = useState("");
+
+  useEffect(() => {
+    if (organizationOnlyMember && (role === "owner" || role === "admin") && organization) setSelectedOrganizationId(organization.id);
+  }, [organizationOnlyMember, organization, role]);
 
   const { createEventWithFiles } = useCreateEventWithFiles();
   const { updateEventWithFiles } = useUpdateEventWithFiles();
@@ -202,6 +211,7 @@ const CreateEvent = ({ editEventId, initialData }: CreateEventProps = {}) => {
     try {
 
       const fd = formToFormData(formData, status);
+      if (!editEventId && selectedOrganizationId) fd.append("organization_id", selectedOrganizationId);
 
       let event;
       if (editEventId) {
@@ -307,6 +317,8 @@ const CreateEvent = ({ editEventId, initialData }: CreateEventProps = {}) => {
         )}
       </div>
 
+
+      {!editEventId && (organizationOnlyMember ? <div className="mb-5 rounded-lg border border-secondary/10 bg-[#131418] px-4 py-3 text-sm text-secondary">Creating this event for <span className="font-semibold text-white">{organization?.name || "your organization"}</span></div> : <label className="mb-5 block max-w-md text-xs text-secondary">Create this event for<select value={selectedOrganizationId} onChange={(event) => setSelectedOrganizationId(event.target.value)} className="mt-1.5 w-full rounded-lg border border-secondary/15 bg-[#1a1c22] px-3 py-2.5 text-sm text-white"><option value="" className="bg-[#1a1c22]">Personal organizer event</option>{creatableOrganizations.map((item) => <option key={item.id} value={item.id} className="bg-[#1a1c22]">{item.name} ({item.access_role})</option>)}</select><span className="mt-1 block text-[11px] text-secondary/45">Personal events remain separate from organization events.</span></label>)}
 
       <Stepper steps={steps} currentStep={currentStep} />
 

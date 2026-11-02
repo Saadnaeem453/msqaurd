@@ -12,6 +12,11 @@ const VerifyEmail = () => {
     (location.state as { accountType?: "attendee" | "organizer" } | null)?.accountType ??
     (typeof window !== "undefined" ? localStorage.getItem("accountType") : null) ??
     "attendee";
+  const requestedReturnTo = (location.state as { returnTo?: unknown } | null)?.returnTo;
+  const invitationReturnTo = typeof requestedReturnTo === "string" &&
+    requestedReturnTo.startsWith("/organization-invitations/accept?token=")
+    ? requestedReturnTo
+    : null;
 
   const [email, setEmail] = useState(initialEmail);
   const [accountType] = useState<"attendee" | "organizer">(
@@ -54,7 +59,9 @@ const VerifyEmail = () => {
     localStorage.setItem("user", JSON.stringify(user));
     localStorage.setItem("accountType", accountType);
     localStorage.setItem("onboardingCompleted", String(onboardingCompleted));
-    if (isOrganizer) {
+    if (invitationReturnTo) {
+      navigate(invitationReturnTo, { replace: true });
+    } else if (isOrganizer) {
       navigate("/organizer", { replace: true });
     } else if (onboardingCompleted) {
       navigate("/layout/overview", { replace: true });

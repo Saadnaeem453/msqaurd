@@ -54,6 +54,8 @@ export interface ApiResult<T = unknown> {
   user?: User;
   verify?: boolean;
   detail?: string;
+  errors?: ValidationError[];
+  status?: number;
 }
 
 export interface User {
@@ -111,7 +113,7 @@ export const tokenStore = {
 async function request<TData = unknown>(
   method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE',
   endpoint: string,
-  body?: Record<string, unknown> | FormData,
+  body?: object | FormData,
   toastOptions: ToastOptions = {}
 ): Promise<ApiResult<TData>> {
   const { successMessage, errorMessage, loadingMessage } = toastOptions;
@@ -137,6 +139,7 @@ async function request<TData = unknown>(
     '/auth/reset-password',
     '/organizer/signup',
     '/organizer/signin',
+    '/organization-invitations/validate',
   ]);
 
   const token = tokenStore.get();
@@ -195,6 +198,7 @@ async function request<TData = unknown>(
         user: json.user,
         verify: json.verify,
         detail: json.detail,
+        status: res.status,
       };
     }
 
@@ -206,7 +210,7 @@ async function request<TData = unknown>(
           description: messages,
         });
       }
-      return { success: false, ok: false, detail: json.detail };
+      return { success: false, ok: false, detail: json.detail, errors: json.errors, status: res.status };
     }
 
 
@@ -220,14 +224,14 @@ if (res.status === 401) {
     window.history.replaceState(null, "", "/login");
   }
 
-  return { success: false, ok: false, detail: "Unauthorized" };
+  return { success: false, ok: false, detail: "Unauthorized", status: res.status };
 }
 
     if (errorMessage !== false) {
       toast.error(errorMessage ?? json.detail ?? 'Something went wrong');
     }
 
-    return { success: false, ok: false, detail: json.detail };
+    return { success: false, ok: false, detail: json.detail, status: res.status };
   } catch (err) {
 
     if (loadingToastId !== undefined) toast.dismiss(loadingToastId);
@@ -291,21 +295,21 @@ export const api = {
 
   post: <TData = unknown>(
     endpoint: string,
-    body?: Record<string, unknown> | FormData,
+    body?: object | FormData,
     toastOptions?: ToastOptions
   ): Promise<ApiResult<TData>> =>
     request<TData>('POST', endpoint, body, toastOptions),
 
   put: <TData = unknown>(
     endpoint: string,
-    body?: Record<string, unknown> | FormData,
+    body?: object | FormData,
     toastOptions?: ToastOptions
   ): Promise<ApiResult<TData>> =>
     request<TData>('PUT', endpoint, body, toastOptions),
 
   patch: <TData = unknown>(
     endpoint: string,
-    body?: Record<string, unknown>,
+    body?: object,
     toastOptions?: ToastOptions
   ): Promise<ApiResult<TData>> =>
     request<TData>('PATCH', endpoint, body, toastOptions),

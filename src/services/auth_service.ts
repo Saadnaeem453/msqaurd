@@ -1,6 +1,7 @@
 import { api, User } from "../lib/api";
 
 export const authApi = {
+  getOrganizationMemberships: () => api.get('/auth/organization-memberships', { successMessage: false, errorMessage: false }),
   signup: (body: {
     full_name: string;
     username: string;

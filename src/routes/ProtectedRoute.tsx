@@ -93,7 +93,7 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     return <Navigate to="/verify-email" state={{ from: location }} replace />;
   }
 
-  if (!isOnboardingCompleted() && !isOrganizerAccount() && location.pathname !== "/onboarding" && location.pathname !== "/verify-email") {
+  if (!isOnboardingCompleted() && !isOrganizerAccount() && !location.pathname.startsWith("/organizer") && location.pathname !== "/onboarding" && location.pathname !== "/verify-email") {
     return <Navigate to="/onboarding" state={{ from: location }} replace />;
   }
 

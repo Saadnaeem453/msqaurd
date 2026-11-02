@@ -17,7 +17,9 @@ import {
 import {
   attendeeTicketApi,
   AttendeeTicket,
+  blobToDataUrl,
 } from "../../services/attendee_ticket.service";
+import TicketPass, { downloadTicketPass } from "../../components/Attendee/TicketPass";
 
 const PAGE_SIZE = 20;
 const formatDate = (value: string) =>
@@ -80,14 +82,13 @@ const MyTicketsPage = () => {
     void loadPurchasedEvents();
   }, [loadPurchasedEvents]);
 
-  useEffect(() => () => Object.values(qrUrls).forEach((url) => URL.revokeObjectURL(url)), [qrUrls]);
-
   const loadQr = async (ticketId: string) => {
     if (qrUrls[ticketId] || qrLoading === ticketId) return;
     setQrLoading(ticketId);
     try {
       const blob = await attendeeTicketApi.qr(ticketId);
-      setQrUrls((current) => ({ ...current, [ticketId]: URL.createObjectURL(blob) }));
+      const dataUrl = await blobToDataUrl(blob);
+      setQrUrls((current) => ({ ...current, [ticketId]: dataUrl }));
     } finally {
       setQrLoading(null);
     }
@@ -96,10 +97,8 @@ const MyTicketsPage = () => {
   const downloadQr = async (ticketId: string) => {
     const blob = await attendeeTicketApi.downloadQr(ticketId);
     const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `ticket-${ticketId}.png`;
-    link.click();
+    const ticket = tickets.find((item) => item.id === ticketId);
+    if (ticket) await downloadTicketPass(ticket, url);
     window.setTimeout(() => URL.revokeObjectURL(url), 1000);
   };
 
@@ -284,19 +283,7 @@ const MyTicketsPage = () => {
               <button type="button" aria-label="Close tickets" onClick={() => setSelectedEventId(null)} className="text-secondary hover:text-white"><X size={20} /></button>
             </div>
             <div className="mt-4 space-y-4">
-              {tickets.filter((item) => item.event.id === selectedEventId).map((item) => (
-                <article key={item.id} className="rounded-lg border border-secondary/10 bg-[#0d0e10] p-4">
-                  <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                    <div>
-                      <p className="font-semibold text-white">{item.tier.name}</p>
-                      <p className="mt-1 text-xs text-secondary">Ticket {item.ticket_code}</p>
-                      <p className="mt-1 text-xs text-secondary">Status: {item.status.replace("_", " ")}</p>
-                    </div>
-                    {item.status !== "valid" && item.status !== "checked_in" ? null : qrLoading === item.id ? <p className="text-xs text-secondary">Loading QR...</p> : qrUrls[item.id] ? <img src={qrUrls[item.id]} alt={`QR code for ${item.tier.name}`} className="h-32 w-32 rounded bg-white p-2" /> : <button type="button" onClick={() => void loadQr(item.id)} className="rounded-md bg-red-600 px-4 py-2 text-xs font-semibold text-white">Show QR</button>}
-                  </div>
-                  {(item.status === "valid" || item.status === "checked_in") && qrUrls[item.id] && <button type="button" onClick={() => void downloadQr(item.id)} className="mt-3 flex items-center gap-2 rounded-md border border-white/10 px-3 py-2 text-xs text-white hover:bg-white/5"><Download size={14} /> Download Ticket</button>}
-                </article>
-              ))}
+              {tickets.filter((item) => item.event.id === selectedEventId).map((item) => <TicketPass key={item.id} ticket={item} qrUrl={qrUrls[item.id]} onQr={() => void loadQr(item.id)} onDownload={() => void downloadQr(item.id)} />)}
             </div>
           </section>
         </div>

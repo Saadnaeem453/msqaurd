@@ -57,12 +57,16 @@ export interface OrganizationData {
   description?: string;
   logo_url?: string;
   website?: string;
-  social_links?: any;
-  owner_id: string;
+  access_role?: OrganizationMemberRole;
   is_verified: boolean;
   is_active: boolean;
   created_at: string;
   updated_at: string;
+  banner_url?: string;
+  established_date?: string;
+  focus_areas?: string[];
+  legal_status?: string;
+  social_links?: { instagram?: string; facebook?: string; twitter?: string; threads?: string; linkedin?: string; [key: string]: unknown };
 }
 
 export interface CreateOrganizationData {
@@ -79,8 +83,47 @@ export interface UpdateOrganizationData {
   description?: string;
   logo_url?: string;
   website?: string;
-  social_links?: any;
+  social_links?: { instagram?: string; facebook?: string; twitter?: string; threads?: string; linkedin?: string; [key: string]: unknown };
+  banner_url?: string;
+  established_date?: string;
+  focus_areas?: string[];
+  legal_status?: string;
   is_active?: boolean;
+}
+
+export type OrganizationMemberRole = 'owner' | 'admin' | 'moderator';
+
+export interface OrganizationMember {
+  id: string;
+  user_id?: string;
+  user?: { id: string; full_name?: string; email?: string; avatar_url?: string | null };
+  full_name?: string;
+  name?: string;
+  email: string;
+  avatar_url?: string | null;
+  role: OrganizationMemberRole;
+  is_active: boolean;
+  created_at?: string;
+}
+
+export interface OrganizationMembersResponse {
+  members: OrganizationMember[];
+  total?: number;
+}
+
+export interface OrganizationInvitation {
+  id: string;
+  email: string;
+  role: Exclude<OrganizationMemberRole, "owner">;
+  expires_at: string;
+  created_at: string;
+}
+
+export interface InvitationValidation {
+  organization: { id: string; name: string };
+  email: string;
+  role: Exclude<OrganizationMemberRole, "owner">;
+  expires_at: string;
 }
 
 export interface OrganizerProfileResponse {
@@ -206,15 +249,16 @@ export const organizerApi = {
    * Get all organizations for the current organizer
    */
   getOrganizations: () =>
-    api.get<OrganizationsResponse>('/organizer/organizations', {
+    api.get<OrganizationData[]>('/organizer/organizations', {
       successMessage: false,
+      errorMessage: false,
     }),
 
   /**
    * Create a new organization
    */
   createOrganization: (data: CreateOrganizationData) =>
-    api.post<{ success: boolean; data: OrganizationData; detail: string }>(
+    api.post<OrganizationData>(
       '/organizer/organizations',
       data,
       {
@@ -226,13 +270,44 @@ export const organizerApi = {
   /**
    * Update an organization
    */
-  updateOrganization: (orgId: string, data: UpdateOrganizationData) =>
-    api.put<{ success: boolean; data: OrganizationData; detail: string }>(
+  updateOrganization: (orgId: string, data: UpdateOrganizationData | FormData) =>
+    api.put<OrganizationData>(
       `/organizer/organizations/${orgId}`,
       data,
       {
         loadingMessage: 'Updating organization...',
         successMessage: 'Organization updated successfully!',
+        errorMessage: false,
       }
     ),
+
+  getOrganization: (orgId: string) =>
+    api.get<OrganizationData>(`/organizations/${encodeURIComponent(orgId)}`, { successMessage: false, errorMessage: false }),
+
+  getMembers: (orgId: string) =>
+    api.get<OrganizationMembersResponse | OrganizationMember[]>(`/organizer/organizations/${encodeURIComponent(orgId)}/members`, { successMessage: false, errorMessage: false }),
+
+  addMember: (orgId: string, data: { email: string; role: Exclude<OrganizationMemberRole, 'owner'> }) =>
+    api.post<OrganizationMember>(`/organizer/organizations/${encodeURIComponent(orgId)}/members`, data, { loadingMessage: 'Adding member...', successMessage: 'Member added successfully.', errorMessage: 'Failed to add member.' }),
+
+  updateMember: (orgId: string, userId: string, data: { role?: Exclude<OrganizationMemberRole, 'owner'>; is_active?: boolean }) =>
+    api.patch<OrganizationMember>(`/organizer/organizations/${encodeURIComponent(orgId)}/members/${encodeURIComponent(userId)}`, data, { loadingMessage: 'Updating member...', successMessage: 'Member updated successfully.', errorMessage: 'Failed to update member.' }),
+
+  removeMember: (orgId: string, userId: string) =>
+    api.delete(`/organizer/organizations/${encodeURIComponent(orgId)}/members/${encodeURIComponent(userId)}`, { loadingMessage: 'Removing member...', successMessage: 'Member removed successfully.', errorMessage: 'Failed to remove member.' }),
+
+  getInvitations: (orgId: string) => api.get<OrganizationInvitation[]>(`/organizer/organizations/${encodeURIComponent(orgId)}/invitations`, { successMessage: false, errorMessage: false }),
+
+  inviteMember: (orgId: string, data: { email: string; role: Exclude<OrganizationMemberRole, 'owner'> }) =>
+    api.post<OrganizationInvitation>(`/organizer/organizations/${encodeURIComponent(orgId)}/invitations`, data, { loadingMessage: 'Sending invitation...', successMessage: 'Invitation sent.', errorMessage: false }),
+
+  resendInvitation: (orgId: string, invitationId: string) =>
+    api.post<OrganizationInvitation>(`/organizer/organizations/${encodeURIComponent(orgId)}/invitations/${encodeURIComponent(invitationId)}/resend`, {}, { loadingMessage: 'Resending invitation...', successMessage: 'Invitation resent.', errorMessage: false }),
+
+  cancelInvitation: (orgId: string, invitationId: string) =>
+    api.delete(`/organizer/organizations/${encodeURIComponent(orgId)}/invitations/${encodeURIComponent(invitationId)}`, { loadingMessage: 'Cancelling invitation...', successMessage: 'Invitation cancelled.', errorMessage: false }),
+
+  validateInvitation: (token: string) => api.get<InvitationValidation>('/organization-invitations/validate', { params: { token }, successMessage: false, errorMessage: false }),
+
+  acceptInvitation: (token: string, data?: { full_name?: string; username?: string; password?: string }) => api.post<{ user_id: string; organization_id: string; role: Exclude<OrganizationMemberRole, 'owner'>; account_created?: boolean }>('/organization-invitations/accept', { token, ...data }, { loadingMessage: 'Accepting invitation...', successMessage: false, errorMessage: false }),
 };

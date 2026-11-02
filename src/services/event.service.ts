@@ -158,7 +158,7 @@ export const eventApi = {
    * List events for the current organizer with pagination and status filter.
    */
   list: (params?: { status?: EventStatus; page?: number; limit?: number }) =>
-    api.get<EventListResponse>('/events', {
+    api.get<EventListResponse['data']>('/events', {
       params,
       successMessage: false,
       errorMessage: true,

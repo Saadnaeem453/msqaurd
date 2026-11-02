@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { authApi } from '../../services/auth_service';
 import { organizerApi } from '../../services/organizer.service';
 
@@ -14,7 +14,13 @@ declare global {
 type AccountType = 'attendee' | 'organizer';
 
 const Signup: React.FC = () => {
+  const location = useLocation();
   const navigate = useNavigate();
+  const requestedReturnTo = (location.state as { returnTo?: unknown } | null)?.returnTo;
+  const invitationReturnTo = typeof requestedReturnTo === 'string' &&
+    requestedReturnTo.startsWith('/organization-invitations/accept?token=')
+    ? requestedReturnTo
+    : null;
   const [accountType, setAccountType] = useState<AccountType>('attendee');
   const [formData, setFormData] = useState({
     fullName: '',
@@ -99,7 +105,7 @@ const Signup: React.FC = () => {
         if (signupSucceeded) {
           setSuccessMsg('Organizer account created! Please check your email for the verification code.');
           navigate('/verify-email', {
-            state: { email: formData.email.trim(), accountType: 'organizer' },
+            state: { email: formData.email.trim(), accountType: 'organizer', returnTo: invitationReturnTo },
             replace: true,
           });
         }
@@ -117,7 +123,7 @@ const Signup: React.FC = () => {
         if (signupSucceeded) {
           setSuccessMsg('Account created! Please check your email for the verification code.');
           navigate('/verify-email', {
-            state: { email: formData.email.trim(), accountType: 'attendee' },
+            state: { email: formData.email.trim(), accountType: 'attendee', returnTo: invitationReturnTo },
             replace: true,
           });
         }

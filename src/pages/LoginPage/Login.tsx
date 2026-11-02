@@ -1,10 +1,16 @@
 
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { authApi } from '../../services/auth_service';
 
 const Login = () => {
+  const location = useLocation();
   const navigate = useNavigate();
+  const requestedReturnTo = (location.state as { returnTo?: unknown } | null)?.returnTo;
+  const invitationReturnTo = typeof requestedReturnTo === 'string' &&
+    requestedReturnTo.startsWith('/organization-invitations/accept?token=')
+    ? requestedReturnTo
+    : null;
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -53,7 +59,7 @@ const Login = () => {
         const accountType = user?.role === 'organizer' ? 'organizer' : 'attendee';
         navigate('/verify-email', {
           replace: true,
-          state: { email: (user?.email || formData.email.trim()), accountType },
+          state: { email: (user?.email || formData.email.trim()), accountType, returnTo: invitationReturnTo },
         });
         return;
       }
@@ -84,13 +90,15 @@ const Login = () => {
       if (!isEmailVerified) {
         navigate('/verify-email', {
           replace: true,
-          state: { email: user.email, accountType },
+          state: { email: user.email, accountType, returnTo: invitationReturnTo },
         });
         return;
       }
 
 
-      if (isOrganizer) {
+      if (invitationReturnTo) {
+        navigate(invitationReturnTo, { replace: true });
+      } else if (isOrganizer) {
         navigate('/organizer', { replace: true });
       } else if (onboardingCompleted) {
         navigate('/layout/overview', { replace: true });
