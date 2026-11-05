@@ -326,9 +326,11 @@ function App() {
           path="organizer"
           element={
             <ProtectedRoute>
-              <OrganizerMembershipGate>
-                <OrganizerDashboardLayout />
-              </OrganizerMembershipGate>
+              <RoleRoute allowedRole="organizer">
+                <OrganizerMembershipGate>
+                  <OrganizerDashboardLayout />
+                </OrganizerMembershipGate>
+              </RoleRoute>
             </ProtectedRoute>
           }
         >

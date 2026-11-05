@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
   Download,
@@ -13,6 +13,7 @@ import {
   Search,
   X,
 } from "lucide-react";
+import { organizerTicketSalesApi, RevenueTransaction } from "../../../services/organizer_ticket_sales.service";
 
 
 
@@ -223,7 +224,7 @@ const mockTransactions = generateMockTransactions();
 
 
 const dateFilters = ["Last 7 Days", "Last 30 Days", "Last 90 Days", "This Month", "Custom Range"];
-const eventFilters = ["All Events", "Youth Gala '23", "Lecture Series", "Community Run", "Tech Workshop", "Spiritual Summit"];
+const eventFilters = ["All Events"];
 const amountFilters = ["Any Amount", "Under $50", "$50 – $100", "$100 – $250", "$250+"];
 
 
@@ -303,12 +304,44 @@ const TransactionsPage = () => {
   const [amountFilter, setAmountFilter] = useState("Any Amount");
   const [searchQuery, setSearchQuery] = useState("");
   const [showSearch, setShowSearch] = useState(false);
+  const [apiTransactions, setApiTransactions] = useState<Transaction[]>([]);
+  const [apiTotal, setApiTotal] = useState(0);
+  const [loading, setLoading] = useState(true);
 
   const perPage = 25;
 
+  const period = dateFilter === "Last 7 Days" ? "7d" : dateFilter === "Last 90 Days" ? "90d" : "30d";
+  useEffect(() => {
+    let active = true;
+    setLoading(true);
+    organizerTicketSalesApi.transactions({ period, page: currentPage, limit: perPage, sort: "newest" }).then((result) => {
+      if (!active) return;
+      const rows = result.ok && result.data ? result.data.transactions : [];
+      setApiTransactions(rows.map((tx: RevenueTransaction) => {
+        const name = tx.purchaser?.full_name || "Attendee";
+        return {
+          id: tx.order_id,
+          date: new Date(tx.payment_date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+          time: new Date(tx.payment_date).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" }),
+          attendeeName: name,
+          attendeeEmail: tx.purchaser?.email || "",
+          attendeeInitials: name.split(" ").map((part) => part[0]).join("").slice(0, 2).toUpperCase(),
+          attendeeColor: "bg-secondary/20 text-secondary",
+          event: tx.event || "—",
+          amount: tx.transaction_total_minor / 100,
+          method: "Card",
+          status: ["paid", "succeeded", "completed"].includes(tx.payment_status.toLowerCase()) ? "Completed" : tx.payment_status.toLowerCase() === "refunded" ? "Refunded" : tx.payment_status.toLowerCase() === "failed" ? "Failed" : "Pending",
+        };
+      }));
+      setApiTotal(result.ok && result.data ? result.data.pagination.total : 0);
+      setLoading(false);
+    });
+    return () => { active = false; };
+  }, [period, currentPage]);
+
 
   const filteredTransactions = useMemo(() => {
-    let result = mockTransactions;
+    let result = apiTransactions;
 
 
     if (eventFilter !== "All Events") {
@@ -339,9 +372,9 @@ const TransactionsPage = () => {
     }
 
     return result;
-  }, [dateFilter, eventFilter, amountFilter, searchQuery]);
+  }, [apiTransactions, dateFilter, eventFilter, amountFilter, searchQuery]);
 
-  const totalPages = Math.max(1, Math.ceil(filteredTransactions.length / perPage));
+  const totalPages = Math.max(1, Math.ceil(apiTotal / perPage));
   const paginatedTransactions = filteredTransactions.slice(
     (currentPage - 1) * perPage,
     currentPage * perPage
@@ -358,27 +391,14 @@ const TransactionsPage = () => {
 
 
   const handleExportCSV = useCallback(() => {
-    const headers = ["Order ID", "Date", "Time", "Attendee", "Email", "Event", "Amount", "Method", "Status"];
-    const rows = filteredTransactions.map((t) => [
-      t.id,
-      t.date,
-      t.time,
-      t.attendeeName,
-      t.attendeeEmail,
-      t.event,
-      t.amount.toFixed(2),
-      t.method,
-      t.status,
-    ]);
-
-    const csvContent = [headers.join(","), ...rows.map((r) => r.join(","))].join("\n");
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = `transactions_${dateFilter.replace(/\s/g, "_")}.csv`;
-    link.click();
-    URL.revokeObjectURL(link.href);
-  }, [filteredTransactions, dateFilter]);
+    organizerTicketSalesApi.export({ period }).then((blob) => {
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = `transactions_${dateFilter.replace(/\s/g, "_")}.csv`;
+      link.click();
+      URL.revokeObjectURL(link.href);
+    });
+  }, [dateFilter, period]);
 
 
   const getPaginationRange = (): (number | "...")[] => {
