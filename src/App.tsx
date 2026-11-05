@@ -56,6 +56,7 @@ import PayoutsPage from "./pages/Organizer/finance/PayoutsPage";
 import AudienceInsights from "./pages/Organizer/analytics/AudienceInsights";
 import EventPerformance from "./pages/Organizer/analytics/EventPerformance";
 import TrendsPage from "./pages/Organizer/analytics/TrendsPage";
+import OrganiserInsightsPage from "./pages/Organizer/analytics/OrganiserInsightsPage";
 import ScannerPage from "./pages/Organizer/checkin/ScannerPage";
 import LiveCheckinsPage from "./pages/Organizer/checkin/LiveCheckinsPage";
 import OrganizationProfile from "./pages/Organizer/organization/OrganizationProfile";
@@ -356,6 +357,7 @@ function App() {
           <Route path="finance/payouts" element={<PayoutsPage />} />
 
           <Route path="analytics/audience" element={<AudienceInsights />} />
+          <Route path="analytics/insights" element={<OrganiserInsightsPage />} />
           <Route path="analytics/performance" element={<EventPerformance />} />
           <Route path="analytics/trends" element={<TrendsPage />} />
 

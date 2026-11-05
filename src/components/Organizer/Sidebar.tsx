@@ -44,7 +44,7 @@ const Sidebar = () => {
       title: "Dashboard",
       items: [
         { label: "Overview", icon: <LayoutDashboard size={18} />, path: "/organizer" },
-        { label: "Insights", icon: <LayoutDashboard size={18} />, path: "/organizer/insights" },
+        { label: "Insights", icon: <LayoutDashboard size={18} />, path: "/organizer/analytics/insights" },
       ],
     },
     {
