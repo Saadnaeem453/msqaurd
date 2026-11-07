@@ -74,6 +74,8 @@ export interface Event {
   venue_type: 'physical' | 'online' | 'hybrid';
   venue_name?: string | null;
   street_address?: string | null;
+  city?: string | null;
+  country?: string | null;
   latitude?: number | null;
   longitude?: number | null;
   hero_image?: string | null;
@@ -138,6 +140,8 @@ export interface CreateEventPayload {
   venue_type?: 'physical' | 'online' | 'hybrid';
   venue_name?: string;
   street_address?: string;
+  city?: string;
+  country?: string;
   latitude?: number;
   longitude?: number;
   hero_image?: string;

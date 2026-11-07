@@ -13,6 +13,10 @@ export interface EventFormData {
   venueType: 'physical' | 'online' | 'hybrid';
   venueName: string;
   streetAddress: string;
+  city: string;
+  country: string;
+  latitude: number | null;
+  longitude: number | null;
   tiers: Array<{
     name: string;
     description?: string;
@@ -58,6 +62,10 @@ export const initialFormData: EventFormData = {
   venueType: 'physical',
   venueName: '',
   streetAddress: '',
+  city: '',
+  country: '',
+  latitude: null,
+  longitude: null,
   tiers: [],
   heroImage: null,
   gallery: [],
@@ -110,6 +118,10 @@ export function formToPayload(
     venue_type: toVenueType(form.venueType),
     venue_name: form.venueName?.trim() || undefined,
     street_address: form.streetAddress?.trim() || undefined,
+    city: form.city?.trim() || undefined,
+    country: form.country?.trim() || undefined,
+    latitude: form.latitude ?? undefined,
+    longitude: form.longitude ?? undefined,
     hero_image: form.heroImageUrl || undefined,
     video_url: form.videoUrl?.trim() || undefined,
     status,
@@ -182,6 +194,10 @@ export function formToFormData(
   fd.append('venue_type', toVenueType(form.venueType));
   if (form.venueName?.trim()) fd.append('venue_name', form.venueName.trim());
   if (form.streetAddress?.trim()) fd.append('street_address', form.streetAddress.trim());
+  if (form.city?.trim()) fd.append('city', form.city.trim());
+  if (form.country?.trim()) fd.append('country', form.country.trim());
+  if (form.latitude != null) fd.append('latitude', String(form.latitude));
+  if (form.longitude != null) fd.append('longitude', String(form.longitude));
   if (form.videoUrl?.trim()) fd.append('video_url', form.videoUrl.trim());
   fd.append('status', status);
 
@@ -269,6 +285,10 @@ export function eventToForm(event: Event): EventFormData {
     venueType: toVenueType(event.venue_type),
     venueName: event.venue_name || '',
     streetAddress: event.street_address || '',
+    city: event.city || '',
+    country: event.country || '',
+    latitude: event.latitude ?? null,
+    longitude: event.longitude ?? null,
     tiers: (event.tiers || []).map((t) => ({
       name: t.name || '',
       description: '',
@@ -331,6 +351,9 @@ export function validateEventForm(form: EventFormData): ValidationErrors {
 
   if (form.venueType === 'physical' || form.venueType === 'hybrid') {
     if (!form.venueName.trim()) errors.venueName = 'Venue name is required for physical/hybrid events';
+    if (!form.streetAddress.trim() || form.latitude == null || form.longitude == null) {
+      errors.location = 'Select a venue address from the location suggestions';
+    }
   }
 
   form.tiers.forEach((tier, idx) => {

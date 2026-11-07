@@ -1,5 +1,6 @@
 import { EventFormData } from "../../../pages/Organizer/events/CreateEvent";
-import { MapPin, Wifi, Monitor, Lightbulb, AlertCircle } from "lucide-react";
+import { MapPin, Wifi, Monitor, Lightbulb, AlertCircle, Search } from "lucide-react";
+import { useEffect, useState } from "react";
 import CustomDropdown from "../../ui/CustomDropdown";
 
 interface Props {
@@ -9,6 +10,37 @@ interface Props {
 }
 
 const VenueStep = ({ data, updateData, errors = {} }: Props) => {
+  const [query, setQuery] = useState(data.streetAddress || "");
+  const [searching, setSearching] = useState(false);
+  const [searchError, setSearchError] = useState("");
+  const [suggestions, setSuggestions] = useState<Array<{ properties: { name?: string; formatted: string; street?: string; city?: string; country?: string; lat: number; lon: number } }>>([]);
+  const geoapifyKey = import.meta.env.VITE_GEOAPIFY_API_KEY;
+
+  useEffect(() => {
+    if (!geoapifyKey || query.trim().length < 3 || query === data.streetAddress) { setSuggestions([]); return; }
+    const controller = new AbortController();
+    const timer = window.setTimeout(async () => {
+      setSearching(true); setSearchError("");
+      try {
+        const response = await fetch(`https://api.geoapify.com/v1/geocode/autocomplete?text=${encodeURIComponent(query)}&limit=5&apiKey=${encodeURIComponent(geoapifyKey)}`, { signal: controller.signal });
+        const json = await response.json();
+        setSuggestions(json.features || []);
+        if (!(json.features || []).length) setSearchError("No matching locations found.");
+      } catch (error) { if ((error as Error).name !== "AbortError") setSearchError("Location search is unavailable. Try again."); }
+      finally { setSearching(false); }
+    }, 350);
+    return () => { window.clearTimeout(timer); controller.abort(); };
+  }, [geoapifyKey, query, data.streetAddress]);
+
+  const chooseSuggestion = (feature: (typeof suggestions)[number]) => {
+    const p = feature.properties;
+    updateData({ venueName: data.venueName || p.name || "", streetAddress: p.street || p.formatted, city: p.city || "", country: p.country || "", latitude: p.lat, longitude: p.lon });
+    setQuery(p.formatted); setSuggestions([]);
+  };
+  const changeQuery = (value: string) => {
+    setQuery(value); setSuggestions([]); setSearchError("");
+    if (value !== data.streetAddress) updateData({ streetAddress: "", city: "", country: "", latitude: null, longitude: null });
+  };
   const venueTypes = [
     { label: "Physical", value: "physical", icon: MapPin },
     { label: "Online", value: "online", icon: Wifi },
@@ -27,7 +59,7 @@ const VenueStep = ({ data, updateData, errors = {} }: Props) => {
         <div className="bg-[#121314] border border-[#292a2b] rounded-lg p-4">
           <h3 className="text-2xl font-jakarta font-semibold text-white mb-4">Time & Date</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
+            <div className="relative">
               <label className="text-secondary text-[10px] uppercase tracking-[0.15em] font-semibold block mb-1.5">
                 EVENT DATE
               </label>
@@ -60,7 +92,7 @@ const VenueStep = ({ data, updateData, errors = {} }: Props) => {
                 onChange={(value) => updateData({ timezone: value })}
               />
             </div>
-            <div>
+            <div className="relative">
               <label className="text-secondary text-[10px] uppercase tracking-[0.15em] font-semibold block mb-1.5">
                 START TIME
               </label>
@@ -146,17 +178,12 @@ const VenueStep = ({ data, updateData, errors = {} }: Props) => {
                 </p>
               )}
             </div>
-            <div>
-              <label className="text-secondary text-[10px] uppercase tracking-[0.15em] font-semibold block mb-1.5">
-                STREET ADDRESS
-              </label>
-              <input
-                type="text"
-                value={data.streetAddress}
-                onChange={(e) => updateData({ streetAddress: e.target.value })}
-                placeholder="123 Park Road, London NW8 7RG"
-                className="w-full bg-transparent border border-[#292a2b] rounded-lg px-4 py-2.5 text-white text-sm outline-none placeholder:text-gray-400 focus:border-primary/50 transition-colors"
-              />
+            <div className="relative">
+              <label className="text-secondary text-[10px] uppercase tracking-[0.15em] font-semibold block mb-1.5">STREET ADDRESS</label>
+              <div className="relative"><Search size={15} className="absolute left-3 top-3 text-secondary" /><input type="search" value={query} onChange={(e) => changeQuery(e.target.value)} onKeyDown={(e) => { if (e.key === "ArrowDown" && suggestions[0]) chooseSuggestion(suggestions[0]); if (e.key === "Escape") setSuggestions([]); }} placeholder="Type and select a real venue address" autoComplete="off" className={`w-full rounded-lg border bg-transparent py-2.5 pl-9 pr-4 text-sm text-white outline-none placeholder:text-gray-400 focus:border-primary/50 ${errors.location ? "border-red-500" : "border-[#292a2b]"}`} />{searching && <span className="absolute right-3 top-3 text-xs text-secondary">Searching...</span>}</div>
+              {suggestions.length > 0 && <div role="listbox" className="absolute left-0 right-0 top-full z-20 mt-1 max-h-56 overflow-y-auto rounded-lg border border-[#292a2b] bg-[#18191c] shadow-xl">{suggestions.map((s, i) => <button role="option" type="button" key={`${s.properties.formatted}-${i}`} onClick={() => chooseSuggestion(s)} className="block w-full border-b border-white/5 px-3 py-2.5 text-left text-sm text-gray-200 hover:bg-white/10 focus:bg-white/10 focus:outline-none">{s.properties.formatted}</button>)}</div>}
+              {searchError && <p className="mt-1 text-xs text-secondary">{searchError}</p>}
+              {errors.location && <p className="mt-1 flex items-center gap-1 text-xs text-red-400"><AlertCircle size={12} />{errors.location}</p>}
             </div>
           </div>
         </div>

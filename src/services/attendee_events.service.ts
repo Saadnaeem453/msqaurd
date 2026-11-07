@@ -60,8 +60,12 @@ export interface AttendeeEvent {
   venue_type: "physical" | "online" | "hybrid";
   venue_name?: string;
   street_address?: string;
-  latitude?: string;
-  longitude?: string;
+  city?: string;
+  country?: string;
+  latitude?: string | number;
+  longitude?: string | number;
+  distance_m?: number;
+  image_url?: string | null;
   hero_image?: string;
   video_url?: string | null;
   status: string;
@@ -163,6 +167,11 @@ export interface RecommendedEventsResponse {
   detail: string;
 }
 
+export interface NearbyEventsResponse {
+  data: AttendeeEvent[];
+  pagination: { page: number; limit: number; total: number; total_pages: number };
+}
+
 export interface CategoryItem {
   label: string;
   value: string;
@@ -203,6 +212,9 @@ export const attendeeEventsApi = {
       successMessage: false,
       errorMessage: true,
     }),
+
+  getNearby: (params: { lat: number; lon: number; radius_m: number; page: number; limit: number }) =>
+    api.get<AttendeeEvent[]>('/events/nearby', { params, successMessage: false, errorMessage: false }),
 
   /**
    * Get a single published event by ID (public endpoint for attendee view).

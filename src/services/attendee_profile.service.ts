@@ -10,6 +10,8 @@ export interface AttendeeProfile {
   marketing_emails: boolean;
   country?: string | null;
   city?: string | null;
+  latitude?: string | number | null;
+  longitude?: string | number | null;
   dob?: string | null;
   age_group?: string | null;
   onboarding_completed: boolean;
