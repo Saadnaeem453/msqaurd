@@ -246,7 +246,7 @@ const OrganiserInsightsPage = () => {
                 <FiChevronDown size={11} className="text-bgray/60" />
               </button>
               {rangeOpen && (
-                <div className="absolute right-0 top-full z-10 mt-1 w-36 rounded-md border border-border_color bg-[#151c24] py-1 shadow-lg">
+                <div className="absolute right-0 top-full z-10 mt-1 w-36 rounded-md border border-border_color bg-[#131418] py-1 shadow-lg">
                   {rangeOptions.map((option) => (
                     <button
                       key={option.value}
@@ -280,7 +280,7 @@ const OrganiserInsightsPage = () => {
           {displayStats.map((item) => {
             const Icon = item.icon;
             return (
-              <div key={item.id} className="rounded-md bg-[#151c24] p-4">
+              <div key={item.id} className="rounded-md bg-[#131418] p-4">
                 <div className="flex items-start justify-between gap-2">
                   <p className="text-[10px] font-medium uppercase tracking-widest text-secondary">
                     {item.label}
@@ -309,7 +309,7 @@ const OrganiserInsightsPage = () => {
 
         {/* Velocity + audience */}
         <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
-          <section className="rounded-md bg-[#151c24] p-5">
+          <section className="rounded-md bg-[#131418] p-5">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <h2 className="text-base font-medium text-bgray">Ticket Sales Velocity</h2>
               <div className="flex rounded-md bg-[#080f15] p-1">
@@ -343,7 +343,7 @@ const OrganiserInsightsPage = () => {
             </div>
           </section>
 
-          <section className="rounded-md bg-[#151c24] p-5">
+          <section className="rounded-md bg-[#131418] p-5">
             <h2 className="text-base font-medium text-bgray">Audience Split</h2>
             <ul className="mt-4 space-y-4">
               {(liveAudienceRows.length ? liveAudienceRows : audienceRows).map((row) => (
@@ -371,7 +371,7 @@ const OrganiserInsightsPage = () => {
 
         {/* Categories + peak times */}
         <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-2">
-          <section className="rounded-md bg-[#151c24] p-5">
+          <section className="rounded-md bg-[#131418] p-5">
             <h2 className="text-base font-medium text-bgray">Popular Categories</h2>
             <ul className="mt-4 space-y-2">
               {categoryRows.map((row) => {
@@ -397,7 +397,7 @@ const OrganiserInsightsPage = () => {
             </ul>
           </section>
 
-          <section className="flex flex-col rounded-md bg-[#151c24] p-5">
+          <section className="flex flex-col rounded-md bg-[#131418] p-5">
             <h2 className="text-base font-medium text-bgray">Peak Booking Times</h2>
             <div className="flex flex-1 flex-col items-center justify-center py-6 text-center">
               <p className="text-3xl font-bold tracking-tight text-primary">19:00 — 21:00</p>
@@ -419,7 +419,7 @@ const OrganiserInsightsPage = () => {
         </div>
 
         {/* Top performing events */}
-        <section className="mt-4 overflow-hidden rounded-md bg-[#151c24]">
+        <section className="mt-4 overflow-hidden rounded-md bg-[#131418]">
           <div className="flex flex-wrap items-center justify-between gap-2 px-5 py-4">
             <h2 className="text-base font-medium text-bgray">Top Performing Events</h2>
             <button type="button" className="text-[10px] font-bold text-primary transition hover:underline">

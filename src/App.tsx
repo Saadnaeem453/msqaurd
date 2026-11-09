@@ -50,6 +50,8 @@ import EventDetail from "./pages/Organizer/events/EventDetail";
 import DraftEvents from "./pages/Organizer/events/DraftEvents";
 import PublishedEvents from "./pages/Organizer/events/PublishedEvents";
 import AccountSettings from "./pages/Organizer/settings/AccountSettings";
+import NotificationSettingsPage from "./pages/Organizer/settings/NotificationSettingsPage";
+import SecurityPrivacyPage from "./pages/Organizer/settings/SecurityPrivacyPage";
 import RevenuePage from "./pages/Organizer/finance/RevenuePage";
 import TransactionsPage from "./pages/Organizer/finance/TransactionsPage";
 import PayoutsPage from "./pages/Organizer/finance/PayoutsPage";
@@ -351,6 +353,8 @@ function App() {
           <Route path="checkin/scanner" element={<ScannerPage />} />
           <Route path="checkin/live" element={<LiveCheckinsPage />} />
           <Route path="settings" element={<AccountSettings />} />
+          <Route path="settings/notifications" element={<NotificationSettingsPage />} />
+          <Route path="settings/security" element={<SecurityPrivacyPage />} />
 
           <Route path="finance/revenue" element={<RevenuePage />} />
           <Route path="finance/transactions" element={<TransactionsPage />} />

@@ -113,6 +113,7 @@ const Sidebar = () => {
     items: section.items.filter((item) => {
       if (item.path === "/organizer/organization/profile") return true;
       if (item.path === "/organizer/organization/team") return role === "admin";
+      if (item.path === "/organizer/settings/notifications" || item.path === "/organizer/settings/security") return true;
       if (item.path.startsWith("/organizer/events")) {
         if (role === "moderator") return ["/organizer/events", "/organizer/events/published", "/organizer/events/past"].includes(item.path);
         return role === "admin";
