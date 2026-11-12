@@ -1,10 +1,13 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Bell, Calendar, Search, User, Settings, LogOut } from "lucide-react";
+import { toast } from "sonner";
+import { authApi, clearLocalAuthState } from "../../services/auth_service";
 
 const Navbar = () => {
   const navigate = useNavigate();
   const [profileOpen, setProfileOpen] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
 
 
@@ -18,14 +21,17 @@ const Navbar = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    localStorage.removeItem("accountType");
-    localStorage.removeItem("onboardingCompleted");
-    localStorage.removeItem("mh_token");
-    localStorage.removeItem("initialLoaderShown");
-    navigate("/login");
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
+    const result = await authApi.logout();
+    if (!result.ok && result.status !== 401) {
+      toast.error(result.detail || "Unable to sign out. Please try again.");
+      setIsLoggingOut(false);
+      return;
+    }
+    clearLocalAuthState();
+    setIsLoggingOut(false);
+    navigate("/login", { replace: true });
   };
 
   return (
@@ -80,14 +86,15 @@ const Navbar = () => {
                 Settings
               </button>
               <button
+                disabled={isLoggingOut}
                 onClick={() => {
                   setProfileOpen(false);
-                  handleLogout();
+                  void handleLogout();
                 }}
-                className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-red-400 hover:text-red-300 hover:bg-secondary/10 transition-colors"
+                className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-red-400 hover:text-red-300 hover:bg-secondary/10 transition-colors disabled:cursor-wait disabled:opacity-60"
               >
                 <LogOut size={16} />
-                Logout
+                {isLoggingOut ? "Signing out..." : "Logout"}
               </button>
             </div>
           )}

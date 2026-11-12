@@ -101,8 +101,8 @@ const NotificationSettingsPage = () => {
       <div className="mx-auto w-full max-w-[1500px] px-5 py-3">
         {/* Header */}
         <header>
-          <h1 className="text-xl font-semibold leading-6 tracking-tight text-bgray">Notification Settings</h1>
-          <p className="mt-1 max-w-[470px] text-xs leading-4 text-bgray/65">
+          <h1 className="text-2xl font-semibold leading-7 tracking-tight text-bgray">Notification Settings</h1>
+          <p className="mt-1 max-w-[470px] text-[13px] leading-[1.45] text-bgray/65">
             Configure how MSQUARED keeps you informed. Manage communication channels for
             sales performance, attendee interactions, and critical system alerts.
           </p>
@@ -120,7 +120,7 @@ const NotificationSettingsPage = () => {
                 </span>
                 <div>
                   <h2 className="text-base font-semibold text-bgray">Email Notifications</h2>
-                  <p className="mt-0.5 text-[10px] text-bgray/50">
+                  <p className="mt-0.5 text-[11px] text-bgray/50">
                     Managed via verified: admin@msquared.com
                   </p>
                 </div>
@@ -130,8 +130,8 @@ const NotificationSettingsPage = () => {
                 {emailSettings.map((setting) => (
                   <li key={setting.id} className="flex items-center justify-between gap-4 py-6">
                     <div className="min-w-0">
-                      <p className="text-xs font-medium text-bgray/90">{setting.title}</p>
-                      <p className="mt-1 max-w-[280px] text-[11px] leading-[1.45] text-bgray/55">
+                      <p className="text-sm font-medium text-bgray/90">{setting.title}</p>
+                      <p className="mt-1 max-w-[280px] text-xs leading-[1.45] text-bgray/55">
                         {setting.description}
                       </p>
                     </div>
@@ -149,7 +149,7 @@ const NotificationSettingsPage = () => {
                 </span>
                 <div>
                   <h2 className="text-base font-semibold text-bgray">In-App Notifications</h2>
-                  <p className="mt-0.5 text-[10px] text-bgray/50">
+                  <p className="mt-0.5 text-[11px] text-bgray/50">
                     Activity while you are using MSQUARED OS
                   </p>
                 </div>
@@ -164,7 +164,7 @@ const NotificationSettingsPage = () => {
                       className="flex items-center gap-3 rounded-md border border-white/[0.04] bg-[#191a1c] px-3 py-2.5"
                     >
                       <SettingIcon size={13} className={setting.iconClasses} />
-                      <span className="flex-1 text-[13px] text-bgray/90">{setting.title}</span>
+                      <span className="flex-1 text-sm text-bgray/90">{setting.title}</span>
                       <Toggle on={settings[setting.id]} label={setting.title} onChange={() => flip(setting.id)} />
                     </li>
                   );
@@ -179,13 +179,13 @@ const NotificationSettingsPage = () => {
             <section className="rounded-xl border border-white/[0.06] bg-[#131418] p-5 sm:min-h-[221px]">
               <div className="flex items-center gap-2.5">
                 <FiMessageSquare size={13} className="text-secondary" />
-                <h2 className="text-[11px] font-medium uppercase tracking-wider text-bgray/80">SMS Alerts</h2>
+                <h2 className="text-xs font-medium uppercase tracking-wider text-bgray/80">SMS Alerts</h2>
               </div>
-              <p className="mt-3 text-[10px] leading-[1.5] text-bgray/55">
+              <p className="mt-3 text-[11px] leading-[1.5] text-bgray/55">
                 Critical alerts are sent via SMS when immediate action is required or servers
                 are down.
               </p>
-              <p className="mt-3 text-[9px] font-semibold uppercase tracking-wider text-bgray/55">
+              <p className="mt-3 text-[10px] font-semibold uppercase tracking-wider text-bgray/55">
                 Phone Number
               </p>
               <div className="mt-1.5 flex items-center gap-2 rounded-md border border-white/[0.06] bg-[#111214] px-2.5 py-2">
@@ -194,9 +194,9 @@ const NotificationSettingsPage = () => {
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   aria-label="Phone number"
-                  className="w-full bg-transparent text-[11px] text-bgray/60 focus:outline-none"
+                  className="w-full bg-transparent text-xs text-bgray/60 focus:outline-none"
                 />
-                <button type="button" className="shrink-0 text-[9px] font-bold uppercase text-primary transition hover:underline">
+                <button type="button" className="shrink-0 text-[10px] font-bold uppercase text-primary transition hover:underline">
                   Verify
                 </button>
               </div>
@@ -212,28 +212,28 @@ const NotificationSettingsPage = () => {
                 >
                   {settings["sms-critical"] && <FiCheck size={10} className="text-bgray" />}
                 </button>
-                <span className="text-[10px] text-bgray/75">Enable Critical SMS Alerts</span>
+                <span className="text-[11px] text-bgray/75">Enable Critical SMS Alerts</span>
               </label>
             </section>
 
             {/* Unsaved changes */}
             <section className="rounded-xl border border-white/[0.06] bg-[#131418] p-5 sm:min-h-[215px]">
-              <h2 className="text-xs font-medium text-bgray/90">Unsaved Changes</h2>
-              <p className="mt-1.5 text-[9px] leading-[1.5] text-bgray/50">
+              <h2 className="text-sm font-medium text-bgray/90">Unsaved Changes</h2>
+              <p className="mt-1.5 text-[10px] leading-[1.5] text-bgray/50">
                 Changes to notification routes affect all connected devices across your
                 organization.
               </p>
               <button
                 type="button"
                 onClick={() => toast.success("Preferences updated across all connected devices.")}
-                className="mt-4 w-full rounded-md bg-primary py-2.5 text-[11px] font-semibold text-white transition hover:bg-primary/90"
+                className="mt-4 w-full rounded-md bg-primary py-2.5 text-xs font-semibold text-white transition hover:bg-primary/90"
               >
                 Update Preferences
               </button>
               <button
                 type="button"
                 onClick={resetDefaults}
-                className="mt-2 w-full rounded-md border border-white/[0.08] py-2.5 text-[11px] font-medium text-bgray/75 transition hover:bg-white/[0.03]"
+                className="mt-2 w-full rounded-md border border-white/[0.08] py-2.5 text-xs font-medium text-bgray/75 transition hover:bg-white/[0.03]"
               >
                 Reset to Default
               </button>
@@ -249,9 +249,9 @@ const NotificationSettingsPage = () => {
                 />
               </div>
               <div className="p-4">
-                <p className="text-[9px] font-bold uppercase tracking-wider text-secondary">Help Center</p>
-                <p className="mt-1 text-[10px] font-semibold text-bgray/90">Need help configuring?</p>
-                <button type="button" className="mt-0.5 text-[9px] text-bgray/55 underline decoration-bgray/30 underline-offset-2 transition hover:text-bgray">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-secondary">Help Center</p>
+                <p className="mt-1 text-[11px] font-semibold text-bgray/90">Need help configuring?</p>
+                <button type="button" className="mt-0.5 text-[10px] text-bgray/55 underline decoration-bgray/30 underline-offset-2 transition hover:text-bgray">
                   Read Documentation →
                 </button>
               </div>

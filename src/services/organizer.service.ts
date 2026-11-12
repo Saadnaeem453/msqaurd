@@ -1,4 +1,5 @@
 import { api } from "../lib/api";
+import { createLoginIdempotencyKey } from "./auth_service";
 
 export interface OrganizerSignupData {
   full_name: string;
@@ -197,13 +198,14 @@ export const organizerApi = {
   /**
    * Sign in as an organizer
    */
-  signin: (data: OrganizerSigninData) =>
+  signin: (data: OrganizerSigninData, idempotencyKey = createLoginIdempotencyKey()) =>
     api.post<{ success: boolean; token: string; user: any; detail: string }>(
       '/organizer/signin',
       data,
       {
         loadingMessage: 'Signing in...',
         successMessage: 'Welcome back, Organizer!',
+        headers: { 'Idempotency-Key': idempotencyKey },
       }
     ),
 

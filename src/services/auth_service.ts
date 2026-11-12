@@ -1,4 +1,30 @@
-import { api, User } from "../lib/api";
+import { api, tokenStore, User } from "../lib/api";
+
+export interface AuthSession {
+  id: string;
+  device_type: string;
+  browser: string | null;
+  operating_system: string | null;
+  location: string | null;
+  signed_in_at: string;
+  last_activity_at: string | null;
+  expires_at: string | null;
+  revoked_at: string | null;
+  status: "active" | "revoked" | "expired" | string;
+  current: boolean;
+}
+
+export const clearLocalAuthState = () => {
+  tokenStore.clear();
+  ["token", "user", "accountType", "onboardingCompleted", "initialLoaderShown", "verify"].forEach((key) => {
+    localStorage.removeItem(key);
+  });
+};
+
+export const createLoginIdempotencyKey = () =>
+  typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
+    ? crypto.randomUUID()
+    : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
 
 export const authApi = {
   getOrganizationMemberships: () => api.get('/auth/organization-memberships', { successMessage: false, errorMessage: false }),
@@ -16,22 +42,26 @@ export const authApi = {
       successMessage: 'Account created! Check your email for the verification code.',
     }),
 
-  signin: (body: { email: string; password: string }) =>
+  // Pass the same key again only when retrying this exact login request.
+  signin: (body: { email: string; password: string }, idempotencyKey = createLoginIdempotencyKey()) =>
     api.post<{ user: User; token: string }>('/auth/signin', body, {
       loadingMessage: 'Signing in...',
       successMessage: 'Welcome back!',
+      headers: { 'Idempotency-Key': idempotencyKey },
     }),
 
-  googleLogin: (body: { idToken: string }) =>
+  googleLogin: (body: { idToken: string }, idempotencyKey = createLoginIdempotencyKey()) =>
     api.post<{ user: User; token: string }>('/auth/google', body, {
       loadingMessage: 'Signing in with Google...',
       successMessage: 'Welcome!',
+      headers: { 'Idempotency-Key': idempotencyKey },
     }),
 
-  appleLogin: (body: { idToken: string }) =>
+  appleLogin: (body: { idToken: string }, idempotencyKey = createLoginIdempotencyKey()) =>
     api.post<{ user: User; token: string }>('/auth/apple', body, {
       loadingMessage: 'Signing in with Apple...',
       successMessage: 'Welcome!',
+      headers: { 'Idempotency-Key': idempotencyKey },
     }),
 
   verifyAccount: (body: { email: string; code: string }) =>
@@ -62,6 +92,28 @@ export const authApi = {
       loadingMessage: 'Resetting password...',
       successMessage: 'Password reset successfully. Please sign in.',
     }),
+
+  changePassword: (body: {
+    current_password: string;
+    new_password: string;
+    confirm_password: string;
+  }) =>
+    api.post<{ token: string }>('/auth/change-password', body, {
+      successMessage: false,
+      errorMessage: false,
+    }),
+
+  getSessions: () =>
+    api.get<AuthSession[]>('/auth/sessions', { successMessage: false, errorMessage: false }),
+
+  revokeSession: (sessionId: string) =>
+    api.delete<{ session_id: string; revoked: boolean; current: boolean }>(
+      `/auth/sessions/${encodeURIComponent(sessionId)}`,
+      { successMessage: false, errorMessage: false },
+    ),
+
+  logout: () =>
+    api.post('/auth/logout', undefined, { successMessage: false, errorMessage: false }),
 
   validateToken: () =>
     api.get('/auth/validate-token', {
